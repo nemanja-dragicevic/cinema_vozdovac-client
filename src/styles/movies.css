@@ -1,0 +1,17 @@
+.gradient-text {
+  background-image: linear-gradient(to right, #4F46E5, #8D44AD, #D26385, #F89A7D, #8D44AD, #4F46E5);
+
+  -webkit-background-clip: text;
+  background-clip: text;
+    
+  font-size: 3rem;
+
+  color: transparent;
+}
+
+.pacmanSpinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
