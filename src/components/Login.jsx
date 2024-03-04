@@ -1,5 +1,4 @@
 import React from "react";
-import "../styles/moviesTable.css";
 
 const Login = () => {
   return (
