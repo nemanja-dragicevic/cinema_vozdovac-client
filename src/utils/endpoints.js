@@ -1,3 +1,3 @@
 // Movies
-const moviesApi = `/api/movie`;
+// const moviesApi = `/api/movie`;
 export const moviesPath = `/api/movie/allWithAWS`;

@@ -1,21 +1,15 @@
-const MovieBackground = ({ small, base64Image }) => {
+import { decode } from "../utils/decode";
+
+const MovieBackground = ({ small, base64Image, nameClass }) => {
   if (base64Image === null) return null;
 
-  const decodedImage = atob(base64Image);
+  const imageUrl = decode(base64Image);
 
-  const bytes = new Uint8Array(decodedImage.length);
-  for (let i = 0; i < decodedImage.length; i++) {
-    bytes[i] = decodedImage.charCodeAt(i);
-  }
-
-  const blob = new Blob([bytes], { type: "image/jpeg" });
-
-  const imageUrl = URL.createObjectURL(blob);
   return small ? (
-    <img className="locandina" src={imageUrl} alt="Movie"></img>
+    <img className={nameClass} src={imageUrl} alt="Movie"></img>
   ) : (
     <div
-      className="blur_back bright_back"
+      className={nameClass}
       style={{ backgroundImage: `url(${imageUrl})` }}
     ></div>
   );
