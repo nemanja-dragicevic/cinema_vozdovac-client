@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import * as moviesActions from "../actions/movies";
-import MoviesTable from "../reusable/MoviesTable";
 import { PacmanLoader } from "react-spinners";
+import MoviesTable from "../reusable/MoviesTable";
+import * as moviesActions from "../actions/movies";
 import "../styles/movies.css";
 
 const Movies = () => {
@@ -36,7 +36,7 @@ const Movies = () => {
     );
   }
 
-  return movies === undefined ? (
+  return movies === undefined || movies.length === 0 ? (
     <h1>Nema filmova</h1>
   ) : (
     <>

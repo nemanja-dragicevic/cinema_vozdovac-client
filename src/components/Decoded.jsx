@@ -2,7 +2,6 @@ import React from "react";
 
 const Decoded = ({ base64Image }) => {
   if (base64Image === null) return null;
-  if (base64Image !== null) console.log("Ima");
   // Remove the data:image/jpeg;base64, prefix from the base64 string
   const base64WithoutPrefix = base64Image.replace(
     /^data:image\/[a-z]+;base64,/,
