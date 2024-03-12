@@ -5,9 +5,9 @@ import WelcomePage from "./components/WelcomePage";
 import Login from "./components/Login";
 import NavBar from "./components/NavBar";
 import Movies from "./components/Movies";
-import Register from "./components/Register";
 import MovieForm from "./components/MovieForm";
 import "react-toastify/dist/ReactToastify.css";
+import Register from "./registration/Register";
 
 function App() {
   return (
