@@ -1,10 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "../styles/style.css";
 import "../styles/register.css";
 import { TextField } from "@mui/material";
-import "../utils/loginButton";
 
 const Register = () => {
+  useEffect(() => {
+    const signInButton = document.getElementById('signIn');
+    const signUpButton = document.getElementById('signUp');
+    const container = document.getElementById('container');
+
+    signInButton.addEventListener('click', () => {
+      container.classList.remove('right-panel-active');
+    });
+
+    signUpButton.addEventListener('click', () => {
+      container.classList.add('right-panel-active');
+    });
+  }, []);
   return (
     <div className="big_container">
       <div className="container" id="container">
@@ -26,7 +38,7 @@ const Register = () => {
         <div className="form-container sign-in-container">
           <form action="#">
             <h1>Sign in</h1>
-            <TextField id="filled-basic" label="Filled" variant="filled" />
+            <TextField id="filled-basic" label="Username" variant="filled" />
             <TextField
               id="outlined-password-input"
               label="Password"
@@ -42,15 +54,15 @@ const Register = () => {
             <div className="overlay-panel overlay-left">
               <h1>Welcome Back!</h1>
               <p>
-                To keep connected with us please login with your personal info
+                To see our movie list, please sign in
               </p>
               <button className="ghost" id="signIn">
                 Sign In
               </button>
             </div>
             <div className="overlay-panel overlay-right">
-              <h1>Hello, Friend!</h1>
-              <p>Enter your personal details and start journey with us</p>
+              <h1>Hello!</h1>
+              <p>Join our community today and watch all the movies for all ages!</p>
               <button className="ghost" id="signUp">
                 Sign Up
               </button>
@@ -59,7 +71,7 @@ const Register = () => {
         </div>
       </div>
     </div>
-  );
+      );
 };
 
 export default Register;
