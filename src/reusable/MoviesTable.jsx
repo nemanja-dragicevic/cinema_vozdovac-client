@@ -29,11 +29,11 @@ const MoviesTable = ({ movies }) => {
               <h1>{movie.name}</h1>
               <h4>{movie.genres.map((genre) => genre.name).join(", ")}</h4>
               <span class="minutes">{movie.duration}</span>
-              <p class="type">
-                {movie.actors
+              {/* <p class="type">
+                {movie.roles
                   .map((actor) => actor.firstName + " " + actor.lastName)
                   .join(", ")}
-              </p>
+              </p> */}
             </div>
             <div class="movie_desc">
               <p class="text">{movie.description}</p>

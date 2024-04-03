@@ -6,11 +6,14 @@ import Login from "./components/Login";
 import NavBar from "./components/NavBar";
 import Movies from "./components/Movies";
 import MovieForm from "./components/MovieForm";
-import "react-toastify/dist/ReactToastify.css";
 import Register from "./registration/Register";
+import 'react-toastify/dist/ReactToastify.css';
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 function App() {
   return (
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
     <div className="app-container">
       <ToastContainer />
       <NavBar />
@@ -22,6 +25,7 @@ function App() {
         <Route exact path="/register" element={<Register />} />
       </Routes>
     </div>
+    </LocalizationProvider>
   );
 }
 
