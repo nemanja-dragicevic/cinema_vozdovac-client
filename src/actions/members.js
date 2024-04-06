@@ -9,6 +9,7 @@ export const login = (data) => {
     return apiService
       .post(loginPath, { ...data })
       .then((response) => {
+        localStorage.setItem("token", response.data.token);
         dispatch(membersActions.fetchMember(response.data));
         notifications.success("Successfully logged in");
       })
@@ -25,6 +26,7 @@ export const register = (data) => {
     return apiService
       .post(registerPath, { ...data })
       .then((response) => {
+        localStorage.setItem("token", response.data.token);
         dispatch(membersActions.fetchMember(response.data));
         notifications.success("Successfully registered");
       })
