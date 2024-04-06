@@ -13,7 +13,7 @@ export const getMovies = () => {
       })
       .catch((error) => {
         dispatch(moviesActions.actionError(error?.response?.data));
-        notifications.prikaz();
+        notifications.error();
       });
   };
 };

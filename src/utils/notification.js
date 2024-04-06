@@ -1,6 +1,10 @@
 import { toast } from "react-toastify";
 
-export function prikaz(message) {
+export function error(message) {
   toast.error(message);
   // .success .info
+}
+
+export function success(message) {
+  toast.success(message);
 }
