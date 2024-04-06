@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 
-const NavBar = () => {
+const NavBar = ({ token }) => {
+  console.log(token);
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <Link className="navbar-brand" to="/">
@@ -25,6 +27,7 @@ const NavBar = () => {
               Naši Filmovi
             </NavLink>
           </li>
+
           <li className="nav-item">
             <NavLink className="nav-link" to="/register">
               Profile
