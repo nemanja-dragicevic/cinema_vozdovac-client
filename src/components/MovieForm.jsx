@@ -1,10 +1,21 @@
 import { useParams } from "react-router";
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import MovieBackground from "./../reusable/MovieBackground";
+import * as rolesActions from "../actions/roles";
 import "../styles/movie.css";
 
 const MovieForm = () => {
+  const dispatch = useDispatch();
   const { id } = useParams();
+
+  const { roles } = useSelector((state) => state.rolesReducer);
+
+  console.log(roles);
+
+  useEffect(() => {
+    dispatch(rolesActions.getRoles(id));
+  }, [dispatch]);
 
   const { movies } = useSelector((state) => state.moviesReducer);
   const movie = movies.filter((movie) => movie.movieID === parseInt(id))[0];
@@ -17,8 +28,8 @@ const MovieForm = () => {
           <h4>{movie.genres.map((genre) => genre.name).join(", ")}</h4>
           <span class="minutes">{movie.duration}</span>
           <p class="type">
-            {movie.actors
-              .map((actor) => actor.firstName + " " + actor.lastName)
+            {roles
+              .map((role) => role.actor.firstName + " " + role.actor.lastName)
               .join(", ")}
           </p>
         </div>
