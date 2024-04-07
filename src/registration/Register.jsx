@@ -80,7 +80,6 @@ const Register = () => {
 
   const handleSignUp = () => {
     const { error } = schema.validate(data);
-    console.log(error);
     if (error === undefined) {
       const sendData = { ...data };
       sendData.gender = data.gender.toUpperCase();
@@ -93,7 +92,6 @@ const Register = () => {
         .split("/")
         .reverse()
         .join("-"); //.replace(/\//g, '-');
-      console.log(sendData);
       dispatch(membersActions.register(sendData));
     }
   };

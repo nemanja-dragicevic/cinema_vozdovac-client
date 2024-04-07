@@ -18,7 +18,6 @@ function App() {
     const stored = localStorage.getItem("token");
     if (stored) {
       setToken(stored);
-      console.log("stigao token - App");
     }
   }, []);
 
