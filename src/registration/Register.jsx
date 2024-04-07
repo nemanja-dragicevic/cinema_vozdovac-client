@@ -36,8 +36,6 @@ const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { member } = useSelector((state) => state.membersReducer);
-
   const maxDate = dayjs().subtract(14, "year");
 
   const initialData = {
@@ -53,10 +51,10 @@ const Register = () => {
   const [data, setData] = useState(initialData);
 
   useEffect(() => {
-    if (member !== undefined) {
+    if (localStorage.getItem("token") !== undefined) {
       navigate("/");
     }
-  }, [member]);
+  }, [localStorage]);
 
   const handleInputChange = (name, value) => {
     setData((prevData) => ({
