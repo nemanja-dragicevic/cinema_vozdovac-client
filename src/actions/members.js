@@ -28,6 +28,7 @@ export const register = (data) => {
       .post(registerPath, { ...data })
       .then((response) => {
         localStorage.setItem("token", response.data.token);
+        sessionStorage.setItem("user", JSON.stringify(response.data));
         dispatch(membersActions.fetchMember(response.data));
         notifications.success("Successfully registered");
       })
