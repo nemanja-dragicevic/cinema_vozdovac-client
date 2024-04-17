@@ -10,6 +10,7 @@ export const login = (data) => {
       .post(loginPath, { ...data })
       .then((response) => {
         localStorage.setItem("token", response.data.token);
+        sessionStorage.setItem("user", JSON.stringify(response.data));
         dispatch(membersActions.fetchMember(response.data));
         notifications.success("Successfully logged in");
       })
