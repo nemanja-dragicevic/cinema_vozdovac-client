@@ -11,8 +11,6 @@ const MovieForm = () => {
 
   const { roles } = useSelector((state) => state.rolesReducer);
 
-  console.log(roles);
-
   useEffect(() => {
     dispatch(rolesActions.getRoles(id));
   }, [dispatch]);
@@ -28,9 +26,13 @@ const MovieForm = () => {
           <h4>{movie.genres.map((genre) => genre.name).join(", ")}</h4>
           <span class="minutes">{movie.duration}</span>
           <p class="type">
-            {roles
-              .map((role) => role.actor.firstName + " " + role.actor.lastName)
-              .join(", ")}
+            {roles ? (
+              roles
+                .map((role) => role.actor.firstName + " " + role.actor.lastName)
+                .join(", ")
+            ) : (
+              <h1></h1>
+            )}
           </p>
         </div>
         <div class="movie_desc">

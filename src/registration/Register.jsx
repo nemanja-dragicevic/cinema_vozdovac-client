@@ -38,6 +38,9 @@ const Register = () => {
 
   const maxDate = dayjs().subtract(14, "year");
 
+  // when logged -> "\"
+  const { member } = useSelector((state) => state.membersReducer);
+
   const initialData = {
     username: "",
     password: "",
@@ -51,10 +54,13 @@ const Register = () => {
   const [data, setData] = useState(initialData);
 
   useEffect(() => {
-    if (localStorage.getItem("token") !== undefined) {
-      navigate("/");
-    }
-  }, [localStorage]);
+    if (member !== undefined) navigate("/");
+  }, [member]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token !== undefined && token !== null) navigate("/");
+  }, []);
 
   const handleInputChange = (name, value) => {
     setData((prevData) => ({

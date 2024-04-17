@@ -19,7 +19,7 @@ function App() {
     if (stored) {
       setToken(stored);
     }
-  }, []);
+  }, [token]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>

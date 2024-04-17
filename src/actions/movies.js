@@ -12,6 +12,9 @@ export const getMovies = () => {
         dispatch(moviesActions.fetchMovies(response.data));
       })
       .catch((error) => {
+        if (error.response.status === 401) {
+          localStorage.removeItem("token");
+        }
         dispatch(moviesActions.actionError(error?.response?.data));
         notifications.error();
       });
