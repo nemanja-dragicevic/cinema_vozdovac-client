@@ -21,6 +21,12 @@ const actorsSlice = createSlice({
       state.actors = [action.payload].concat(state.actors);
       state.error = undefined;
     },
+    deleteActor(state, action) {
+      state.actors = state.actors.filter(
+        (actor) => actor.actorID !== action.payload
+      );
+      state.error = undefined;
+    },
     actionStart(state) {
       state.error = undefined;
     },

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as actorsActions from "../actions/actors";
-import { DataGrid } from "@mui/x-data-grid";
 import Table from "../reusable/Table";
 import { InputAdornment, Toolbar } from "@mui/material";
 import { Search } from "@mui/icons-material";
@@ -18,6 +17,7 @@ const ActorsPage = () => {
 
   const handleDelete = (id) => {
     console.log(id);
+    dispatch(actorsActions.deleteActor(id));
   };
 
   const [filterFn, setFilterFn] = useState({
@@ -39,7 +39,7 @@ const ActorsPage = () => {
         if (target.value == "") return items;
         else
           return items.filter((x) =>
-            x.firstName.toLowerCase().includes(target.value)
+            x.firstName.toLowerCase().includes(target.value.toLowerCase())
           );
       },
     });
@@ -62,7 +62,12 @@ const ActorsPage = () => {
           onChange={handleSearch}
         />
       </Toolbar>
-      <Table headCells={headCells} data={actors} filterFn={filterFn} />
+      <Table
+        headCells={headCells}
+        data={actors}
+        filterFn={filterFn}
+        onDelete={handleDelete}
+      />
     </div>
   );
 };
