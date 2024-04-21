@@ -3,13 +3,16 @@ import { useSelector } from "react-redux";
 import { Link, NavLink } from "react-router-dom";
 
 const NavBar = () => {
-  const { member } = useSelector((state) => state.membersReducer);
+  var { member } = useSelector((state) => state.membersReducer);
   // const member = sessionStorage.getItem("user");
 
   const [role, setRole] = useState("DEFAULT");
   useEffect(() => {
     console.log("changed member", member);
     if (member) setRole(member.role);
+    else if (sessionStorage.getItem("user")) {
+      member = JSON.parse(sessionStorage.getItem("user"));
+    }
   }, [member]);
 
   return (
@@ -37,8 +40,8 @@ const NavBar = () => {
           </li>
           <li class="nav-item">
             {role === "ADMIN" ? (
-              <NavLink className="nav-link" to="/register">
-                Add movie
+              <NavLink className="nav-link" to="/actors">
+                Actors
               </NavLink>
             ) : null}
           </li>
@@ -49,7 +52,7 @@ const NavBar = () => {
               </NavLink>
             ) : null}
           </li>
-          {!member ? (
+          {!sessionStorage.getItem("user") ? (
             <li class="nav-item">
               <NavLink className="nav-link" to="/register">
                 Profile
