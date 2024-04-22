@@ -17,7 +17,7 @@ const actorsSlice = createSlice({
       state.actors = action.payload;
       state.error = undefined;
     },
-    addActor(state, action) {
+    saveActor(state, action) {
       state.actors = [action.payload].concat(state.actors);
       state.error = undefined;
     },

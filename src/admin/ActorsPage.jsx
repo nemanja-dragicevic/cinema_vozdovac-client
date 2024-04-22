@@ -1,13 +1,28 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Joi from "joi";
+import { InputAdornment, Paper, Toolbar } from "@mui/material";
+import { PeopleOutlineTwoTone, Search } from "@mui/icons-material";
 import * as actorsActions from "../actions/actors";
 import Table from "../reusable/Table";
-import { InputAdornment, Toolbar } from "@mui/material";
-import { Search } from "@mui/icons-material";
 import SearchInput from "../reusable/SearchInput";
+import ActorForm from "../actor/ActorForm";
+import ActorHeader from "../actor/ActorHeader";
+
+const schema = Joi.object({
+  actorID: Joi.number().integer().min(0).required(),
+  firstName: Joi.string().min(2).max(30).required().label("First name"),
+  lastName: Joi.string().min(2).max(30).required().label("Last name"),
+  gender: Joi.string().required(),
+});
 
 const ActorsPage = () => {
   const dispatch = useDispatch();
+
+  const [errors, setErrors] = useState({
+    firstName: { error: false, message: "" },
+    lastName: { error: false, message: "" },
+  });
 
   const { actors } = useSelector((state) => state.actorsReducer);
 
@@ -16,7 +31,6 @@ const ActorsPage = () => {
   }, [dispatch]);
 
   const handleDelete = (id) => {
-    console.log(id);
     dispatch(actorsActions.deleteActor(id));
   };
 
@@ -36,7 +50,7 @@ const ActorsPage = () => {
     let target = e.target;
     setFilterFn({
       fn: (items) => {
-        if (target.value == "") return items;
+        if (target.value === "") return items;
         else
           return items.filter((x) =>
             x.firstName.toLowerCase().includes(target.value.toLowerCase())
@@ -45,29 +59,61 @@ const ActorsPage = () => {
     });
   };
 
+  const handleSave = (data) => {
+    const validation = schema.validate(data);
+    if (validation.error) {
+      const error = validation.error.details[0].message;
+      if (error.includes("First name")) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          firstName: { error: true, message: error },
+        }));
+      } else if (error.includes("Last name")) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          lastName: { error: true, message: error },
+        }));
+      }
+      return;
+    }
+    setErrors({
+      firstName: { error: false, message: "" },
+      lastName: { error: false, message: "" },
+    });
+
+    dispatch(actorsActions.saveActor(data));
+  };
+
   return (
     <div
       style={{ backgroundColor: "white", padding: "20px", marginTop: "50px" }}
     >
-      <Toolbar>
-        <SearchInput
-          label="Search actors"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            ),
-          }}
-          onChange={handleSearch}
+      <Paper>
+        <ActorHeader
+          title="New actor"
+          icon={<PeopleOutlineTwoTone fontSize="large" />}
         />
-      </Toolbar>
-      <Table
-        headCells={headCells}
-        data={actors}
-        filterFn={filterFn}
-        onDelete={handleDelete}
-      />
+        <ActorForm onSave={handleSave} errors={errors} />
+        <Toolbar>
+          <SearchInput
+            label="Search actors"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            }}
+            onChange={handleSearch}
+          />
+        </Toolbar>
+        <Table
+          headCells={headCells}
+          data={actors}
+          filterFn={filterFn}
+          onDelete={handleDelete}
+        />
+      </Paper>
     </div>
   );
 };

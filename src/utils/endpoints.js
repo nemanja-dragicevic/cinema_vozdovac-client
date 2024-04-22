@@ -9,6 +9,6 @@ export const loginPath = `/api/members/login`;
 export const movieRolesPath = (movieID) => `/api/role/${movieID}`;
 
 // Actors
-const actorsPath = `/api/actor`;
+export const actorsPath = `/api/actor`;
 export const getActorsPath = actorsPath + `/all`;
 export const actorWithId = (actorID) => actorsPath + `/${actorID}`;

@@ -9,6 +9,7 @@ import Input from "./Input";
 import * as membersActions from "../actions/members";
 import "../styles/style.css";
 import "../styles/register.css";
+import { error } from "./../utils/notification";
 
 const schema_login = Joi.object({
   username: Joi.string().min(3).max(30).required().label("Username"),
@@ -40,6 +41,14 @@ const Register = () => {
 
   // when logged -> "\"
   const { member } = useSelector((state) => state.membersReducer);
+
+  const [errors, setErrors] = useState({
+    username: { error: false, message: "" },
+    password: { error: false, message: "" },
+    firstName: { error: false, message: "" },
+    lastName: { error: false, message: "" },
+    email: { error: false, message: "" },
+  });
 
   const initialData = {
     username: "",
@@ -79,6 +88,7 @@ const Register = () => {
       sendData.birthDate = null;
       sendData.gender = null;
       dispatch(membersActions.login(sendData));
+    } else {
     }
   };
 
@@ -148,7 +158,7 @@ const Register = () => {
               value={data.firstName}
               onChange={handleInputChange}
               label="First name"
-              reduce={true}
+              error={errors.firstName}
             />
             <Input
               password={false}
@@ -156,6 +166,7 @@ const Register = () => {
               value={data.lastName}
               onChange={handleInputChange}
               label="Last name"
+              error={errors.lastName}
             />
             <Input
               password={false}
@@ -163,6 +174,7 @@ const Register = () => {
               value={data.email}
               onChange={handleInputChange}
               label="Email"
+              error={errors.email}
             />
             <InputLabel id="demo-simple-select-standard-label">
               Gender
@@ -190,12 +202,14 @@ const Register = () => {
               value={data.username}
               onChange={handleInputChange}
               label="Username"
+              error={errors.username}
             />
             <Input
               password={true}
               value={data.password}
               name="password"
               onChange={handleInputChange}
+              error={errors.password}
             />
             <button onClick={handleSignUp}>Sign Up</button>
           </form>
@@ -209,12 +223,14 @@ const Register = () => {
               value={data.username}
               onChange={handleInputChange}
               label="Username"
+              error={errors.username}
             />
             <Input
               password={true}
               value={data.password}
               name="password"
               onChange={handleInputChange}
+              error={errors.password}
             />
             <button onClick={handleSignIn}>Sign In</button>
           </form>

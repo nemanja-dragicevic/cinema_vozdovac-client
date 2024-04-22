@@ -1,12 +1,13 @@
 import { TextField } from "@mui/material";
 
-const SearchInput = ({ label, onChange }) => {
+const SearchInput = ({ label, name, onChange, ...other }) => {
   return (
     <TextField
       variant="outlined"
       label={label}
       onChange={onChange}
       color="secondary"
+      {...other}
       sx={{
         width: "50%",
         "& .MuiOutlinedInput-root": {

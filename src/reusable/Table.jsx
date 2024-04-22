@@ -1,4 +1,4 @@
-import { Paper, TableBody, TableCell, TableRow } from "@mui/material";
+import { TableBody, TableCell, TableRow } from "@mui/material";
 import useTable from "../utils/useTable";
 
 const Table = ({ headCells, data, filterFn, onDelete }) => {
@@ -6,7 +6,7 @@ const Table = ({ headCells, data, filterFn, onDelete }) => {
     useTable(data, headCells, filterFn);
 
   return (
-    <Paper>
+    <>
       <TblContainer>
         <TblHead />
         <TableBody>
@@ -28,7 +28,7 @@ const Table = ({ headCells, data, filterFn, onDelete }) => {
         </TableBody>
       </TblContainer>
       <TblPagination />
-    </Paper>
+    </>
   );
 };
 
