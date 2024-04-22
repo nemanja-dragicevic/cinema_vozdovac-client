@@ -29,7 +29,7 @@ export const saveActor = (data) => {
       })
       .catch((error) => {
         dispatch(actorsActions.actionError(error?.response?.data));
-        notifications.error(error?.response?.data);
+        notifications.error("Error while saving actor");
       });
   };
 };
