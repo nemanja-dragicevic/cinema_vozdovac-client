@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import moviesReducer from "./movies";
 import membersReducer from "./member";
 import rolesReducer from "./roles";
+import actorsReducer from "./actors";
 // import { thunk } from "redux-thunk";
 
 const store = configureStore({
@@ -9,6 +10,7 @@ const store = configureStore({
     moviesReducer,
     membersReducer,
     rolesReducer,
+    actorsReducer,
   },
 });
 

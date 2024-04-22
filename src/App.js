@@ -11,6 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useEffect, useState } from "react";
+import ActorsPage from "./admin/ActorsPage";
 
 function App() {
   const [token, setToken] = useState(null);
@@ -32,6 +33,7 @@ function App() {
           <Route exact path="/movies" element={<Movies />} />
           <Route exact path="/movies/:id" element={<MovieForm />} />
           <Route exact path="/register" element={<Register />} />
+          <Route exact path="/actors" element={<ActorsPage />} />
         </Routes>
       </div>
     </LocalizationProvider>
