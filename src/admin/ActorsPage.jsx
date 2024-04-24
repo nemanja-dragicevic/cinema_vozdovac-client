@@ -19,12 +19,20 @@ const schema = Joi.object({
 const ActorsPage = () => {
   const dispatch = useDispatch();
 
+  const initialFValues = {
+    actorID: 0,
+    firstName: "",
+    lastName: "",
+    gender: "MALE",
+  };
+
   const [errors, setErrors] = useState({
     firstName: { error: false, message: "" },
     lastName: { error: false, message: "" },
   });
 
   const { actors } = useSelector((state) => state.actorsReducer);
+  const [data, setData] = useState(initialFValues);
 
   useEffect(() => {
     dispatch(actorsActions.getActors());
@@ -59,10 +67,30 @@ const ActorsPage = () => {
     });
   };
 
+  const handleChange = (name, value) => {
+    setErrors({
+      firstName: { error: false, message: "" },
+      lastName: { error: false, message: "" },
+    });
+    setData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleGenderChange = (e) => {
+    const { name, value } = e.target;
+    setData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
   const handleSave = (data) => {
     const validation = schema.validate(data);
     if (validation.error) {
       const error = validation.error.details[0].message;
+      console.log(error);
       if (error.includes("First name")) {
         setErrors((prevErrors) => ({
           ...prevErrors,
@@ -82,6 +110,11 @@ const ActorsPage = () => {
     });
 
     dispatch(actorsActions.saveActor(data));
+    handleReset();
+  };
+
+  const handleReset = () => {
+    setData(initialFValues);
   };
 
   return (
@@ -93,7 +126,14 @@ const ActorsPage = () => {
           title="New actor"
           icon={<PeopleOutlineTwoTone fontSize="large" />}
         />
-        <ActorForm onSave={handleSave} errors={errors} />
+        <ActorForm
+          onSave={handleSave}
+          errors={errors}
+          data={data}
+          onChange={handleChange}
+          onReset={handleReset}
+          onGenderChange={handleGenderChange}
+        />
         <Toolbar>
           <SearchInput
             label="Search actors"
