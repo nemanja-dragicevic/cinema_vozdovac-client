@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Joi from "joi";
-import { InputAdornment, Paper, Toolbar } from "@mui/material";
+import { Button, InputAdornment, Paper, Toolbar } from "@mui/material";
 import { PeopleOutlineTwoTone, Search } from "@mui/icons-material";
 import * as actorsActions from "../actions/actors";
 import Table from "../reusable/Table";
 import SearchInput from "../reusable/SearchInput";
 import ActorForm from "../actor/ActorForm";
 import ActorHeader from "../actor/ActorHeader";
+import AddIcon from "@mui/icons-material/Add";
+import Popup from "../reusable/Popup";
 
 const schema = Joi.object({
   actorID: Joi.number().integer().min(0).required(),
@@ -33,6 +35,8 @@ const ActorsPage = () => {
 
   const { actors } = useSelector((state) => state.actorsReducer);
   const [data, setData] = useState(initialFValues);
+  const [openPopup, setOpenPopup] = useState(false);
+  const [objToEdit, setObjToEdit] = useState(null);
 
   useEffect(() => {
     dispatch(actorsActions.getActors());
@@ -86,6 +90,11 @@ const ActorsPage = () => {
     }));
   };
 
+  const setEditObj = (obj) => {
+    setObjToEdit(obj);
+    setOpenPopup(true);
+  };
+
   const handleSave = (data) => {
     const validation = schema.validate(data);
     if (validation.error) {
@@ -126,15 +135,15 @@ const ActorsPage = () => {
           title="New actor"
           icon={<PeopleOutlineTwoTone fontSize="large" />}
         />
-        <ActorForm
+        {/* <ActorForm
           onSave={handleSave}
           errors={errors}
           data={data}
           onChange={handleChange}
           onReset={handleReset}
           onGenderChange={handleGenderChange}
-        />
-        <Toolbar>
+        /> */}
+        <Toolbar sx={{ display: "flex", flexDirection: "row", columnGap: 10 }}>
           <SearchInput
             label="Search actors"
             InputProps={{
@@ -146,14 +155,34 @@ const ActorsPage = () => {
             }}
             onChange={handleSearch}
           />
+          <Button
+            variant="outlined"
+            startIcon={<AddIcon />}
+            onClick={() => setOpenPopup(true)}
+            // sx={{ position: "absolute" }}
+          >
+            Add new
+          </Button>
         </Toolbar>
+
         <Table
           headCells={headCells}
           data={actors}
           filterFn={filterFn}
           onDelete={handleDelete}
+          setEditObj={setEditObj}
         />
       </Paper>
+      <Popup openPopup={openPopup} setOpen={setOpenPopup} title="Actor Form">
+        <ActorForm
+          onSave={handleSave}
+          errors={errors}
+          data={objToEdit || data}
+          onChange={handleChange}
+          onReset={handleReset}
+          onGenderChange={handleGenderChange}
+        />
+      </Popup>
     </div>
   );
 };
