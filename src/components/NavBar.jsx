@@ -8,7 +8,6 @@ const NavBar = () => {
 
   const [role, setRole] = useState("DEFAULT");
   useEffect(() => {
-    console.log("changed member", member);
     if (member) setRole(member.role);
     else if (sessionStorage.getItem("user")) {
       member = JSON.parse(sessionStorage.getItem("user"));

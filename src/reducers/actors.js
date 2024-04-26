@@ -21,6 +21,12 @@ const actorsSlice = createSlice({
       state.actors = [action.payload].concat(state.actors);
       state.error = undefined;
     },
+    updateActor(state, action) {
+      state.actors = state.actors?.map((actor) =>
+        actor.actorID === action.payload.actorID ? action.payload : actor
+      );
+      state.error = undefined;
+    },
     deleteActor(state, action) {
       state.actors = state.actors.filter(
         (actor) => actor.actorID !== action.payload

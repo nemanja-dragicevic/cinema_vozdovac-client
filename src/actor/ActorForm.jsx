@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Button,
   FormControl,
@@ -9,47 +8,28 @@ import {
 } from "@mui/material";
 import Input from "../registration/Input";
 
-const ActorForm = ({ onSave, errors }) => {
-  const initialFValues = {
-    actorID: 0,
-    firstName: "",
-    lastName: "",
-    gender: "MALE",
-  };
-  const [data, setData] = useState(initialFValues);
-
-  const handleChange = (name, value) => {
-    if (name !== "firstName" && name !== "lastName") {
-      setData((prevData) => ({
-        ...prevData,
-        ["gender"]: value,
-      }));
-    }
-
-    setData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleReset = () => {
-    setData(initialFValues);
-  };
-
+const ActorForm = ({
+  errors,
+  data,
+  onChange,
+  onReset,
+  onSave,
+  onGenderChange,
+}) => {
   return (
     <div style={{ display: "flex", marginTop: 20, marginBottom: 30, gap: 20 }}>
       <Input
         name="firstName"
         value={data.firstName}
         label="First name"
-        onChange={handleChange}
+        onChange={onChange}
         error={errors.firstName}
       />
       <Input
         name="lastName"
         value={data.lastName}
         label="Last name"
-        onChange={handleChange}
+        onChange={onChange}
         error={errors.lastName}
       />
       <FormControl>
@@ -59,7 +39,7 @@ const ActorForm = ({ onSave, errors }) => {
           aria-labelledby="demo-controlled-radio-buttons-group"
           name="gender"
           value={data.gender}
-          onChange={handleChange}
+          onChange={onGenderChange}
         >
           <FormControlLabel value="FEMALE" control={<Radio />} label="Female" />
           <FormControlLabel value="MALE" control={<Radio />} label="Male" />
@@ -73,7 +53,7 @@ const ActorForm = ({ onSave, errors }) => {
       >
         Save actor
       </Button>
-      <Button onClick={handleReset} variant="outlined" sx={{ height: 50 }}>
+      <Button onClick={onReset} variant="outlined" sx={{ height: 50 }}>
         Reset
       </Button>
     </div>

@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Joi from "joi";
-import { InputAdornment, Paper, Toolbar } from "@mui/material";
+import { Button, InputAdornment, Paper, Toolbar } from "@mui/material";
 import { PeopleOutlineTwoTone, Search } from "@mui/icons-material";
 import * as actorsActions from "../actions/actors";
 import Table from "../reusable/Table";
 import SearchInput from "../reusable/SearchInput";
 import ActorForm from "../actor/ActorForm";
 import ActorHeader from "../actor/ActorHeader";
+import AddIcon from "@mui/icons-material/Add";
+import Popup from "../reusable/Popup";
 
 const schema = Joi.object({
   actorID: Joi.number().integer().min(0).required(),
@@ -19,20 +21,25 @@ const schema = Joi.object({
 const ActorsPage = () => {
   const dispatch = useDispatch();
 
+  const initialFValues = {
+    actorID: 0,
+    firstName: "",
+    lastName: "",
+    gender: "MALE",
+  };
+
   const [errors, setErrors] = useState({
     firstName: { error: false, message: "" },
     lastName: { error: false, message: "" },
   });
 
   const { actors } = useSelector((state) => state.actorsReducer);
+  const [data, setData] = useState(initialFValues);
+  const [openPopup, setOpenPopup] = useState(false);
 
   useEffect(() => {
     dispatch(actorsActions.getActors());
   }, [dispatch]);
-
-  const handleDelete = (id) => {
-    dispatch(actorsActions.deleteActor(id));
-  };
 
   const [filterFn, setFilterFn] = useState({
     fn: (items) => {
@@ -59,10 +66,49 @@ const ActorsPage = () => {
     });
   };
 
+  const resetErrors = () => {
+    setErrors({
+      firstName: { error: false, message: "" },
+      lastName: { error: false, message: "" },
+    });
+  };
+
+  const handleChange = (name, value) => {
+    resetErrors();
+    setData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleGenderChange = (e) => {
+    const { name, value } = e.target;
+    setData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const setEditObj = (obj) => {
+    resetErrors();
+    setData(obj);
+    setOpenPopup(true);
+  };
+
+  const openAddActor = () => {
+    handleReset();
+    setOpenPopup(true);
+  };
+
+  const handleReset = () => {
+    setData(initialFValues);
+  };
+
   const handleSave = (data) => {
     const validation = schema.validate(data);
     if (validation.error) {
       const error = validation.error.details[0].message;
+      console.log(error);
       if (error.includes("First name")) {
         setErrors((prevErrors) => ({
           ...prevErrors,
@@ -76,12 +122,16 @@ const ActorsPage = () => {
       }
       return;
     }
-    setErrors({
-      firstName: { error: false, message: "" },
-      lastName: { error: false, message: "" },
-    });
+    resetErrors();
+    if (data.actorID !== 0) dispatch(actorsActions.updateActor(data));
+    else dispatch(actorsActions.saveActor(data));
 
-    dispatch(actorsActions.saveActor(data));
+    handleReset();
+  };
+
+  const handleDelete = (id) => {
+    //console.log("Delete actor with id: ", id);
+    dispatch(actorsActions.deleteActor(id));
   };
 
   return (
@@ -93,8 +143,15 @@ const ActorsPage = () => {
           title="New actor"
           icon={<PeopleOutlineTwoTone fontSize="large" />}
         />
-        <ActorForm onSave={handleSave} errors={errors} />
-        <Toolbar>
+        {/* <ActorForm
+          onSave={handleSave}
+          errors={errors}
+          data={data}
+          onChange={handleChange}
+          onReset={handleReset}
+          onGenderChange={handleGenderChange}
+        /> */}
+        <Toolbar sx={{ display: "flex", flexDirection: "row", columnGap: 10 }}>
           <SearchInput
             label="Search actors"
             InputProps={{
@@ -106,14 +163,33 @@ const ActorsPage = () => {
             }}
             onChange={handleSearch}
           />
+          <Button
+            variant="outlined"
+            startIcon={<AddIcon />}
+            onClick={() => openAddActor()}
+          >
+            Add new
+          </Button>
         </Toolbar>
+
         <Table
           headCells={headCells}
           data={actors}
           filterFn={filterFn}
           onDelete={handleDelete}
+          setEditObj={setEditObj}
         />
       </Paper>
+      <Popup openPopup={openPopup} setOpen={setOpenPopup} title="Actor Form">
+        <ActorForm
+          onSave={handleSave}
+          errors={errors}
+          data={data}
+          onChange={handleChange}
+          onReset={handleReset}
+          onGenderChange={handleGenderChange}
+        />
+      </Popup>
     </div>
   );
 };
