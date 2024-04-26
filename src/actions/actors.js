@@ -37,6 +37,23 @@ export const saveActor = (data) => {
   };
 };
 
+export const updateActor = (data) => {
+  return (dispatch) => {
+    dispatch(actorsActions.actionStart());
+    return apiService
+      .put(actorsPath, data)
+      .then((response) => {
+        dispatch(actorsActions.updateActor(response.data));
+        notifications.success("Actor updated successfully");
+      })
+      .catch((error) => {
+        if (error?.response?.status === 401) redirect401Error(error);
+        dispatch(actorsActions.actionError(error?.response?.data));
+        notifications.error("Error while updating actor");
+      });
+  };
+};
+
 export const deleteActor = (id) => {
   return (dispatch) => {
     dispatch(actorsActions.actionStart());

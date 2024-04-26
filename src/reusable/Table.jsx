@@ -3,6 +3,8 @@ import useTable from "../utils/useTable";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ConfirmDialog from "./ConfirmDialog";
+import { useState } from "react";
 
 const Table = ({ headCells, data, filterFn, onDelete, setEditObj }) => {
   const theme = createTheme({
@@ -13,6 +15,13 @@ const Table = ({ headCells, data, filterFn, onDelete, setEditObj }) => {
         contrastText: "#0d47a1",
       },
     },
+  });
+
+  //const [confirmDialog, setConfirmDialog] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
   });
 
   const { TblContainer, TblHead, TblPagination, dataAfterPagingAndSorting } =
@@ -41,7 +50,7 @@ const Table = ({ headCells, data, filterFn, onDelete, setEditObj }) => {
                   </Button>
                   <button
                     className="btn btn-danger m-1"
-                    onClick={() => onDelete(item.actorID)}
+                    //onClick={() => onDelete(item.actorID)}
                   >
                     <DeleteIcon />
                   </button>
@@ -52,6 +61,10 @@ const Table = ({ headCells, data, filterFn, onDelete, setEditObj }) => {
         </TblContainer>
         <TblPagination />
       </ThemeProvider>
+      <ConfirmDialog
+        confirmDialog={confirmDialog}
+        setConfirm={setConfirmDialog}
+      />
     </>
   );
 };

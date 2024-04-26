@@ -41,10 +41,6 @@ const ActorsPage = () => {
     dispatch(actorsActions.getActors());
   }, [dispatch]);
 
-  const handleDelete = (id) => {
-    dispatch(actorsActions.deleteActor(id));
-  };
-
   const [filterFn, setFilterFn] = useState({
     fn: (items) => {
       return items;
@@ -70,11 +66,15 @@ const ActorsPage = () => {
     });
   };
 
-  const handleChange = (name, value) => {
+  const resetErrors = () => {
     setErrors({
       firstName: { error: false, message: "" },
       lastName: { error: false, message: "" },
     });
+  };
+
+  const handleChange = (name, value) => {
+    resetErrors();
     setData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -90,12 +90,18 @@ const ActorsPage = () => {
   };
 
   const setEditObj = (obj) => {
-    setErrors({
-      firstName: { error: false, message: "" },
-      lastName: { error: false, message: "" },
-    });
+    resetErrors();
     setData(obj);
     setOpenPopup(true);
+  };
+
+  const openAddActor = () => {
+    handleReset();
+    setOpenPopup(true);
+  };
+
+  const handleReset = () => {
+    setData(initialFValues);
   };
 
   const handleSave = (data) => {
@@ -116,17 +122,15 @@ const ActorsPage = () => {
       }
       return;
     }
-    setErrors({
-      firstName: { error: false, message: "" },
-      lastName: { error: false, message: "" },
-    });
+    resetErrors();
+    if (data.actorID !== 0) dispatch(actorsActions.updateActor(data));
+    else dispatch(actorsActions.saveActor(data));
 
-    dispatch(actorsActions.saveActor(data));
     handleReset();
   };
 
-  const handleReset = () => {
-    setData(initialFValues);
+  const handleDelete = (id) => {
+    //dispatch(actorsActions.deleteActor(id));
   };
 
   return (
@@ -161,7 +165,7 @@ const ActorsPage = () => {
           <Button
             variant="outlined"
             startIcon={<AddIcon />}
-            onClick={() => setOpenPopup(true)}
+            onClick={() => openAddActor()}
           >
             Add new
           </Button>
