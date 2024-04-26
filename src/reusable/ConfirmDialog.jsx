@@ -1,20 +1,40 @@
-import { Button, Dialog, DialogActions, DialogTitle } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Typography,
+} from "@mui/material";
 import NotListedLocationSharpIcon from "@mui/icons-material/NotListedLocationSharp";
 
-const ConfirmDialog = ({ confirmDialog, setConfirm, onDelete }) => {
+const ConfirmDialog = ({ confirmDialog, setConfirm }) => {
   return (
-    <Dialog open={confirmDialog}>
-      <DialogTitle>
-        <NotListedLocationSharpIcon color="secondary" fontSize="large" />
+    <Dialog open={confirmDialog.isOpen} style={{ textAlign: "center" }}>
+      <DialogTitle
+        sx={{
+          "& .MuiSvgIcon-root": {
+            fontSize: "6rem",
+          },
+        }}
+      >
+        <NotListedLocationSharpIcon color="error" fontSize="large" />
       </DialogTitle>
-      <DialogActions>
-        <Button variant="outlined" onClick={() => setConfirm(false)}>
+      <DialogContent color="secondary.light">
+        <Typography variant="h6">{confirmDialog.title}</Typography>
+        <Typography variant="subtitle2">{confirmDialog.subTitle}</Typography>
+      </DialogContent>
+      <DialogActions style={{ justifyContent: "center" }}>
+        <Button
+          variant="outlined"
+          onClick={() => setConfirm({ ...confirmDialog, isOpen: false })}
+        >
           No
         </Button>
         <Button
-          variant="outlined"
+          variant="contained"
           color="primary"
-          //onClick={() => setConfirm(false)}
+          onClick={confirmDialog.onConfirm}
         >
           Yes
         </Button>

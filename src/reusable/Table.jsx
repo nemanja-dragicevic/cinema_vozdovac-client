@@ -27,6 +27,11 @@ const Table = ({ headCells, data, filterFn, onDelete, setEditObj }) => {
   const { TblContainer, TblHead, TblPagination, dataAfterPagingAndSorting } =
     useTable(data, headCells, filterFn);
 
+  const closeDialog = (id) => {
+    setConfirmDialog({ ...confirmDialog, isOpen: false });
+    onDelete(id);
+  };
+
   return (
     <>
       <ThemeProvider theme={theme}>
@@ -51,6 +56,16 @@ const Table = ({ headCells, data, filterFn, onDelete, setEditObj }) => {
                   <button
                     className="btn btn-danger m-1"
                     //onClick={() => onDelete(item.actorID)}
+                    onClick={() => {
+                      setConfirmDialog({
+                        isOpen: true,
+                        title: "Are you sure you want to delete this record?",
+                        subTitle: "You can't undo this operation",
+                        onConfirm: () => {
+                          closeDialog(item.actorID);
+                        },
+                      });
+                    }}
                   >
                     <DeleteIcon />
                   </button>

@@ -130,7 +130,8 @@ const ActorsPage = () => {
   };
 
   const handleDelete = (id) => {
-    //dispatch(actorsActions.deleteActor(id));
+    //console.log("Delete actor with id: ", id);
+    dispatch(actorsActions.deleteActor(id));
   };
 
   return (
