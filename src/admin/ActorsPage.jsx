@@ -36,7 +36,6 @@ const ActorsPage = () => {
   const { actors } = useSelector((state) => state.actorsReducer);
   const [data, setData] = useState(initialFValues);
   const [openPopup, setOpenPopup] = useState(false);
-  const [objToEdit, setObjToEdit] = useState(null);
 
   useEffect(() => {
     dispatch(actorsActions.getActors());
@@ -91,7 +90,11 @@ const ActorsPage = () => {
   };
 
   const setEditObj = (obj) => {
-    setObjToEdit(obj);
+    setErrors({
+      firstName: { error: false, message: "" },
+      lastName: { error: false, message: "" },
+    });
+    setData(obj);
     setOpenPopup(true);
   };
 
@@ -159,7 +162,6 @@ const ActorsPage = () => {
             variant="outlined"
             startIcon={<AddIcon />}
             onClick={() => setOpenPopup(true)}
-            // sx={{ position: "absolute" }}
           >
             Add new
           </Button>
@@ -177,7 +179,7 @@ const ActorsPage = () => {
         <ActorForm
           onSave={handleSave}
           errors={errors}
-          data={objToEdit || data}
+          data={data}
           onChange={handleChange}
           onReset={handleReset}
           onGenderChange={handleGenderChange}
