@@ -10,6 +10,7 @@ import ActorForm from "../actor/ActorForm";
 import ActorHeader from "../actor/ActorHeader";
 import AddIcon from "@mui/icons-material/Add";
 import Popup from "../reusable/Popup";
+import * as notifications from "../utils/notification";
 
 const schema = Joi.object({
   actorID: Joi.number().integer().min(0).required(),
@@ -59,8 +60,10 @@ const ActorsPage = () => {
       fn: (items) => {
         if (target.value === "") return items;
         else
-          return items.filter((x) =>
-            x.firstName.toLowerCase().includes(target.value.toLowerCase())
+          return items.filter(
+            (x) =>
+              x.firstName.toLowerCase().includes(target.value.toLowerCase()) ||
+              x.lastName.toLowerCase().includes(target.value.toLowerCase())
           );
       },
     });
@@ -123,6 +126,15 @@ const ActorsPage = () => {
       return;
     }
     resetErrors();
+    if (
+      actors.filter(
+        (actor) =>
+          actor.firstName === data.firstName && actor.lastName === data.lastName
+      ).length > 0
+    ) {
+      notifications.error("Actor already exists");
+      return;
+    }
     if (data.actorID !== 0) dispatch(actorsActions.updateActor(data));
     else dispatch(actorsActions.saveActor(data));
 
@@ -130,7 +142,6 @@ const ActorsPage = () => {
   };
 
   const handleDelete = (id) => {
-    //console.log("Delete actor with id: ", id);
     dispatch(actorsActions.deleteActor(id));
   };
 
