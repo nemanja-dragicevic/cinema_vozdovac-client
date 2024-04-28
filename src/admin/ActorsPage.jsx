@@ -59,8 +59,10 @@ const ActorsPage = () => {
       fn: (items) => {
         if (target.value === "") return items;
         else
-          return items.filter((x) =>
-            x.firstName.toLowerCase().includes(target.value.toLowerCase())
+          return items.filter(
+            (x) =>
+              x.firstName.toLowerCase().includes(target.value.toLowerCase()) ||
+              x.lastName.toLowerCase().includes(target.value.toLowerCase())
           );
       },
     });
