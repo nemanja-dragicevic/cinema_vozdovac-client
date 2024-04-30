@@ -12,6 +12,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useEffect, useState } from "react";
 import ActorsPage from "./admin/ActorsPage";
+import AddMoviePage from "./admin/AddMoviePage";
 
 function App() {
   const [token, setToken] = useState(null);
@@ -34,6 +35,7 @@ function App() {
           <Route exact path="/movies/:id" element={<MovieForm />} />
           <Route exact path="/register" element={<Register />} />
           <Route exact path="/actors" element={<ActorsPage />} />
+          <Route exact path="/add_movie" element={<AddMoviePage />} />
         </Routes>
       </div>
     </LocalizationProvider>
