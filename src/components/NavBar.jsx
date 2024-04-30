@@ -1,3 +1,4 @@
+import { Button } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, NavLink } from "react-router-dom";
@@ -13,6 +14,12 @@ const NavBar = () => {
       member = JSON.parse(sessionStorage.getItem("user"));
     }
   }, [member]);
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("user");
+    localStorage.removeItem("token");
+    window.location = "/register";
+  };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -45,6 +52,13 @@ const NavBar = () => {
             ) : null}
           </li>
           <li class="nav-item">
+            {role === "ADMIN" ? (
+              <NavLink className="nav-link" to="/add_movie">
+                Add Movie
+              </NavLink>
+            ) : null}
+          </li>
+          <li class="nav-item">
             {role === "USER" ? (
               <NavLink className="nav-link" to="/register">
                 Order movie
@@ -59,7 +73,16 @@ const NavBar = () => {
             </li>
           ) : null}
         </ul>
-        <span class="navbar-text">Dobrodošli</span>
+        <span class="navbar-text">Dobrodošli u svet filmske zabave</span>
+        {sessionStorage.getItem("user") ? (
+          <ul className="navbar-nav ms-auto">
+            <li className="nav-item">
+              <Button className="nav-link" onClick={handleLogout}>
+                Logout
+              </Button>
+            </li>
+          </ul>
+        ) : null}
       </div>
     </nav>
     // <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
