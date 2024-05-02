@@ -6,7 +6,7 @@ import { PeopleOutlineTwoTone, Search } from "@mui/icons-material";
 import * as actorsActions from "../actions/actors";
 import Table from "../reusable/Table";
 import SearchInput from "../reusable/SearchInput";
-import ActorForm from "../actor/ActorForm";
+import ActorForm from "./ActorForm";
 import AddIcon from "@mui/icons-material/Add";
 import Popup from "../reusable/Popup";
 import * as notifications from "../utils/notification";
@@ -113,7 +113,6 @@ const ActorsPage = () => {
     const validation = schema.validate(data);
     if (validation.error) {
       const error = validation.error.details[0].message;
-      console.log(error);
       if (error.includes("First name")) {
         setErrors((prevErrors) => ({
           ...prevErrors,
@@ -164,7 +163,15 @@ const ActorsPage = () => {
           onReset={handleReset}
           onGenderChange={handleGenderChange}
         /> */}
-        <Toolbar sx={{ display: "flex", flexDirection: "row", columnGap: 10 }}>
+        <Toolbar
+          sx={{
+            marginTop: 5,
+            marginBottom: 3,
+            display: "flex",
+            flexDirection: "row",
+            columnGap: 10,
+          }}
+        >
           <SearchInput
             label="Search actors"
             InputProps={{
