@@ -6,7 +6,15 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ConfirmDialog from "./ConfirmDialog";
 import { useState } from "react";
 
-const Table = ({ headCells, data, filterFn, onDelete, setEditObj }) => {
+const Table = ({
+  headCells,
+  data,
+  filterFn,
+  onDelete,
+  setEditObj,
+  key,
+  fields,
+}) => {
   const theme = createTheme({
     palette: {
       secondary: {
@@ -39,10 +47,10 @@ const Table = ({ headCells, data, filterFn, onDelete, setEditObj }) => {
           <TblHead />
           <TableBody>
             {dataAfterPagingAndSorting().map((item) => (
-              <TableRow key={item.actorID}>
-                <TableCell>{item.firstName}</TableCell>
-                <TableCell>{item.lastName}</TableCell>
-                <TableCell>{item.gender}</TableCell>
+              <TableRow key={item[{ key }]}>
+                {fields.map((field) => (
+                  <TableCell key={field}>{item[field]}</TableCell>
+                ))}
                 <TableCell>
                   <Button
                     variant="contained"
