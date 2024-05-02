@@ -12,7 +12,7 @@ const Table = ({
   filterFn,
   onDelete,
   setEditObj,
-  key,
+  objectKey,
   fields,
 }) => {
   const theme = createTheme({
@@ -47,7 +47,7 @@ const Table = ({
           <TblHead />
           <TableBody>
             {dataAfterPagingAndSorting().map((item) => (
-              <TableRow key={item[{ key }]}>
+              <TableRow objectKey={item[objectKey]}>
                 {fields.map((field) => (
                   <TableCell key={field}>{item[field]}</TableCell>
                 ))}
@@ -70,7 +70,7 @@ const Table = ({
                         title: "Are you sure you want to delete this record?",
                         subTitle: "You can't undo this operation",
                         onConfirm: () => {
-                          closeDialog(item.actorID);
+                          closeDialog(item[objectKey]);
                         },
                       });
                     }}

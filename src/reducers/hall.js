@@ -17,6 +17,12 @@ const hallSlice = createSlice({
       state.halls = [action.payload].concat(state.halls);
       state.error = undefined;
     },
+    updateHall(state, action) {
+      state.halls = state.halls.map((hall) =>
+        hall.hallID === action.payload.hallID ? action.payload : hall
+      );
+      state.error = undefined;
+    },
     deleteHall(state, action) {
       state.halls = state.halls.filter(
         (hall) => hall.hallID !== action.payload
