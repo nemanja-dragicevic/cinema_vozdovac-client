@@ -6,7 +6,15 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ConfirmDialog from "./ConfirmDialog";
 import { useState } from "react";
 
-const Table = ({ headCells, data, filterFn, onDelete, setEditObj }) => {
+const Table = ({
+  headCells,
+  data,
+  filterFn,
+  onDelete,
+  setEditObj,
+  objectKey,
+  fields,
+}) => {
   const theme = createTheme({
     palette: {
       secondary: {
@@ -39,10 +47,10 @@ const Table = ({ headCells, data, filterFn, onDelete, setEditObj }) => {
           <TblHead />
           <TableBody>
             {dataAfterPagingAndSorting().map((item) => (
-              <TableRow key={item.actorID}>
-                <TableCell>{item.firstName}</TableCell>
-                <TableCell>{item.lastName}</TableCell>
-                <TableCell>{item.gender}</TableCell>
+              <TableRow objectKey={item[objectKey]}>
+                {fields.map((field) => (
+                  <TableCell key={field}>{item[field]}</TableCell>
+                ))}
                 <TableCell>
                   <Button
                     variant="contained"
@@ -62,7 +70,7 @@ const Table = ({ headCells, data, filterFn, onDelete, setEditObj }) => {
                         title: "Are you sure you want to delete this record?",
                         subTitle: "You can't undo this operation",
                         onConfirm: () => {
-                          closeDialog(item.actorID);
+                          closeDialog(item[objectKey]);
                         },
                       });
                     }}

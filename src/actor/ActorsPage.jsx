@@ -6,11 +6,11 @@ import { PeopleOutlineTwoTone, Search } from "@mui/icons-material";
 import * as actorsActions from "../actions/actors";
 import Table from "../reusable/Table";
 import SearchInput from "../reusable/SearchInput";
-import ActorForm from "../actor/ActorForm";
-import ActorHeader from "../actor/ActorHeader";
+import ActorForm from "./ActorForm";
 import AddIcon from "@mui/icons-material/Add";
 import Popup from "../reusable/Popup";
 import * as notifications from "../utils/notification";
+import AddHeader from "../reusable/AddHeader";
 
 const schema = Joi.object({
   actorID: Joi.number().integer().min(0).required(),
@@ -37,6 +37,8 @@ const ActorsPage = () => {
   const { actors } = useSelector((state) => state.actorsReducer);
   const [data, setData] = useState(initialFValues);
   const [openPopup, setOpenPopup] = useState(false);
+  const fields = ["firstName", "lastName", "gender"];
+  const key = "actorID";
 
   useEffect(() => {
     dispatch(actorsActions.getActors());
@@ -111,7 +113,6 @@ const ActorsPage = () => {
     const validation = schema.validate(data);
     if (validation.error) {
       const error = validation.error.details[0].message;
-      console.log(error);
       if (error.includes("First name")) {
         setErrors((prevErrors) => ({
           ...prevErrors,
@@ -150,7 +151,7 @@ const ActorsPage = () => {
       style={{ backgroundColor: "white", padding: "20px", marginTop: "50px" }}
     >
       <Paper>
-        <ActorHeader
+        <AddHeader
           title="New actor"
           icon={<PeopleOutlineTwoTone fontSize="large" />}
         />
@@ -162,7 +163,15 @@ const ActorsPage = () => {
           onReset={handleReset}
           onGenderChange={handleGenderChange}
         /> */}
-        <Toolbar sx={{ display: "flex", flexDirection: "row", columnGap: 10 }}>
+        <Toolbar
+          sx={{
+            marginTop: 5,
+            marginBottom: 3,
+            display: "flex",
+            flexDirection: "row",
+            columnGap: 10,
+          }}
+        >
           <SearchInput
             label="Search actors"
             InputProps={{
@@ -189,6 +198,8 @@ const ActorsPage = () => {
           filterFn={filterFn}
           onDelete={handleDelete}
           setEditObj={setEditObj}
+          key={key}
+          fields={fields}
         />
       </Paper>
       <Popup openPopup={openPopup} setOpen={setOpenPopup} title="Actor Form">

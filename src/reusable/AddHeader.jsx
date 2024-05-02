@@ -1,6 +1,6 @@
 import { Card, Paper, Typography } from "@mui/material";
 
-const ActorHeader = ({ title, icon, subtitle }) => {
+const AddHeader = ({ title, icon, subtitle }) => {
   return (
     <Paper elevation={0} square sx={{ backgroundColor: "#fdfdff" }}>
       <div style={{ display: "flex", mb: 30 }}>
@@ -20,4 +20,4 @@ const ActorHeader = ({ title, icon, subtitle }) => {
   );
 };
 
-export default ActorHeader;
+export default AddHeader;

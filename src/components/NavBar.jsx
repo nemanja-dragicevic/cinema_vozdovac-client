@@ -59,6 +59,13 @@ const NavBar = () => {
             ) : null}
           </li>
           <li class="nav-item">
+            {role === "ADMIN" ? (
+              <NavLink className="nav-link" to="/hall">
+                Hall properties
+              </NavLink>
+            ) : null}
+          </li>
+          <li class="nav-item">
             {role === "USER" ? (
               <NavLink className="nav-link" to="/register">
                 Order movie

@@ -12,3 +12,6 @@ export const movieRolesPath = (movieID) => `/api/role/${movieID}`;
 export const actorsPath = `/api/actor`;
 export const getActorsPath = actorsPath + `/all`;
 export const actorWithId = (actorID) => actorsPath + `/${actorID}`;
+
+// Halls
+export const hallsPath = `/api/hall`;
