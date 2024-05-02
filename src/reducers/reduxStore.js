@@ -3,6 +3,7 @@ import moviesReducer from "./movies";
 import membersReducer from "./member";
 import rolesReducer from "./roles";
 import actorsReducer from "./actors";
+import hallReducer from "./hall";
 // import { thunk } from "redux-thunk";
 
 const store = configureStore({
@@ -11,6 +12,7 @@ const store = configureStore({
     membersReducer,
     rolesReducer,
     actorsReducer,
+    hallReducer,
   },
 });
 
