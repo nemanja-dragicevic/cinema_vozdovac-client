@@ -7,10 +7,10 @@ import * as actorsActions from "../actions/actors";
 import Table from "../reusable/Table";
 import SearchInput from "../reusable/SearchInput";
 import ActorForm from "../actor/ActorForm";
-import ActorHeader from "../actor/ActorHeader";
 import AddIcon from "@mui/icons-material/Add";
 import Popup from "../reusable/Popup";
 import * as notifications from "../utils/notification";
+import AddHeader from "../reusable/AddHeader";
 
 const schema = Joi.object({
   actorID: Joi.number().integer().min(0).required(),
@@ -152,7 +152,7 @@ const ActorsPage = () => {
       style={{ backgroundColor: "white", padding: "20px", marginTop: "50px" }}
     >
       <Paper>
-        <ActorHeader
+        <AddHeader
           title="New actor"
           icon={<PeopleOutlineTwoTone fontSize="large" />}
         />

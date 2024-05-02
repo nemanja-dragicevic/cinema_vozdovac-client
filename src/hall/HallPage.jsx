@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as hallActions from "../actions/hall";
 import Table from "../reusable/Table";
+import AddHeader from "../reusable/AddHeader";
+import ChairOutlinedIcon from "@mui/icons-material/ChairOutlined";
+import { Paper } from "@mui/material";
 
 const HallPage = () => {
   const dispatch = useDispatch();
@@ -42,14 +45,21 @@ const HallPage = () => {
   console.log(halls);
 
   return (
-    <div>
-      <Table
-        headCells={headCells}
-        filterFn={filterFn}
-        data={halls}
-        key={key}
-        fields={fields}
-      />
+    <div style={{ padding: "20px", marginTop: "50px" }}>
+      <Paper sx={{ padding: 3 }}>
+        <AddHeader
+          title="Add Hall"
+          icon={<ChairOutlinedIcon fontSize="large" />}
+        />
+
+        <Table
+          headCells={headCells}
+          filterFn={filterFn}
+          data={halls}
+          key={key}
+          fields={fields}
+        />
+      </Paper>
     </div>
   );
 };
