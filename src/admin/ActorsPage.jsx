@@ -37,6 +37,8 @@ const ActorsPage = () => {
   const { actors } = useSelector((state) => state.actorsReducer);
   const [data, setData] = useState(initialFValues);
   const [openPopup, setOpenPopup] = useState(false);
+  const fields = ["firstName", "lastName", "gender"];
+  const key = "actorID";
 
   useEffect(() => {
     dispatch(actorsActions.getActors());
@@ -189,6 +191,8 @@ const ActorsPage = () => {
           filterFn={filterFn}
           onDelete={handleDelete}
           setEditObj={setEditObj}
+          key={key}
+          fields={fields}
         />
       </Paper>
       <Popup openPopup={openPopup} setOpen={setOpenPopup} title="Actor Form">
