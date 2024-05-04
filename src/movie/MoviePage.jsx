@@ -8,8 +8,26 @@ const MoviePage = () => {
   const dispatch = useDispatch();
 
   const objectKey = "movieID";
-  const fields = ["name", "duration", "description", "startTime", "endTime"];
+  const initialFValues = {
+    movieID: 0,
+    name: "",
+    duration: "",
+    description: "",
+    startTime: "",
+    endTime: "",
+    genres: [],
+  };
+  const fields = [
+    "name",
+    "duration",
+    "description",
+    "startTime",
+    "endTime",
+    "genres",
+  ];
   const { movies } = useSelector((state) => state.moviesReducer);
+
+  const [data, setData] = useState(initialFValues);
   const [filterFn, setFilterFn] = useState({
     fn: (items) => {
       return items;
@@ -33,9 +51,13 @@ const MoviePage = () => {
     });
   };
 
+  const setEditObj = (item) => {
+    setData(item);
+    console.log("Editing movie with id: ", item.movieID);
+  };
+
   const onDelete = (id) => {
-    console.log("Deleting movie with id: ", id);
-    //dispatch(moviesActions.deleteMovie(id));
+    dispatch(moviesActions.deleteMovie(id));
   };
 
   const headCells = [
@@ -43,9 +65,8 @@ const MoviePage = () => {
     { id: "duration", label: "Duration" },
     { id: "description", label: "Description", disableSorting: true },
     { id: "startTime", label: "Release date" },
-    { id: "endTime", label: "End date" },
+    { id: "endTime", label: "End date", disableSorting: true },
     { id: "genres", label: "Genre(s)", disableSorting: true },
-    //{ id: "actions", label: "Actions", disableSorting: true },
   ];
 
   return (
@@ -58,6 +79,7 @@ const MoviePage = () => {
           fields={fields}
           objectKey={objectKey}
           onDelete={onDelete}
+          setEditObj={setEditObj}
         />
       </Paper>
     </div>
