@@ -21,6 +21,24 @@ export const getMovies = () => {
   };
 };
 
+export const getMovie = (id) => {
+  return (dispatch) => {
+    dispatch(moviesActions.actionStart());
+    return apiService
+      .get(moviesPathID(id))
+      .then((response) => {
+        dispatch(moviesActions.fetchMovie(response.data));
+      })
+      .catch((error) => {
+        if (error.response.status === 401) {
+          localStorage.removeItem("token");
+        }
+        dispatch(moviesActions.actionError(error?.response?.data));
+        notifications.error();
+      });
+  };
+};
+
 export const deleteMovie = (id) => {
   return (dispatch) => {
     dispatch(moviesActions.actionStart());

@@ -14,6 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 import HallPage from "./hall/HallPage";
 import ActorsPage from "./actor/ActorsPage";
 import MoviePage from "./movie/MoviePage";
+import MovieComponent from "./movie/MovieComponent";
 
 function App() {
   const [token, setToken] = useState(null);
@@ -38,6 +39,7 @@ function App() {
           <Route exact path="/actors" element={<ActorsPage />} />
           <Route exact path="/add_movie" element={<MoviePage />} />
           <Route exact path="/hall" element={<HallPage />} />
+          <Route exact path="/movie_edit/:id" element={<MovieComponent />} />
         </Routes>
       </div>
     </LocalizationProvider>
