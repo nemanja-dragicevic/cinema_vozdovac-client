@@ -1,6 +1,6 @@
 import { TextField } from "@mui/material";
 
-const Input = ({ password, name, label, value, onChange, error }) => {
+const Input = ({ password, name, label, value, onChange, error, ...rest }) => {
   const handleChange = (event) => {
     onChange(name, event.target.value);
   };
@@ -18,6 +18,7 @@ const Input = ({ password, name, label, value, onChange, error }) => {
       size="small"
       sx={{ width: 200 }}
       type={password ? "password" : "text"}
+      {...rest}
     />
   );
 };
