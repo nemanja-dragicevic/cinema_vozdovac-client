@@ -54,7 +54,7 @@ const NavBar = () => {
           <li class="nav-item">
             {role === "ADMIN" ? (
               <NavLink className="nav-link" to="/add_movie">
-                Add Movie
+                Movie page
               </NavLink>
             ) : null}
           </li>
