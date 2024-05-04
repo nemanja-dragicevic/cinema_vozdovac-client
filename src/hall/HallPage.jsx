@@ -90,6 +90,11 @@ const HallPage = () => {
     setOpenPopup(true);
   };
 
+  const handleReset = () => {
+    resetErrors();
+    setData(initialFValues);
+  };
+
   const setEditObj = (item) => {
     resetErrors();
     setData(item);
@@ -176,6 +181,7 @@ const HallPage = () => {
           errors={errors}
           onSave={handleSave}
           onChange={handleChange}
+          onReset={handleReset}
         />
       </Popup>
     </div>
