@@ -35,37 +35,37 @@ const NavBar = () => {
         aria-expanded="false"
         aria-label="Toggle navigation"
       >
-        <span class="navbar-toggler-icon"></span>
+        <span className="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarText">
-        <ul class="navbar-nav ">
-          <li class="nav-item active">
+      <div className="collapse navbar-collapse" id="navbarText">
+        <ul className="navbar-nav ">
+          <li className="nav-item active">
             <NavLink className="nav-link" to="/movies">
               Naši Filmovi
             </NavLink>
           </li>
-          <li class="nav-item">
+          <li className="nav-item">
             {role === "ADMIN" ? (
               <NavLink className="nav-link" to="/actors">
                 Actors
               </NavLink>
             ) : null}
           </li>
-          <li class="nav-item">
+          <li className="nav-item">
             {role === "ADMIN" ? (
               <NavLink className="nav-link" to="/add_movie">
-                Add Movie
+                Movie page
               </NavLink>
             ) : null}
           </li>
-          <li class="nav-item">
+          <li className="nav-item">
             {role === "ADMIN" ? (
               <NavLink className="nav-link" to="/hall">
                 Hall properties
               </NavLink>
             ) : null}
           </li>
-          <li class="nav-item">
+          <li className="nav-item">
             {role === "USER" ? (
               <NavLink className="nav-link" to="/register">
                 Order movie
@@ -73,14 +73,14 @@ const NavBar = () => {
             ) : null}
           </li>
           {!sessionStorage.getItem("user") ? (
-            <li class="nav-item">
+            <li className="nav-item">
               <NavLink className="nav-link" to="/register">
                 Profile
               </NavLink>
             </li>
           ) : null}
         </ul>
-        <span class="navbar-text">Dobrodošli u svet filmske zabave</span>
+        <span className="navbar-text">Dobrodošli u svet filmske zabave</span>
         {sessionStorage.getItem("user") ? (
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">

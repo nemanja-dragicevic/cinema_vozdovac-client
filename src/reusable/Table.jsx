@@ -49,7 +49,13 @@ const Table = ({
             {dataAfterPagingAndSorting().map((item) => (
               <TableRow objectKey={item[objectKey]}>
                 {fields.map((field) => (
-                  <TableCell key={field}>{item[field]}</TableCell>
+                  <TableCell key={field}>
+                    {Array.isArray(item[field])
+                      ? item[field]
+                          .map((arrayItem) => arrayItem.name)
+                          .join(", ")
+                      : item[field]}
+                  </TableCell>
                 ))}
                 <TableCell>
                   <Button

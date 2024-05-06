@@ -17,6 +17,18 @@ const moviesSlice = createSlice({
       state.movies = [action.payload].concat(state.movies);
       state.error = undefined;
     },
+    editMovie(state, action) {
+      state.movies = state.movies.map((movie) =>
+        movie.movieID === action.payload.movieID ? action.payload : movie
+      );
+      state.error = undefined;
+    },
+    deleteMovie(state, action) {
+      state.movies = state.movies.filter(
+        (movie) => movie.movieID !== action.payload
+      );
+      state.error = undefined;
+    },
     actionStart(state) {
       state.error = undefined;
     },

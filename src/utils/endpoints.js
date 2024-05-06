@@ -1,6 +1,10 @@
 // Movies
-// const moviesApi = `/api/movie`;
+const moviesApi = `/api/movie`;
 export const moviesPath = `/api/movie/allWithAWS`;
+export const moviesPathID = (id) => `${moviesApi}/${id}`;
+
+// Genres
+export const genresPath = `/api/genre`;
 
 export const registerPath = `/api/members/register`;
 export const loginPath = `/api/members/login`;
