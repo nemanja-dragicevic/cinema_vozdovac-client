@@ -44,14 +44,15 @@ const MovieComponent = () => {
   const { movies } = useSelector((state) => state.moviesReducer);
   const { genres } = useSelector((state) => state.genresReducer);
 
+  const [imageUrl, setImageUrl] = useState(null);
+  const [image, setImage] = useState(null);
+  const [newImage, setNewImage] = useState(false);
+
   useEffect(() => {
     if (genres.length > 0 && movies.length > 0) {
       const movie = movies.find((movie) => movie.movieID === parseInt(id));
       const movieGenreIDs = movie.genres.map((genre) => genre.genreID);
-      const updatedGenres = genres.map((genre) => ({
-        ...genre,
-        checked: movieGenreIDs.includes(genre.genreID),
-      }));
+      const updatedGenres = activeGenres(movieGenreIDs);
       setAllGenres(updatedGenres);
     }
   }, [genres, movies, id]);
@@ -67,6 +68,13 @@ const MovieComponent = () => {
     description: { error: false, message: "" },
     genre: { error: false, message: "" },
   });
+
+  const activeGenres = (movieGenreIDs) => {
+    return genres.map((genre) => ({
+      ...genre,
+      checked: movieGenreIDs.includes(genre.genreID),
+    }));
+  };
 
   const handleChange = (name, value) => {
     resetErrors();
@@ -109,13 +117,29 @@ const MovieComponent = () => {
     });
   };
 
+  const handleUpload = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageUrl(reader.result);
+        setNewImage(true);
+        setImage(file);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSave = () => {
     console.log(data);
   };
 
   const handleReset = () => {
     setData(movie);
+    setNewImage(false);
     resetErrors();
+    setAllGenres(activeGenres(movie.genres.map((genre) => genre.genreID)));
   };
 
   return (
@@ -188,6 +212,14 @@ const MovieComponent = () => {
           format="D/MM/YYYY"
           sx={{ width: "50%" }}
         />
+        <Button variant="contained" component="label" sx={{ width: "50%" }}>
+          <MovieIcon />
+          Upload picture
+          <span style={{ paddingLeft: 4, fontSize: 10 }}>
+            (reccommended size: 1380x690)
+          </span>
+          <input type="file" accept="image/*" hidden onChange={handleUpload} />
+        </Button>
         <div
           style={{
             display: "flex",
@@ -237,11 +269,18 @@ const MovieComponent = () => {
             <p className="text">{data.description}</p>
           </div>
         </div>
-        <MovieBackground
-          small={false}
-          base64Image={movie.bigPicture}
-          nameClass="blur_back bright_back"
-        />
+        {!newImage ? (
+          <MovieBackground
+            small={false}
+            base64Image={movie.bigPicture}
+            nameClass="blur_back bright_back"
+          />
+        ) : (
+          <div
+            className="blur_back bright_back"
+            style={{ backgroundImage: `url(${imageUrl})` }}
+          ></div>
+        )}
       </div>
     </div>
   );
