@@ -33,7 +33,7 @@ export default function useTable(data, headCells, filterFn) {
     };
 
     return (
-      <TableHead>
+      <TableHead sx={{ backgroundColor: "#969cc7" }}>
         <TableRow>
           {headCells.map((headCell) => (
             <TableCell
@@ -55,6 +55,7 @@ export default function useTable(data, headCells, filterFn) {
               )}
             </TableCell>
           ))}
+          <TableCell></TableCell>
         </TableRow>
       </TableHead>
     );

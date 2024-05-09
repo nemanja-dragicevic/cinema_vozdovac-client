@@ -19,6 +19,8 @@ import MovieBackground from "../reusable/MovieBackground";
 import GradientHeader from "../reusable/GradientHeader";
 import MovieIcon from "@mui/icons-material/Movie";
 import "../styles/moviesTable.css";
+import Popup from "../reusable/Popup";
+import ConfirmDialog from "../reusable/ConfirmDialog";
 
 const schema = Joi.object({
   movieID: Joi.number().integer().min(0).required(),
@@ -44,14 +46,21 @@ const MovieComponent = () => {
   const { movies } = useSelector((state) => state.moviesReducer);
   const { genres } = useSelector((state) => state.genresReducer);
 
+  const [imageUrl, setImageUrl] = useState(null);
+  const [image, setImage] = useState(null);
+  const [newImage, setNewImage] = useState(false);
+  const [openPopup, setOpenPopup] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+
   useEffect(() => {
     if (genres.length > 0 && movies.length > 0) {
       const movie = movies.find((movie) => movie.movieID === parseInt(id));
       const movieGenreIDs = movie.genres.map((genre) => genre.genreID);
-      const updatedGenres = genres.map((genre) => ({
-        ...genre,
-        checked: movieGenreIDs.includes(genre.genreID),
-      }));
+      const updatedGenres = activeGenres(movieGenreIDs);
       setAllGenres(updatedGenres);
     }
   }, [genres, movies, id]);
@@ -67,6 +76,13 @@ const MovieComponent = () => {
     description: { error: false, message: "" },
     genre: { error: false, message: "" },
   });
+
+  const activeGenres = (movieGenreIDs) => {
+    return genres.map((genre) => ({
+      ...genre,
+      checked: movieGenreIDs.includes(genre.genreID),
+    }));
+  };
 
   const handleChange = (name, value) => {
     resetErrors();
@@ -109,13 +125,30 @@ const MovieComponent = () => {
     });
   };
 
+  const handleUpload = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageUrl(reader.result);
+        setNewImage(true);
+        setImage(file);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSave = () => {
     console.log(data);
+    setConfirmDialog({ ...confirmDialog, isOpen: false });
   };
 
   const handleReset = () => {
     setData(movie);
+    setNewImage(false);
     resetErrors();
+    setAllGenres(activeGenres(movie.genres.map((genre) => genre.genreID)));
   };
 
   return (
@@ -175,8 +208,9 @@ const MovieComponent = () => {
         <DatePicker
           label="Release date"
           disableFuture
+          value={data.startTime ? dayjs(data.startTime) : null}
           maxDate={maxDate}
-          // onChange={}
+          onChange={(date) => setData({ ...data, startTime: date })}
           format="D/MM/YYYY"
           sx={{ width: "50%" }}
         />
@@ -184,10 +218,19 @@ const MovieComponent = () => {
           label="End date"
           disableFuture
           maxDate={maxDate}
-          // onChange={}
+          value={data.endTime ? dayjs(data.endTime) : null}
+          onChange={(date) => setData({ ...data, endTime: date })}
           format="D/MM/YYYY"
           sx={{ width: "50%" }}
         />
+        <Button variant="contained" component="label" sx={{ width: "50%" }}>
+          <MovieIcon />
+          Upload picture
+          <span style={{ paddingLeft: 4, fontSize: 10 }}>
+            (reccommended size: 1380x690)
+          </span>
+          <input type="file" accept="image/*" hidden onChange={handleUpload} />
+        </Button>
         <div
           style={{
             display: "flex",
@@ -199,7 +242,16 @@ const MovieComponent = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={handleSave}
+            onClick={() => {
+              setConfirmDialog({
+                isOpen: true,
+                title: "Are you sure you want to save this movie?",
+                subTitle: "You can't undo this operation",
+                onConfirm: () => {
+                  handleSave();
+                },
+              });
+            }}
             sx={{ width: "20%" }}
           >
             Save a movie
@@ -227,22 +279,28 @@ const MovieComponent = () => {
             <h1>{data.name}</h1>
             <h4>{data.genres.map((genre) => genre.name).join(", ")}</h4>
             <span className="minutes">{data.duration}</span>
-            {/* <p className="type">
-                {movie.roles
-                  .map((actor) => actor.firstName + " " + actor.lastName)
-                  .join(", ")}
-              </p> */}
           </div>
           <div className="movie_desc">
             <p className="text">{data.description}</p>
           </div>
         </div>
-        <MovieBackground
-          small={false}
-          base64Image={movie.bigPicture}
-          nameClass="blur_back bright_back"
-        />
+        {!newImage ? (
+          <MovieBackground
+            small={false}
+            base64Image={movie.bigPicture}
+            nameClass="blur_back bright_back"
+          />
+        ) : (
+          <div
+            className="blur_back bright_back"
+            style={{ backgroundImage: `url(${imageUrl})` }}
+          ></div>
+        )}
       </div>
+      <ConfirmDialog
+        confirmDialog={confirmDialog}
+        setConfirmDialog={setConfirmDialog}
+      />
     </div>
   );
 };
