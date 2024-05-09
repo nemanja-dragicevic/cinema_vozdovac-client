@@ -19,6 +19,8 @@ import MovieBackground from "../reusable/MovieBackground";
 import GradientHeader from "../reusable/GradientHeader";
 import MovieIcon from "@mui/icons-material/Movie";
 import "../styles/moviesTable.css";
+import Popup from "../reusable/Popup";
+import ConfirmDialog from "../reusable/ConfirmDialog";
 
 const schema = Joi.object({
   movieID: Joi.number().integer().min(0).required(),
@@ -47,6 +49,12 @@ const MovieComponent = () => {
   const [imageUrl, setImageUrl] = useState(null);
   const [image, setImage] = useState(null);
   const [newImage, setNewImage] = useState(false);
+  const [openPopup, setOpenPopup] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
 
   useEffect(() => {
     if (genres.length > 0 && movies.length > 0) {
@@ -133,6 +141,7 @@ const MovieComponent = () => {
 
   const handleSave = () => {
     console.log(data);
+    setConfirmDialog({ ...confirmDialog, isOpen: false });
   };
 
   const handleReset = () => {
@@ -199,8 +208,9 @@ const MovieComponent = () => {
         <DatePicker
           label="Release date"
           disableFuture
+          value={data.startTime ? dayjs(data.startTime) : null}
           maxDate={maxDate}
-          // onChange={}
+          onChange={(date) => setData({ ...data, startTime: date })}
           format="D/MM/YYYY"
           sx={{ width: "50%" }}
         />
@@ -208,7 +218,8 @@ const MovieComponent = () => {
           label="End date"
           disableFuture
           maxDate={maxDate}
-          // onChange={}
+          value={data.endTime ? dayjs(data.endTime) : null}
+          onChange={(date) => setData({ ...data, endTime: date })}
           format="D/MM/YYYY"
           sx={{ width: "50%" }}
         />
@@ -231,7 +242,16 @@ const MovieComponent = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={handleSave}
+            onClick={() => {
+              setConfirmDialog({
+                isOpen: true,
+                title: "Are you sure you want to save this movie?",
+                subTitle: "You can't undo this operation",
+                onConfirm: () => {
+                  handleSave();
+                },
+              });
+            }}
             sx={{ width: "20%" }}
           >
             Save a movie
@@ -259,11 +279,6 @@ const MovieComponent = () => {
             <h1>{data.name}</h1>
             <h4>{data.genres.map((genre) => genre.name).join(", ")}</h4>
             <span className="minutes">{data.duration}</span>
-            {/* <p className="type">
-                {movie.roles
-                  .map((actor) => actor.firstName + " " + actor.lastName)
-                  .join(", ")}
-              </p> */}
           </div>
           <div className="movie_desc">
             <p className="text">{data.description}</p>
@@ -282,6 +297,10 @@ const MovieComponent = () => {
           ></div>
         )}
       </div>
+      <ConfirmDialog
+        confirmDialog={confirmDialog}
+        setConfirmDialog={setConfirmDialog}
+      />
     </div>
   );
 };
