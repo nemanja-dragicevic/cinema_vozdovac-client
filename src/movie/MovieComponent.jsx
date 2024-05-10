@@ -19,18 +19,12 @@ import MovieBackground from "../reusable/MovieBackground";
 import GradientHeader from "../reusable/GradientHeader";
 import MovieIcon from "@mui/icons-material/Movie";
 import "../styles/moviesTable.css";
-import Popup from "../reusable/Popup";
 import ConfirmDialog from "../reusable/ConfirmDialog";
 
 const schema = Joi.object({
   movieID: Joi.number().integer().min(0).required(),
   name: Joi.string().min(2).max(30).required().label("Movie name"),
-  duration: Joi.string()
-    .min(2)
-    .pattern(new RegExp("^[0-9]h[0-59]min{2}$"))
-    .max(30)
-    .required()
-    .label("Duration"),
+  duration: Joi.number().integer().min(30).required().label("Duration"),
   description: Joi.string().min(2).max(30).required().label("Description"),
   genre: Joi.array().items(Joi.string()).min(1).required().label("Genre"),
 });
@@ -47,9 +41,10 @@ const MovieComponent = () => {
   const { genres } = useSelector((state) => state.genresReducer);
 
   const [imageUrl, setImageUrl] = useState(null);
-  const [image, setImage] = useState(null);
-  const [newImage, setNewImage] = useState(false);
-  const [openPopup, setOpenPopup] = useState(false);
+  const [newImage, setNewImage] = useState({
+    bigPicture: true,
+    smallPicture: true,
+  });
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     title: "",
@@ -93,9 +88,8 @@ const MovieComponent = () => {
   };
 
   const handleGenreChange = (e) => {
-    console.log(e);
     const { name, value, checked } = e.target;
-    console.log(name, checked);
+
     setAllGenres((prevGenres) =>
       prevGenres.map((genre) =>
         genre.name === name ? { ...genre, checked } : genre
@@ -126,14 +120,22 @@ const MovieComponent = () => {
   };
 
   const handleUpload = (e) => {
+    const name = e.target.name;
+
+    // if (name === "bigPicture") {
+
     const file = e.target.files[0];
 
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setImageUrl(reader.result);
-        setNewImage(true);
-        setImage(file);
+        setNewImage({ ...newImage, [name]: false });
+        // setImage(file);
+        setData((prevData) => ({
+          ...prevData,
+          [name]: reader.result,
+        }));
       };
       reader.readAsDataURL(file);
     }
@@ -146,7 +148,7 @@ const MovieComponent = () => {
 
   const handleReset = () => {
     setData(movie);
-    setNewImage(false);
+    setNewImage({ bigPicture: true, smallPicture: true });
     resetErrors();
     setAllGenres(activeGenres(movie.genres.map((genre) => genre.genreID)));
   };
@@ -163,7 +165,9 @@ const MovieComponent = () => {
           marginRight: 10,
         }}
       >
-        <div style={{ display: "flex", columnGap: "50px" }}>
+        <div
+          style={{ display: "flex", columnGap: "50px", flexDirection: "row" }}
+        >
           <Input
             name="name"
             value={data.name}
@@ -174,7 +178,7 @@ const MovieComponent = () => {
           <Input
             name="duration"
             value={data.duration}
-            label="Duration"
+            label="Duration (in minutes)"
             error={errors.duration}
             onChange={handleChange}
           />
@@ -186,25 +190,25 @@ const MovieComponent = () => {
             onChange={handleChange}
             multiline
           />
-          <FormGroup>
-            {allGenres.map((genre) => (
-              <FormControlLabel
-                key={genre.genreID}
-                control={
-                  <Checkbox
-                    checked={genre.checked}
-                    icon={<CheckBoxOutlineBlankIcon />}
-                    checkedIcon={<CheckCircleIcon />}
-                    name={genre.name}
-                    onChange={handleGenreChange}
-                    value={genre.genreID}
-                  />
-                }
-                label={genre.name}
-              />
-            ))}
-          </FormGroup>
         </div>
+        <FormGroup sx={{ display: "flex", flexDirection: "row", columnGap: 8 }}>
+          {allGenres.map((genre) => (
+            <FormControlLabel
+              key={genre.genreID}
+              control={
+                <Checkbox
+                  checked={genre.checked}
+                  icon={<CheckBoxOutlineBlankIcon />}
+                  checkedIcon={<CheckCircleIcon />}
+                  name={genre.name}
+                  onChange={handleGenreChange}
+                  value={genre.genreID}
+                />
+              }
+              label={genre.name}
+            />
+          ))}
+        </FormGroup>
         <DatePicker
           label="Release date"
           disableFuture
@@ -223,14 +227,44 @@ const MovieComponent = () => {
           format="D/MM/YYYY"
           sx={{ width: "50%" }}
         />
-        <Button variant="contained" component="label" sx={{ width: "50%" }}>
-          <MovieIcon />
-          Upload picture
-          <span style={{ paddingLeft: 4, fontSize: 10 }}>
-            (reccommended size: 1380x690)
-          </span>
-          <input type="file" accept="image/*" hidden onChange={handleUpload} />
-        </Button>
+        <div style={{ display: "flex", columnGap: 30 }}>
+          <Button
+            variant="contained"
+            component="label"
+            sx={{ width: "30%", textAlign: "center" }}
+          >
+            <MovieIcon />
+            Upload big picture <br />
+            <span style={{ paddingLeft: 10, fontSize: 10 }}>
+              (reccommended size: 1380x690)
+            </span>
+            <input
+              name="bigPicture"
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={handleUpload}
+            />
+          </Button>
+          <Button
+            variant="contained"
+            component="label"
+            sx={{ width: "30%", textAlign: "center" }}
+          >
+            <MovieIcon />
+            Upload small picture <br />
+            <span style={{ paddingLeft: 10, fontSize: 10 }}>
+              (reccommended size: 900x600)
+            </span>
+            <input
+              name="smallPicture"
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={handleUpload}
+            />
+          </Button>
+        </div>
         <div
           style={{
             display: "flex",
@@ -275,31 +309,27 @@ const MovieComponent = () => {
               small={true}
               base64Image={data.smallPicture}
               nameClass="locandina"
+              toDecode={newImage.smallPicture}
             />
+
             <h1>{data.name}</h1>
             <h4>{data.genres.map((genre) => genre.name).join(", ")}</h4>
-            <span className="minutes">{data.duration}</span>
+            <span className="minutes">{data.duration} min</span>
           </div>
           <div className="movie_desc">
             <p className="text">{data.description}</p>
           </div>
         </div>
-        {!newImage ? (
-          <MovieBackground
-            small={false}
-            base64Image={movie.bigPicture}
-            nameClass="blur_back bright_back"
-          />
-        ) : (
-          <div
-            className="blur_back bright_back"
-            style={{ backgroundImage: `url(${imageUrl})` }}
-          ></div>
-        )}
+        <MovieBackground
+          small={false}
+          base64Image={data.bigPicture}
+          nameClass="blur_back bright_back"
+          toDecode={newImage.bigPicture}
+        />
       </div>
       <ConfirmDialog
         confirmDialog={confirmDialog}
-        setConfirmDialog={setConfirmDialog}
+        setConfirm={setConfirmDialog}
       />
     </div>
   );
