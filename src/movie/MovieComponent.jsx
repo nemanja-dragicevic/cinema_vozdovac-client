@@ -9,17 +9,17 @@ import {
   Paper,
 } from "@mui/material";
 import Joi from "joi";
-import Input from "../registration/Input";
-import * as genresActions from "./../actions/genres";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
+import MovieIcon from "@mui/icons-material/Movie";
 import MovieBackground from "../reusable/MovieBackground";
 import GradientHeader from "../reusable/GradientHeader";
-import MovieIcon from "@mui/icons-material/Movie";
-import "../styles/moviesTable.css";
 import ConfirmDialog from "../reusable/ConfirmDialog";
+import Input from "../registration/Input";
+import * as genresActions from "./../actions/genres";
+import "../styles/moviesTable.css";
 
 const schema = Joi.object({
   movieID: Joi.number().integer().min(0).required(),
