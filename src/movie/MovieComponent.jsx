@@ -11,22 +11,30 @@ import {
 import Joi from "joi";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import { DatePicker } from "@mui/x-date-pickers";
-import dayjs from "dayjs";
 import MovieIcon from "@mui/icons-material/Movie";
 import MovieBackground from "../reusable/MovieBackground";
 import GradientHeader from "../reusable/GradientHeader";
 import ConfirmDialog from "../reusable/ConfirmDialog";
 import Input from "../registration/Input";
 import * as genresActions from "./../actions/genres";
+import * as actorsActions from "./../actions/actors";
+import * as moviesActions from "./../actions/movies";
 import "../styles/moviesTable.css";
+import AddHeader from "./../reusable/AddHeader";
+import Table from "../reusable/Table";
+import TableSearch from "../components/TableSearch";
 
 const schema = Joi.object({
   movieID: Joi.number().integer().min(0).required(),
   name: Joi.string().min(2).max(30).required().label("Movie name"),
   duration: Joi.number().integer().min(30).required().label("Duration"),
   description: Joi.string().min(2).max(30).required().label("Description"),
-  genre: Joi.array().items(Joi.string()).min(1).required().label("Genre"),
+  genres: Joi.array().items(Joi.object()).min(1).required().label("Genre"),
+  startTime: Joi.required(),
+  endTime: Joi.required(),
+  smallPicture: Joi.string().required().label("Small picture"),
+  bigPicture: Joi.string().required().label("Big picture"),
+  roleDTO: Joi.array().items(Joi.object()).min(1).required().label("Roles"),
 });
 
 const MovieComponent = () => {
@@ -35,12 +43,15 @@ const MovieComponent = () => {
 
   useEffect(() => {
     dispatch(genresActions.getGenres());
+    dispatch(actorsActions.getActors());
   }, [dispatch]);
 
+  const objectKey = "actorID";
   const { movies } = useSelector((state) => state.moviesReducer);
   const { genres } = useSelector((state) => state.genresReducer);
+  const { actors } = useSelector((state) => state.actorsReducer);
 
-  const [imageUrl, setImageUrl] = useState(null);
+  // const [imageUrl, setImageUrl] = useState(null);
   const [newImage, setNewImage] = useState({
     bigPicture: true,
     smallPicture: true,
@@ -58,12 +69,50 @@ const MovieComponent = () => {
       const updatedGenres = activeGenres(movieGenreIDs);
       setAllGenres(updatedGenres);
     }
-  }, [genres, movies, id]);
+    if (actors.length > 0) {
+      setAllActors(
+        actors.map((actor) => ({
+          ...actor,
+          checked: movie.roleDTO
+            .map((role) => role.actor.actorID)
+            .includes(actor.actorID),
+        }))
+      );
+    }
+  }, [genres, movies, id, actors]);
 
-  const maxDate = dayjs(); //.subtract(14, "year");
-  const movie = movies.find((movie) => movie.movieID === parseInt(id));
+  const fields = ["firstName", "lastName", "gender"];
+  const headCells = [
+    { id: "firstName", label: "First name" },
+    { id: "lastName", label: "Last name" },
+    { id: "gender", label: "Gender", disableSorting: true },
+  ];
+  const [filterFn, setFilterFn] = useState({
+    fn: (items) => {
+      return items;
+    },
+  });
+
+  const movie =
+    id === "0"
+      ? {
+          movieID: 0,
+          name: "",
+          duration: 0,
+          description: "",
+          genres: [],
+          bigPicture: "",
+          smallPicture: "",
+          roleDTO: [],
+        }
+      : movies.find((movie) => movie.movieID === parseInt(id));
+
   const [allGenres, setAllGenres] = useState([]);
-
+  const [allActors, setAllActors] = useState([]);
+  const [fileImages, setFileImages] = useState({
+    smallPicture: null,
+    bigPicture: null,
+  });
   const [data, setData] = useState(movie);
   const [errors, setErrors] = useState({
     name: { error: false, message: "" },
@@ -87,6 +136,21 @@ const MovieComponent = () => {
     }));
   };
 
+  const handleSearch = (e) => {
+    let target = e.target;
+    setFilterFn({
+      fn: (items) => {
+        if (target.value === "") return items;
+        else
+          return items.filter(
+            (x) =>
+              x.firstName.toLowerCase().includes(target.value.toLowerCase()) ||
+              x.lastName.toLowerCase().includes(target.value.toLowerCase())
+          );
+      },
+    });
+  };
+
   const handleGenreChange = (e) => {
     const { name, value, checked } = e.target;
 
@@ -107,7 +171,31 @@ const MovieComponent = () => {
         genres: prevData.genres.filter((genre) => genre.name !== name),
       }));
     }
-    // console.log(data);
+  };
+
+  const handleActorSelection = (e) => {
+    const { value, checked } = e.target;
+
+    if (checked) {
+      setData((prevData) => ({
+        ...prevData,
+        roleDTO: [...prevData.roleDTO, { actorID: value }],
+      }));
+    } else {
+      setData((prevData) => ({
+        ...prevData,
+        roleDTO: prevData.roleDTO.filter((role) => role.actorID !== value),
+      }));
+    }
+
+    setAllActors((prevActors) =>
+      prevActors.map((actor) => {
+        if (actor.actorID === parseInt(value)) {
+          return { ...actor, checked };
+        }
+        return actor;
+      })
+    );
   };
 
   const resetErrors = () => {
@@ -122,19 +210,24 @@ const MovieComponent = () => {
   const handleUpload = (e) => {
     const name = e.target.name;
 
-    // if (name === "bigPicture") {
-
     const file = e.target.files[0];
 
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImageUrl(reader.result);
+        // setImageUrl(reader.result);
         setNewImage({ ...newImage, [name]: false });
         // setImage(file);
         setData((prevData) => ({
           ...prevData,
           [name]: reader.result,
+          // .replace(/-/g, "+") // Replace "-" with "+"
+          // .replace(/_/g, "/"), // Replace "_" with "/",
+          // [name]: file,
+        }));
+        setFileImages((prevImages) => ({
+          ...prevImages,
+          [name]: file,
         }));
       };
       reader.readAsDataURL(file);
@@ -143,7 +236,15 @@ const MovieComponent = () => {
 
   const handleSave = () => {
     console.log(data);
-    setConfirmDialog({ ...confirmDialog, isOpen: false });
+    // setConfirmDialog({ ...confirmDialog, isOpen: false });
+
+    const { error } = schema.validate(data, { abortEarly: false });
+
+    if (!error) {
+      dispatch(moviesActions.editMovie(data, fileImages));
+    } else {
+      console.log(error);
+    }
   };
 
   const handleReset = () => {
@@ -151,6 +252,14 @@ const MovieComponent = () => {
     setNewImage({ bigPicture: true, smallPicture: true });
     resetErrors();
     setAllGenres(activeGenres(movie.genres.map((genre) => genre.genreID)));
+    setAllActors(
+      actors.map((actor) => ({
+        ...actor,
+        checked: movie.roleDTO
+          .map((role) => role.actor.actorID)
+          .includes(actor.actorID),
+      }))
+    );
   };
 
   return (
@@ -165,8 +274,14 @@ const MovieComponent = () => {
           marginRight: 10,
         }}
       >
+        <AddHeader title="Edit a movie" icon={<MovieIcon fontSize="large" />} />
         <div
-          style={{ display: "flex", columnGap: "50px", flexDirection: "row" }}
+          style={{
+            display: "flex",
+            columnGap: "50px",
+            flexDirection: "row",
+            justifyContent: "center",
+          }}
         >
           <Input
             name="name"
@@ -191,7 +306,14 @@ const MovieComponent = () => {
             multiline
           />
         </div>
-        <FormGroup sx={{ display: "flex", flexDirection: "row", columnGap: 8 }}>
+        <FormGroup
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            columnGap: 8,
+            justifyContent: "center",
+          }}
+        >
           {allGenres.map((genre) => (
             <FormControlLabel
               key={genre.genreID}
@@ -209,25 +331,19 @@ const MovieComponent = () => {
             />
           ))}
         </FormGroup>
-        <DatePicker
-          label="Release date"
-          disableFuture
-          value={data.startTime ? dayjs(data.startTime) : null}
-          maxDate={maxDate}
-          onChange={(date) => setData({ ...data, startTime: date })}
-          format="D/MM/YYYY"
-          sx={{ width: "50%" }}
+        <TableSearch searching={true} handleSearch={handleSearch} />
+        <Table
+          headCells={headCells}
+          filterFn={filterFn}
+          data={allActors}
+          fields={fields}
+          objectKey={objectKey}
+          selection={true}
+          setEditObj={handleActorSelection}
         />
-        <DatePicker
-          label="End date"
-          disableFuture
-          maxDate={maxDate}
-          value={data.endTime ? dayjs(data.endTime) : null}
-          onChange={(date) => setData({ ...data, endTime: date })}
-          format="D/MM/YYYY"
-          sx={{ width: "50%" }}
-        />
-        <div style={{ display: "flex", columnGap: 30 }}>
+        <div
+          style={{ display: "flex", columnGap: 30, justifyContent: "center" }}
+        >
           <Button
             variant="contained"
             component="label"
@@ -276,16 +392,17 @@ const MovieComponent = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => {
-              setConfirmDialog({
-                isOpen: true,
-                title: "Are you sure you want to save this movie?",
-                subTitle: "You can't undo this operation",
-                onConfirm: () => {
-                  handleSave();
-                },
-              });
-            }}
+            // onClick={() => {
+            //   setConfirmDialog({
+            //     isOpen: true,
+            //     title: "Are you sure you want to save this movie?",
+            //     subTitle: "You can't undo this operation",
+            //     onConfirm: () => {
+            //       handleSave();
+            //     },
+            //   });
+            // }}
+            onClick={handleSave}
             sx={{ width: "20%" }}
           >
             Save a movie

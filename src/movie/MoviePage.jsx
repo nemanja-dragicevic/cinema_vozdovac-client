@@ -124,7 +124,7 @@ const MoviePage = () => {
           <Button
             variant="outlined"
             startIcon={<AddIcon />}
-            onClick={() => navigate("/movie_add/0")}
+            onClick={() => navigate("/movie_edit/0")}
           >
             Add new
           </Button>
