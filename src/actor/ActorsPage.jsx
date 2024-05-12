@@ -38,7 +38,7 @@ const ActorsPage = () => {
   const [data, setData] = useState(initialFValues);
   const [openPopup, setOpenPopup] = useState(false);
   const fields = ["firstName", "lastName", "gender"];
-  const key = "actorID";
+  const objectKey = "actorID";
 
   useEffect(() => {
     dispatch(actorsActions.getActors());
@@ -155,14 +155,6 @@ const ActorsPage = () => {
           title="New actor"
           icon={<PeopleOutlineTwoTone fontSize="large" />}
         />
-        {/* <ActorForm
-          onSave={handleSave}
-          errors={errors}
-          data={data}
-          onChange={handleChange}
-          onReset={handleReset}
-          onGenderChange={handleGenderChange}
-        /> */}
         <Toolbar
           sx={{
             marginTop: 5,
@@ -198,8 +190,9 @@ const ActorsPage = () => {
           filterFn={filterFn}
           onDelete={handleDelete}
           setEditObj={setEditObj}
-          key={key}
+          objectKey={objectKey}
           fields={fields}
+          selection={false}
         />
       </Paper>
       <Popup openPopup={openPopup} setOpen={setOpenPopup} title="Actor Form">
