@@ -38,8 +38,8 @@ const schema = Joi.object({
     .label("Duration"),
   description: Joi.string().min(10).max(250).required().label("Description"),
   genres: Joi.array().items(Joi.object()).min(1).required().label("Genre"),
-  startTime: Joi.required(),
-  endTime: Joi.required(),
+  startTime: Joi.any(),
+  endTime: Joi.any(),
   smallPicture: Joi.string().required().label("Small picture"),
   bigPicture: Joi.string().required().label("Big picture"),
   roleDTO: Joi.array()
@@ -47,7 +47,7 @@ const schema = Joi.object({
     .min(1)
     .required()
     .label("Actor roles"),
-  roleName: Joi.string().min(2).max(30).required().label("Role name"),
+  roleName: Joi.string().min(2).max(30).label("Role name"),
 });
 
 const MovieComponent = () => {
@@ -127,7 +127,7 @@ const MovieComponent = () => {
           roleDTO: [],
         }
       : movies.find((movie) => movie.movieID === parseInt(id));
-  console.log(movie);
+
   const [allGenres, setAllGenres] = useState([]);
   const [allActors, setAllActors] = useState([]);
   const [openPopup, setOpenPopup] = useState(false);
@@ -150,7 +150,7 @@ const MovieComponent = () => {
       checked: movieGenreIDs.includes(genre.genreID),
     }));
   };
-
+  console.log(data);
   const handleChange = (name, value) => {
     resetErrors();
     if (name === "roleName") {
@@ -216,7 +216,7 @@ const MovieComponent = () => {
       setData((prevData) => ({
         ...prevData,
         roleDTO: prevData.roleDTO.filter(
-          (role) => role.actorID !== parseInt(value)
+          (role) => role.actor.actorID !== parseInt(value)
         ),
       }));
       setAllActors((prevActors) =>
@@ -277,7 +277,10 @@ const MovieComponent = () => {
 
     setData((prevData) => ({
       ...prevData,
-      roleDTO: [...prevData.roleDTO, actorToAdd],
+      roleDTO: [
+        ...prevData.roleDTO,
+        { actor: { actorID: actorToAdd.actorID }, roleName: value },
+      ],
     }));
 
     setAllActors((prevActors) =>
@@ -334,7 +337,7 @@ const MovieComponent = () => {
     const validation = schema.validate(data);
 
     console.log(data);
-
+    console.log(validation.error);
     if (validation.error) {
       const { details } = validation.error;
       details.forEach((detail) => {
@@ -353,6 +356,7 @@ const MovieComponent = () => {
       });
       return;
     } else {
+      console.log(data);
       setConfirmDialog({
         isOpen: true,
         title: "Are you sure you want to save this movie?",

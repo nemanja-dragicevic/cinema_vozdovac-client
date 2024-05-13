@@ -45,11 +45,11 @@ export const editMovie = (data, images) => {
   formData.append("movie", JSON.stringify(data));
   if (images.smallPicture !== null) {
     formData.append("smallPicture", images.smallPicture);
-    data.smallPicture = null;
+    // data.smallPicture = null;
   }
   if (images.bigPicture !== null) {
     formData.append("bigPicture", images.bigPicture);
-    data.bigPicture = null;
+    // data.bigPicture = null;
   }
 
   return (dispatch) => {
