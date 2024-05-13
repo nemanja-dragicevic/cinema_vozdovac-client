@@ -78,7 +78,7 @@ const MovieComponent = () => {
     if (genres.length > 0 && movies.length > 0) {
       const movie = movies.find((movie) => movie.movieID === parseInt(id));
       const movieGenreIDs =
-        movie?.genres.length() > 0
+        movie?.genres.length > 0
           ? movie.genres.map((genre) => genre.genreID)
           : [];
       const updatedGenres = activeGenres(movieGenreIDs);
