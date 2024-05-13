@@ -6,6 +6,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ConfirmDialog from "./ConfirmDialog";
 import { useState } from "react";
 import CheckBox from "@mui/material/Checkbox";
+import Input from "../registration/Input";
 
 const Table = ({
   headCells,
@@ -61,12 +62,22 @@ const Table = ({
                 ))}
                 <TableCell>
                   {selection ? (
-                    <CheckBox
-                      checked={item.checked}
-                      onClick={setEditObj}
-                      value={item[objectKey]}
-                      inputProps={{ "aria-label": "controlled" }}
-                    />
+                    <>
+                      {item.checked ? (
+                        <Input
+                          name="roleName"
+                          value={item.roleName}
+                          error={false}
+                          disabled={true}
+                        />
+                      ) : null}
+                      <CheckBox
+                        checked={item.checked}
+                        onClick={setEditObj}
+                        value={item[objectKey]}
+                        inputProps={{ "aria-label": "controlled" }}
+                      />
+                    </>
                   ) : (
                     <>
                       <Button

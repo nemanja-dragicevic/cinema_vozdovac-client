@@ -24,6 +24,8 @@ import AddHeader from "./../reusable/AddHeader";
 import Table from "../reusable/Table";
 import TableSearch from "../components/TableSearch";
 import { warning } from "../utils/notification";
+import Popup from "../reusable/Popup";
+import ActorRole from "./ActorRole";
 
 const schema = Joi.object({
   movieID: Joi.number().integer().min(0).required(),
@@ -45,6 +47,7 @@ const schema = Joi.object({
     .min(1)
     .required()
     .label("Actor roles"),
+  roleName: Joi.string().min(2).max(30).required().label("Role name"),
 });
 
 const MovieComponent = () => {
@@ -60,8 +63,7 @@ const MovieComponent = () => {
   const { movies } = useSelector((state) => state.moviesReducer);
   const { genres } = useSelector((state) => state.genresReducer);
   const { actors } = useSelector((state) => state.actorsReducer);
-
-  // const [imageUrl, setImageUrl] = useState(null);
+  const [actorToAdd, setActorToAdd] = useState({ actorID: 0, roleName: "" });
   const [newImage, setNewImage] = useState({
     bigPicture: true,
     smallPicture: true,
@@ -86,6 +88,10 @@ const MovieComponent = () => {
           checked: movie.roleDTO
             .map((role) => role.actor.actorID)
             .includes(actor.actorID),
+          roleName:
+            movie.roleDTO.find((role) =>
+              role.actor.actorID === actor.actorID ? role.roleName : ""
+            )?.roleName || "",
         }))
       );
     }
@@ -96,6 +102,7 @@ const MovieComponent = () => {
     { id: "firstName", label: "First name" },
     { id: "lastName", label: "Last name" },
     { id: "gender", label: "Gender", disableSorting: true },
+    { id: "role", label: "Actor role", disableSorting: true },
   ];
 
   const [filterFn, setFilterFn] = useState({
@@ -120,6 +127,7 @@ const MovieComponent = () => {
 
   const [allGenres, setAllGenres] = useState([]);
   const [allActors, setAllActors] = useState([]);
+  const [openPopup, setOpenPopup] = useState(false);
   const [fileImages, setFileImages] = useState({
     smallPicture: null,
     bigPicture: null,
@@ -130,6 +138,7 @@ const MovieComponent = () => {
     duration: { error: false, message: "" },
     description: { error: false, message: "" },
     genre: { error: false, message: "" },
+    roleDTO: { error: false, message: "" },
   });
 
   const activeGenres = (movieGenreIDs) => {
@@ -141,10 +150,17 @@ const MovieComponent = () => {
 
   const handleChange = (name, value) => {
     resetErrors();
-    setData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    if (name === "roleName") {
+      setActorToAdd((prevActor) => ({
+        ...prevActor,
+        roleName: value,
+      }));
+    } else {
+      setData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSearch = (e) => {
@@ -188,25 +204,83 @@ const MovieComponent = () => {
     const { value, checked } = e.target;
 
     if (checked) {
-      setData((prevData) => ({
-        ...prevData,
-        roleDTO: [...prevData.roleDTO, { actorID: value }],
+      setOpenPopup(true);
+      setActorToAdd((prevActor) => ({
+        ...prevActor,
+        actorID: parseInt(value),
       }));
     } else {
-      setData((prevData) => ({
-        ...prevData,
-        roleDTO: prevData.roleDTO.filter((role) => role.actorID !== value),
-      }));
+      setAllActors((prevActors) =>
+        prevActors.map((actor) => {
+          if (actor.actorID === parseInt(value)) {
+            return { ...actor, checked };
+          }
+          return actor;
+        })
+      );
     }
+
+    // if (checked) {
+    //   setOpenPopup(true);
+    //   setData((prevData) => ({
+    //     ...prevData,
+    //     roleDTO: [...prevData.roleDTO, { actorID: value }],
+    //   }));
+    // } else {
+    //   setData((prevData) => ({
+    //     ...prevData,
+    //     roleDTO: prevData.roleDTO.filter((role) => role.actorID !== value),
+    //   }));
+    // }
+
+    // setAllActors((prevActors) =>
+    //   prevActors.map((actor) => {
+    //     if (actor.actorID === parseInt(value)) {
+    //       return { ...actor, checked };
+    //     }
+    //     return actor;
+    //   })
+    // );
+  };
+
+  const closePopup = () => {
+    setOpenPopup(false);
+    setActorToAdd({ actorID: 0, roleName: "" });
+    errors.roleDTO.error = false;
+    errors.roleDTO.message = "";
+  };
+
+  const addRole = () => {
+    const value = actorToAdd.roleName;
+
+    if (value === undefined || value.trim() === "") {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        roleDTO: { error: true, message: "Role name is required" },
+      }));
+      return;
+    }
+    setOpenPopup(false);
+    setActorToAdd((prevActor) => ({
+      ...prevActor,
+      roleName: value,
+    }));
+
+    setData((prevData) => ({
+      ...prevData,
+      roleDTO: [...prevData.roleDTO, actorToAdd],
+    }));
 
     setAllActors((prevActors) =>
       prevActors.map((actor) => {
-        if (actor.actorID === parseInt(value)) {
-          return { ...actor, checked };
+        if (actor.actorID === actorToAdd.actorID) {
+          return { ...actor, checked: true, roleName: actorToAdd.roleName };
         }
         return actor;
       })
     );
+
+    setActorToAdd({ actorID: 0, roleName: "" });
   };
 
   const resetErrors = () => {
@@ -215,6 +289,7 @@ const MovieComponent = () => {
       duration: { error: false, message: "" },
       description: { error: false, message: "" },
       genre: { error: false, message: "" },
+      roleDTO: { error: false, message: "" },
     });
   };
 
@@ -249,7 +324,7 @@ const MovieComponent = () => {
     // const { error } = schema.validate(data, { abortEarly: false });
     const validation = schema.validate(data);
 
-    console.log(validation);
+    console.log(data);
 
     if (validation.error) {
       const { details } = validation.error;
@@ -292,6 +367,10 @@ const MovieComponent = () => {
         checked: movie.roleDTO
           .map((role) => role.actor.actorID)
           .includes(actor.actorID),
+        roleName:
+          movie.roleDTO.find((role) =>
+            role.actor.actorID === actor.actorID ? role.roleName : ""
+          )?.roleName || "",
       }))
     );
   };
@@ -472,6 +551,14 @@ const MovieComponent = () => {
         confirmDialog={confirmDialog}
         setConfirm={setConfirmDialog}
       />
+      <Popup title="Actor role" openPopup={openPopup} setOpen={closePopup}>
+        <ActorRole
+          value={actorToAdd.roleName}
+          errors={errors.roleDTO}
+          onChange={handleChange}
+          addRole={addRole}
+        />
+      </Popup>
     </div>
   );
 };
