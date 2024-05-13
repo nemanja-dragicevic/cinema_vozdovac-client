@@ -210,6 +210,12 @@ const MovieComponent = () => {
         actorID: parseInt(value),
       }));
     } else {
+      setData((prevData) => ({
+        ...prevData,
+        roleDTO: prevData.roleDTO.filter(
+          (role) => role.actorID !== parseInt(value)
+        ),
+      }));
       setAllActors((prevActors) =>
         prevActors.map((actor) => {
           if (actor.actorID === parseInt(value)) {
