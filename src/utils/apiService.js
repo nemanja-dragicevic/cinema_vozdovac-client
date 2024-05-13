@@ -32,6 +32,16 @@ const apiService = {
       .delete(url, { headers: getHeaders() })
       .catch(handleErrors);
   },
+  putFormData(url, body) {
+    return axiosInstance
+      .put(url, body, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .catch(handleErrors);
+  },
 };
 
 function getHeaders() {

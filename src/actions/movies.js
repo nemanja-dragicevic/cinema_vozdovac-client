@@ -1,5 +1,5 @@
 import { moviesActions } from "../reducers/movies";
-import { moviesPath, moviesPathID } from "../utils/endpoints";
+import { moviesApi, moviesPath, moviesPathID } from "../utils/endpoints";
 import apiService from "./../utils/apiService";
 import * as notifications from "../utils/notification";
 
@@ -35,6 +35,37 @@ export const getMovie = (id) => {
         }
         dispatch(moviesActions.actionError(error?.response?.data));
         notifications.error();
+      });
+  };
+};
+
+export const editMovie = (data, images) => {
+  const formData = new FormData();
+
+  formData.append("movie", JSON.stringify(data));
+  if (images.smallPicture !== null) {
+    formData.append("smallPicture", images.smallPicture);
+    // data.smallPicture = null;
+  }
+  if (images.bigPicture !== null) {
+    formData.append("bigPicture", images.bigPicture);
+    // data.bigPicture = null;
+  }
+
+  return (dispatch) => {
+    dispatch(moviesActions.actionStart());
+    return apiService
+      .putFormData(moviesApi, formData)
+      .then((response) => {
+        dispatch(moviesActions.editMovie(response.data));
+        notifications.success("Successfully edited movie");
+      })
+      .catch((error) => {
+        if (error.response.status === 401) {
+          localStorage.removeItem("token");
+        }
+        dispatch(moviesActions.actionError(error?.response?.data));
+        notifications.error("Error while editing movie");
       });
   };
 };

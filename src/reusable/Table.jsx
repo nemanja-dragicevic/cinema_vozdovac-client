@@ -5,6 +5,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ConfirmDialog from "./ConfirmDialog";
 import { useState } from "react";
+import CheckBox from "@mui/material/Checkbox";
+import Input from "../registration/Input";
 
 const Table = ({
   headCells,
@@ -14,6 +16,7 @@ const Table = ({
   setEditObj,
   objectKey,
   fields,
+  selection,
 }) => {
   const theme = createTheme({
     palette: {
@@ -58,31 +61,53 @@ const Table = ({
                   </TableCell>
                 ))}
                 <TableCell>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => {
-                      setEditObj(item);
-                    }}
-                  >
-                    <EditOutlinedIcon />
-                  </Button>
-                  <button
-                    className="btn btn-danger m-1"
-                    //onClick={() => onDelete(item.actorID)}
-                    onClick={() => {
-                      setConfirmDialog({
-                        isOpen: true,
-                        title: "Are you sure you want to delete this record?",
-                        subTitle: "You can't undo this operation",
-                        onConfirm: () => {
-                          closeDialog(item[objectKey]);
-                        },
-                      });
-                    }}
-                  >
-                    <DeleteIcon />
-                  </button>
+                  {selection ? (
+                    <>
+                      {item.checked ? (
+                        <Input
+                          name="roleName"
+                          value={item.roleName}
+                          error={false}
+                          disabled={true}
+                        />
+                      ) : null}
+                      <CheckBox
+                        checked={item.checked}
+                        onClick={setEditObj}
+                        value={item[objectKey]}
+                        inputProps={{ "aria-label": "controlled" }}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={() => {
+                          setEditObj(item);
+                        }}
+                      >
+                        <EditOutlinedIcon />
+                      </Button>
+                      <button
+                        className="btn btn-danger m-1"
+                        //onClick={() => onDelete(item.actorID)}
+                        onClick={() => {
+                          setConfirmDialog({
+                            isOpen: true,
+                            title:
+                              "Are you sure you want to delete this record?",
+                            subTitle: "You can't undo this operation",
+                            onConfirm: () => {
+                              closeDialog(item[objectKey]);
+                            },
+                          });
+                        }}
+                      >
+                        <DeleteIcon />
+                      </button>
+                    </>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

@@ -60,6 +60,7 @@
         }
       }
       .movie_desc{
+        margin-top: 25px;
         padding: 25px;
         height: 50%;
         .text{

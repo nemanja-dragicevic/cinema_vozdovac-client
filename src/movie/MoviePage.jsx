@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import * as moviesActions from "../actions/movies";
-import { Paper } from "@mui/material";
-import { PacmanLoader } from "react-spinners";
-import Table from "../reusable/Table";
-import "../styles/movies.css";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { PacmanLoader } from "react-spinners";
+import { Button, InputAdornment, Paper, Toolbar } from "@mui/material";
+import MovieIcon from "@mui/icons-material/Movie";
+import AddIcon from "@mui/icons-material/Add";
+import * as moviesActions from "../actions/movies";
+import Table from "../reusable/Table";
+import AddHeader from "../reusable/AddHeader";
+import SearchInput from "../reusable/SearchInput";
+import { Search } from "@mui/icons-material";
+import "../styles/movies.css";
 
 const MoviePage = () => {
   const dispatch = useDispatch();
@@ -94,6 +99,37 @@ const MoviePage = () => {
   return (
     <div style={{ padding: "20px", marginTop: "50px" }}>
       <Paper sx={{ padding: 3 }}>
+        <AddHeader title="Movie list" icon={<MovieIcon fontSize="large" />} />
+
+        <Toolbar
+          sx={{
+            marginTop: 5,
+            marginBottom: 3,
+            display: "flex",
+            flexDirection: "row",
+            columnGap: 10,
+          }}
+        >
+          <SearchInput
+            label="Search movies by name"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            }}
+            onChange={handleSearch}
+          />
+          <Button
+            variant="outlined"
+            startIcon={<AddIcon />}
+            onClick={() => navigate("/movie_edit/0")}
+          >
+            Add new
+          </Button>
+        </Toolbar>
+
         <Table
           headCells={headCells}
           filterFn={filterFn}

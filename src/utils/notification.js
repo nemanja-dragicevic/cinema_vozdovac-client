@@ -7,3 +7,7 @@ export function error(message) {
 export function success(message) {
   toast.success(message, { closeOnClick: true, theme: "colored" });
 }
+
+export function warning(message) {
+  toast.warning(message, { closeOnClick: true, theme: "dark" });
+}
