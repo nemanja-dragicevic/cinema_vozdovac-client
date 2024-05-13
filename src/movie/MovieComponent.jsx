@@ -77,7 +77,10 @@ const MovieComponent = () => {
   useEffect(() => {
     if (genres.length > 0 && movies.length > 0) {
       const movie = movies.find((movie) => movie.movieID === parseInt(id));
-      const movieGenreIDs = movie.genres.map((genre) => genre.genreID);
+      const movieGenreIDs =
+        movie?.genres.length() > 0
+          ? movie.genres.map((genre) => genre.genreID)
+          : [];
       const updatedGenres = activeGenres(movieGenreIDs);
       setAllGenres(updatedGenres);
     }
@@ -124,7 +127,7 @@ const MovieComponent = () => {
           roleDTO: [],
         }
       : movies.find((movie) => movie.movieID === parseInt(id));
-
+  console.log(movie);
   const [allGenres, setAllGenres] = useState([]);
   const [allActors, setAllActors] = useState([]);
   const [openPopup, setOpenPopup] = useState(false);
@@ -393,7 +396,10 @@ const MovieComponent = () => {
           marginRight: 10,
         }}
       >
-        <AddHeader title="Edit a movie" icon={<MovieIcon fontSize="large" />} />
+        <AddHeader
+          title={id === "0" ? "Save a movie" : "Edit a movie"}
+          icon={<MovieIcon fontSize="large" />}
+        />
         <div
           style={{
             display: "flex",
