@@ -127,14 +127,42 @@ const ActorsPage = () => {
       return;
     }
     resetErrors();
+    console.log(data);
+    console.log(actors);
+    // if (
+    //   actors.filter(
+    //     (actor) =>
+    //       (actor.firstName === data.firstName &&
+    //         actor.lastName === data.lastName &&
+    //         actor.actorID === data.actorID &&
+    //         actor.gender === data.gender) ||
+    //       (actor.firstName === data.firstName &&
+    //         actor.lastName === data.lastName &&
+    //         actor.actorID !== data.actorID)
+    //   ).length > 0
+    // ) {
+    //   notifications.error("Actor already exists");
+    //   return;
+    // }
     if (
-      actors.filter(
-        (actor) =>
-          actor.firstName === data.firstName && actor.lastName === data.lastName
-      ).length > 0
+      (data.actorID === 0 &&
+        actors.filter(
+          (actor) =>
+            actor.firstName === data.firstName &&
+            actor.lastName === data.lastName
+        ).length > 0) ||
+      (data.actorID !== 0 &&
+        actors.filter(
+          (actor) =>
+            actor.actorID !== data.actorID &&
+            actor.firstName === data.firstName &&
+            actor.lastName === data.lastName
+        ).length > 0)
     ) {
-      notifications.error("Actor already exists");
-      return;
+      {
+        notifications.error("Actor already exists");
+        return;
+      }
     }
     if (data.actorID !== 0) dispatch(actorsActions.updateActor(data));
     else dispatch(actorsActions.saveActor(data));
