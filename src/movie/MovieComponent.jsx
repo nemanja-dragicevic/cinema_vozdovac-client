@@ -23,18 +23,28 @@ import "../styles/moviesTable.css";
 import AddHeader from "./../reusable/AddHeader";
 import Table from "../reusable/Table";
 import TableSearch from "../components/TableSearch";
+import { warning } from "../utils/notification";
 
 const schema = Joi.object({
   movieID: Joi.number().integer().min(0).required(),
   name: Joi.string().min(2).max(30).required().label("Movie name"),
-  duration: Joi.number().integer().min(30).required().label("Duration"),
-  description: Joi.string().min(2).max(30).required().label("Description"),
+  duration: Joi.number()
+    .integer()
+    .min(30)
+    .max(240)
+    .required()
+    .label("Duration"),
+  description: Joi.string().min(10).max(250).required().label("Description"),
   genres: Joi.array().items(Joi.object()).min(1).required().label("Genre"),
   startTime: Joi.required(),
   endTime: Joi.required(),
   smallPicture: Joi.string().required().label("Small picture"),
   bigPicture: Joi.string().required().label("Big picture"),
-  roleDTO: Joi.array().items(Joi.object()).min(1).required().label("Roles"),
+  roleDTO: Joi.array()
+    .items(Joi.object())
+    .min(1)
+    .required()
+    .label("Actor roles"),
 });
 
 const MovieComponent = () => {
@@ -87,6 +97,7 @@ const MovieComponent = () => {
     { id: "lastName", label: "Last name" },
     { id: "gender", label: "Gender", disableSorting: true },
   ];
+
   const [filterFn, setFilterFn] = useState({
     fn: (items) => {
       return items;
@@ -235,15 +246,38 @@ const MovieComponent = () => {
   };
 
   const handleSave = () => {
-    console.log(data);
-    // setConfirmDialog({ ...confirmDialog, isOpen: false });
+    // const { error } = schema.validate(data, { abortEarly: false });
+    const validation = schema.validate(data);
 
-    const { error } = schema.validate(data, { abortEarly: false });
+    console.log(validation);
 
-    if (!error) {
-      dispatch(moviesActions.editMovie(data, fileImages));
+    if (validation.error) {
+      const { details } = validation.error;
+      details.forEach((detail) => {
+        const errorMess = detail.message;
+        const field = detail.path[0];
+        if (field === "roleDTO") {
+          warning("Please select at least one actor");
+        } else if (field === "genres") {
+          warning("Please select at least one genre");
+        } else {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            [field]: { error: true, message: errorMess },
+          }));
+        }
+      });
+      return;
     } else {
-      console.log(error);
+      setConfirmDialog({
+        isOpen: true,
+        title: "Are you sure you want to save this movie?",
+        subTitle: "You can't undo this operation",
+        onConfirm: () => {
+          setConfirmDialog({ ...confirmDialog, isOpen: false });
+          dispatch(moviesActions.editMovie(data, fileImages));
+        },
+      });
     }
   };
 
@@ -392,16 +426,6 @@ const MovieComponent = () => {
           <Button
             variant="contained"
             color="primary"
-            // onClick={() => {
-            //   setConfirmDialog({
-            //     isOpen: true,
-            //     title: "Are you sure you want to save this movie?",
-            //     subTitle: "You can't undo this operation",
-            //     onConfirm: () => {
-            //       handleSave();
-            //     },
-            //   });
-            // }}
             onClick={handleSave}
             sx={{ width: "20%" }}
           >
