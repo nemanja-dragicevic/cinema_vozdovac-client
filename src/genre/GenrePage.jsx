@@ -11,10 +11,8 @@ import Popup from "../reusable/Popup";
 import GenreForm from "./GenreForm";
 
 const schema = Joi.object({
-    hallID: Joi.number().integer().min(0).required(),
-    hallName: Joi.string().min(2).max(30).required().label("Hall name"),
-    rowsCount: Joi.number().integer().min(1).required().label("Rows count"),
-    seatsPerRow: Joi.number().integer().min(1).required().label("Seats per row"),
+    genreID: Joi.number().integer().min(0).required(),
+    name: Joi.string().min(5).max(30).required().label("Genre name"),
   });
 
 const GenrePage = () => {
@@ -30,7 +28,7 @@ const GenrePage = () => {
 
     const initialFValues = {
         genreID: 0,
-        genreName: "",
+        name: "",
     };
     const headCells = [
         { id: "name", label: "Genre name" },
@@ -38,13 +36,14 @@ const GenrePage = () => {
 
     const [openPopup, setOpenPopup] = useState(false);
     const [data, setData] = useState(initialFValues);
+    const [errors, setErrors] = useState({
+        name: { error: false, message: "" },
+    });
     const [filterFn, setFilterFn] = useState({
         fn: (items) => {
           return items;
         },
       });
-
-    console.log(genres);
 
     const handleSearch = (e) => {
         let target = e.target;
@@ -60,13 +59,47 @@ const GenrePage = () => {
       };
 
       const setEditObj = (obj) => {
+        resetErrors();
         setData(obj);
         setOpenPopup(true);
       }
 
+      const resetErrors = () => {
+        setErrors({
+          name: { error: false, message: "" },
+        });
+      };
+
+      const handleChange = (name, value) => {
+        resetErrors();
+        setData({
+          ...data,
+          [name]: value,
+        });
+      };
+
       const handleDelete = (id) => {
             console.log("Delete genre with id: ", id);
             // genreActions.deleteGenre(id);
+        }
+
+        const handleSave = () => {
+            const { error } = schema.validate(data);
+
+            if (error) {
+              const { details } = error;
+              const field = details[0].path[0];
+              setErrors((prevErrors) => ({
+                  ...prevErrors,
+                  [field]: { error: true, message: details[0].message },
+              }));
+              return;
+            }
+            if (data.genreID === 0)
+              genreActions.addGenre(data);
+            else {
+              genreActions.updateGenre(data);
+            }
         }
 
     return ( 
@@ -92,7 +125,12 @@ const GenrePage = () => {
             />
             </Paper>
             <Popup title="Genre Form" openPopup={openPopup} setOpen={setOpenPopup}>
-                <GenreForm />
+                <GenreForm
+                    data={data} 
+                    error={errors}
+                    onSave={handleSave}
+                    onChange={handleChange}
+                />
             </Popup>
         </div>
      );

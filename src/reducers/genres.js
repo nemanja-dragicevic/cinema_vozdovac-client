@@ -13,6 +13,16 @@ const genresSlice = createSlice({
       state.genres = action.payload;
       state.error = undefined;
     },
+    saveGenre(state, action) {
+      state.genres.push(action.payload);
+      state.error = undefined;
+    },
+    updateGenre(state, action) {
+      state.genres = state.genres.map((genre) =>
+        genre.genreID === action.payload.genreID ? action.payload : genre
+      );
+      state.error = undefined;
+    },
     deleteGenre(state, action) {
       state.genres = state.genres.filter((genre) => genre.genreID !== action.payload);
       state.error = undefined;
