@@ -3,7 +3,7 @@ import SearchInput from "../reusable/SearchInput";
 import { Search } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
 
-const TableSearch = ({ handleSearch, searching }) => {
+const TableSearch = ({ handleSearch, searching, label }) => {
   return (
     <Toolbar
       sx={{
@@ -15,7 +15,7 @@ const TableSearch = ({ handleSearch, searching }) => {
       }}
     >
       <SearchInput
-        label="Search actors"
+        label={label}
         InputProps={{
           endAdornment: (
             <InputAdornment position="start">
