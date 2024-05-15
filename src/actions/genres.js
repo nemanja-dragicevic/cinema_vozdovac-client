@@ -21,3 +21,22 @@ export const getGenres = () => {
       });
   };
 };
+
+export const deleteGenre = (id) => {
+  return (dispatch) => {
+    dispatch(genresActions.actionStart());
+    return apiService
+      .delete(`${genresPath}/${id}`)
+      .then(() => {
+        dispatch(genresActions.deleteGenre(id));
+        notifications.success("Genre deleted successfully");
+      })
+      .catch((error) => {
+        if (error.response.status === 401) {
+          redirect401Error(error);
+        }
+        dispatch(genresActions.actionError(error?.response?.data));
+        notifications.error("Error while deleting genre");
+      });
+  };
+}
