@@ -13,6 +13,10 @@ const genresSlice = createSlice({
       state.genres = action.payload;
       state.error = undefined;
     },
+    deleteGenre(state, action) {
+      state.genres = state.genres.filter((genre) => genre.genreID !== action.payload);
+      state.error = undefined;
+    },
     actionStart(state) {
       state.error = undefined;
     },
