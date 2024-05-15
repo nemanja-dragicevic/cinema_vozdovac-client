@@ -3,7 +3,7 @@ import SearchInput from "../reusable/SearchInput";
 import { Search } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
 
-const TableSearch = ({ handleSearch, searching, label }) => {
+const TableSearch = ({ handleSearch, searching, label, onOpenPopup }) => {
   return (
     <Toolbar
       sx={{
@@ -29,7 +29,7 @@ const TableSearch = ({ handleSearch, searching, label }) => {
         <Button
           variant="outlined"
           startIcon={<AddIcon />}
-          // onClick={() => openAddActor()}
+          onClick={onOpenPopup}
         >
           Add new
         </Button>
