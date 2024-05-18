@@ -16,6 +16,7 @@ import ActorsPage from "./actor/ActorsPage";
 import MoviePage from "./movie/MoviePage";
 import MovieComponent from "./movie/MovieComponent";
 import GenrePage from "./genre/GenrePage";
+import ProjectionsPage from "./projections/ProjectionsPage";
 
 function App() {
   const [token, setToken] = useState(null);
@@ -42,6 +43,7 @@ function App() {
           <Route exact path="/hall" element={<HallPage />} />
           <Route exact path="/genre" element={<GenrePage />} />
           <Route exact path="/movie_edit/:id" element={<MovieComponent />} />
+          <Route exact path="/projections" element={<ProjectionsPage />} />
         </Routes>
       </div>
     </LocalizationProvider>
