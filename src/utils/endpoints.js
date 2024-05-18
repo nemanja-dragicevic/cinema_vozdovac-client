@@ -1,5 +1,6 @@
 // Movies
 export const moviesApi = `/api/movie`;
+export const allMovies = moviesApi + `/all`;
 export const moviesPath = `/api/movie/allWithAWS`;
 export const moviesPathID = (id) => `${moviesApi}/${id}`;
 

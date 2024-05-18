@@ -1,5 +1,10 @@
 import { moviesActions } from "../reducers/movies";
-import { moviesApi, moviesPath, moviesPathID } from "../utils/endpoints";
+import {
+  allMovies,
+  moviesApi,
+  moviesPath,
+  moviesPathID,
+} from "../utils/endpoints";
 import apiService from "./../utils/apiService";
 import * as notifications from "../utils/notification";
 
@@ -8,6 +13,24 @@ export const getMovies = () => {
     dispatch(moviesActions.actionStart());
     return apiService
       .get(moviesPath)
+      .then((response) => {
+        dispatch(moviesActions.fetchMovies(response.data));
+      })
+      .catch((error) => {
+        if (error.response.status === 401) {
+          localStorage.removeItem("token");
+        }
+        dispatch(moviesActions.actionError(error?.response?.data));
+        notifications.error();
+      });
+  };
+};
+
+export const getMoviesInfo = () => {
+  return (dispatch) => {
+    dispatch(moviesActions.actionStart());
+    return apiService
+      .get(allMovies)
       .then((response) => {
         dispatch(moviesActions.fetchMovies(response.data));
       })
