@@ -44,6 +44,12 @@ export const getMoviesInfo = () => {
   };
 };
 
+export const setMovie = (movie) => {
+  return (dispatch) => {
+    dispatch(moviesActions.setMovie(movie));
+  };
+};
+
 export const getMovie = (id) => {
   return (dispatch) => {
     dispatch(moviesActions.actionStart());
