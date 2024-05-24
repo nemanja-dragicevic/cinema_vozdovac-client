@@ -150,7 +150,7 @@ const MovieComponent = () => {
       checked: movieGenreIDs.includes(genre.genreID),
     }));
   };
-  console.log(data);
+
   const handleChange = (name, value) => {
     resetErrors();
     if (name === "roleName") {

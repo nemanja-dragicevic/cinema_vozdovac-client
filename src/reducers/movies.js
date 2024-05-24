@@ -13,6 +13,10 @@ const moviesSlice = createSlice({
       state.movies = action.payload;
       state.error = undefined;
     },
+    setMovie(state, action) {
+      state.movie = action.payload;
+      state.error = undefined;
+    },
     addMovie(state, action) {
       state.movies = [action.payload].concat(state.movies);
       state.error = undefined;
