@@ -13,7 +13,7 @@ import Input from "../registration/Input";
 import Popup from "../reusable/Popup";
 import ProjectionTimes from "./ProjectionTimes";
 
-const Projections = () => {
+const ProjectionsOld = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -196,9 +196,98 @@ const Projections = () => {
           title={"Select a hall and dates for movie " + movie?.name}
           icon={<TheatersIcon fontSize="large" />}
         />
+        <div style={{ display: "flex", columnGap: "20px" }}>
+          <DatePicker
+            label="Start date"
+            name="startTime"
+            sx={{ marginTop: "20px", width: "250px" }}
+            format="D/MM/YYYY"
+            disabled={new dayjs(data.movie.startTime) < new dayjs()}
+            value={new dayjs(data?.movie.startTime)}
+            onChange={handleDateChange("startTime")}
+            minDate={
+              data.movie.startTime ? new dayjs(data.movie.startTime) : null
+            }
+          />
+          <DatePicker
+            label="End date"
+            name="endTime"
+            sx={{ marginTop: "20px", width: "250px" }}
+            format="D/MM/YYYY"
+            disabled={new dayjs(data.movie.endTime) < new dayjs()}
+            value={new dayjs(data?.movie.endTime)}
+          />
+          <Input
+            label="Price"
+            name="price"
+            value={data.price}
+            onChange={handleChange}
+            type="number"
+            sx={{ marginTop: "20px", width: "250px" }}
+            error={errors.price}
+          />
+        </div>
+        <TableSearch
+          label="Select a hall"
+          searching={true}
+          handleSearch={handleSearch}
+        />
+        <Table
+          data={tableHalls}
+          filterFn={filterFn}
+          objectKey="hallID"
+          fields={fields}
+          headCells={headCells}
+          selection={true}
+          setEditObj={handleHallSelection}
+        />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            columnGap: "20px",
+          }}
+        >
+          <Button variant="contained" sx={{ marginTop: "20px" }}>
+            Add projection
+          </Button>
+          <Button
+            variant="outlined"
+            sx={{ marginTop: "20px" }}
+            onClick={handleReset}
+          >
+            Reset
+          </Button>
+          <Button
+            variant="outlined"
+            sx={{ marginTop: "20px" }}
+            onClick={() => {
+              navigate("/projections");
+            }}
+          >
+            Cancel
+          </Button>
+        </div>
       </Paper>
+      <Popup
+        title="Select times for projection"
+        openPopup={popup}
+        setOpen={setPopup}
+      >
+        <ProjectionTimes
+          hallID={data.hall}
+          duration={movie.duration}
+          onCheckAvailability={handleCheckAvailability}
+          errors={errors.time}
+          handleTimeChange={handleTimeChange}
+          rangeTime={rangeTime}
+          shouldDisableTime={shouldDisableTime}
+        />
+      </Popup>
     </div>
   );
 };
 
-export default Projections;
+export default ProjectionsOld;
