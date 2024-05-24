@@ -18,6 +18,7 @@ import MovieComponent from "./movie/MovieComponent";
 import GenrePage from "./genre/GenrePage";
 import ProjectionsPage from "./projections/ProjectionsPage";
 import Projections from "./projections/Projections";
+import UserSettings from "./member/UserSetings";
 
 function App() {
   const [token, setToken] = useState(null);
@@ -46,6 +47,7 @@ function App() {
           <Route exact path="/movie_edit/:id" element={<MovieComponent />} />
           <Route exact path="/projections" element={<ProjectionsPage />} />
           <Route exact path="/projections/:id" element={<Projections />} />
+          <Route exact path="/settings" element={<UserSettings />} />
         </Routes>
       </div>
     </LocalizationProvider>
