@@ -9,12 +9,21 @@ import Input from "./Input";
 import * as membersActions from "../actions/members";
 import "../styles/style.css";
 import "../styles/register.css";
+import PersonIcon from "@mui/icons-material/Person";
 import { error } from "./../utils/notification";
+import AddHeader from "./../reusable/AddHeader";
+
+const div_style = { display: "flex", flexDirection: "row", columnGap: 15 };
 
 const schema_login = Joi.object({
   username: Joi.string().min(3).max(30).required().label("Username"),
   password: Joi.string()
     .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
+    .messages({
+      "string.pattern.base":
+        "Password must be 3-30 characters long and " +
+        "contain only letters and numbers.",
+    })
     .label("Password"),
 });
 
@@ -23,8 +32,8 @@ const schema = Joi.object({
   password: Joi.string()
     .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
     .label("Password"),
-  firstName: Joi.string().min(3).max(30).required(),
-  lastName: Joi.string().min(3).max(30).required(),
+  firstName: Joi.string().min(2).max(30).required().label("First name"),
+  lastName: Joi.string().min(3).max(30).required().label("Last name"),
   email: Joi.string().email({
     minDomainSegments: 2,
     tlds: { allow: ["com", "net"] },
@@ -57,7 +66,7 @@ const Register = () => {
     lastName: "",
     email: "",
     gender: "Male",
-    birthDate: dayjs(),
+    birthDate: null,
   };
 
   const [data, setData] = useState(initialData);
@@ -72,29 +81,63 @@ const Register = () => {
   }, []);
 
   const handleInputChange = (name, value) => {
+    resetRegisterErrors();
     setData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
 
+  const resetRegisterErrors = () => {
+    setErrors({
+      username: { error: false, message: "" },
+      password: { error: false, message: "" },
+      firstName: { error: false, message: "" },
+      lastName: { error: false, message: "" },
+      email: { error: false, message: "" },
+    });
+  };
+
   const handleSignIn = () => {
-    const { error } = schema_login.validate({
+    const validate = schema_login.validate({
       username: data.username,
       password: data.password,
     });
-    if (error === undefined) {
+    console.log(validate);
+    if (validate.error) {
+      const { details } = validate.error;
+      const error = details[0].message;
+      const field = details[0].path[0];
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [field]: { error: true, message: error },
+      }));
+    } else {
       const sendData = { ...data };
       sendData.birthDate = null;
       sendData.gender = null;
       dispatch(membersActions.login(sendData));
-    } else {
     }
   };
 
   const handleSignUp = () => {
-    const { error } = schema.validate(data);
-    if (error === undefined) {
+    const validate = schema.validate(data);
+
+    if (validate.error) {
+      const { details } = validate.error;
+      const error = details[0].message;
+      const field = details[0].path[0];
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [field]: { error: true, message: error },
+      }));
+    } else if (data.birthDate === null) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        birthDate: { error: true, message: "Birth date is required" },
+      }));
+      error("Birth date is required");
+    } else {
       const sendData = { ...data };
       sendData.gender = data.gender.toUpperCase();
       sendData.birthDate = new Date(data.birthDate["$d"])
@@ -106,6 +149,7 @@ const Register = () => {
         .split("/")
         .reverse()
         .join("-"); //.replace(/\//g, '-');
+      console.log(sendData);
       dispatch(membersActions.register(sendData));
     }
   };
@@ -144,74 +188,94 @@ const Register = () => {
 
   const resetData = () => {
     setData(initialData);
+    resetRegisterErrors();
   };
 
   return (
     <div className="big_container">
       <div className="container" id="container">
         <div className="form-container sign-up-container">
-          <form onSubmit={handleSubmit}>
+          <form
+            onSubmit={handleSubmit}
+            style={{ display: "flex", flexDirection: "column", rowGap: 10 }}
+          >
+            <AddHeader
+              title="User information"
+              icon={<PersonIcon fontSize="large" />}
+            />
             {/* <h2>Create Account</h2> */}
-            <Input
-              password={false}
-              name="firstName"
-              value={data.firstName}
-              onChange={handleInputChange}
-              label="First name"
-              error={errors.firstName}
-            />
-            <Input
-              password={false}
-              name="lastName"
-              value={data.lastName}
-              onChange={handleInputChange}
-              label="Last name"
-              error={errors.lastName}
-            />
-            <Input
-              password={false}
-              name="email"
-              value={data.email}
-              onChange={handleInputChange}
-              label="Email"
-              error={errors.email}
-            />
-            <InputLabel id="demo-simple-select-standard-label">
-              Gender
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-helper-label"
-              id="demo-simple-select-helper"
-              value={data.gender}
-              label="Gender"
-              onChange={handleGender}
-              size="small"
-            >
-              <MenuItem value={"Male"}>Male</MenuItem>
-              <MenuItem value={"Female"}>Female</MenuItem>
-            </Select>
+            <div style={{ ...div_style, marginTop: 15 }}>
+              <Input
+                password={false}
+                name="firstName"
+                value={data.firstName}
+                onChange={handleInputChange}
+                label="First name"
+                error={errors.firstName}
+                sx={{ width: 150 }}
+              />
+              <Input
+                password={false}
+                name="lastName"
+                value={data.lastName}
+                onChange={handleInputChange}
+                label="Last name"
+                error={errors.lastName}
+                sx={{ width: 150 }}
+              />
+            </div>
+            <div style={div_style}>
+              <Input
+                password={false}
+                name="email"
+                value={data.email}
+                onChange={handleInputChange}
+                label="Email"
+                error={errors.email}
+              />
+              {/* <InputLabel id="demo-simple-select-standard-label"></InputLabel> */}
+              <Select
+                labelId="demo-simple-select-helper-label"
+                id="demo-simple-select-helper"
+                value={data.gender}
+                label="Gender"
+                onChange={handleGender}
+                size="small"
+              >
+                <MenuItem value={"Male"}>Male</MenuItem>
+                <MenuItem value={"Female"}>Female</MenuItem>
+              </Select>
+            </div>
             <DatePicker
               disableFuture
               maxDate={maxDate}
               onChange={handleDateChange}
               format="D/MM/YYYY"
+              label="Birth Date"
+              value={data.birthDate}
             />
-            <Input
-              password={false}
-              name="username"
-              value={data.username}
-              onChange={handleInputChange}
-              label="Username"
-              error={errors.username}
-            />
-            <Input
-              password={true}
-              value={data.password}
-              name="password"
-              onChange={handleInputChange}
-              error={errors.password}
-            />
-            <button onClick={handleSignUp}>Sign Up</button>
+            <div style={div_style}>
+              <Input
+                password={false}
+                name="username"
+                value={data.username}
+                onChange={handleInputChange}
+                label="Username"
+                error={errors.username}
+                sx={{ width: 150 }}
+              />
+              <Input
+                password={true}
+                value={data.password}
+                name="password"
+                onChange={handleInputChange}
+                error={errors.password}
+                sx={{ width: 150 }}
+              />
+            </div>
+            <button style={{ marginTop: 10 }} onClick={handleSignUp}>
+              Sign Up
+            </button>
           </form>
         </div>
         <div className="form-container sign-in-container">
