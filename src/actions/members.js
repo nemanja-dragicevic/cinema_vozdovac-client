@@ -1,5 +1,5 @@
 import { membersActions } from "../reducers/member";
-import { loginPath, registerPath } from "../utils/endpoints";
+import { loginPath, membersPath, registerPath } from "../utils/endpoints";
 import apiService from "./../utils/apiService";
 import * as notifications from "../utils/notification";
 
@@ -31,6 +31,23 @@ export const register = (data) => {
         sessionStorage.setItem("user", JSON.stringify(response.data));
         dispatch(membersActions.fetchMember(response.data));
         notifications.success("Successfully registered");
+      })
+      .catch((error) => {
+        dispatch(membersActions.actionError(error?.response?.data));
+        notifications.error(error?.response?.data);
+      });
+  };
+};
+
+export const updateProfile = (data) => {
+  return (dispatch) => {
+    dispatch(membersActions.actionStart());
+    return apiService
+      .put(membersPath, { ...data })
+      .then((response) => {
+        sessionStorage.setItem("user", JSON.stringify(response.data));
+        dispatch(membersActions.fetchMember(response.data));
+        notifications.success("Successfully updated profile");
       })
       .catch((error) => {
         dispatch(membersActions.actionError(error?.response?.data));
