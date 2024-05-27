@@ -55,3 +55,18 @@ export const updateProfile = (data) => {
       });
   };
 };
+
+export const changePassword = (data) => {
+  return (dispatch) => {
+    dispatch(membersActions.actionStart());
+    return apiService
+      .put(`${membersPath}/change-pass`, { ...data })
+      .then(() => {
+        notifications.success("Successfully changed password");
+      })
+      .catch((error) => {
+        dispatch(membersActions.actionError(error?.response?.data));
+        notifications.error(error?.response?.data);
+      });
+  };
+};
