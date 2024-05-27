@@ -292,6 +292,7 @@ const Register = () => {
             <Input
               password={true}
               value={data.password}
+              label="Password"
               name="password"
               onChange={handleInputChange}
               error={errors.password}

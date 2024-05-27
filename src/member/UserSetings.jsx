@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import Joi from "joi";
 import EditProfile from "./EditProfile";
@@ -35,31 +35,54 @@ const UserSettings = () => {
     lastName: { error: false, message: "" },
     email: { error: false, message: "" },
     username: { error: false, message: "" },
-    password: { error: false, message: "" },
+    oldPassword: { error: false, message: "" },
+    newPassword: { error: false, message: "" },
+    confirmNewPassword: { error: false, message: "" },
   });
 
   const [data, setData] = useState(member);
   const [openEdit, setOpenEdit] = useState(false);
   const [changePassword, setChangePassword] = useState(false);
+  const [editPassword, setEditPassword] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmNewPassword: "",
+  });
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     title: "",
     subTitle: "",
   });
 
+  useEffect(() => {
+    if (!openEdit) setData(member);
+    resetErrors();
+  }, [openEdit, changePassword]);
+
   const handleChange = (name, value) => {
     resetErrors();
-    setData((prev) => {
-      return {
+
+    if (
+      name === "oldPassword" ||
+      name === "newPassword" ||
+      name === "confirmNewPassword"
+    ) {
+      setEditPassword((prev) => ({
         ...prev,
         [name]: value,
-      };
-    });
+      }));
+    } else {
+      setData((prev) => {
+        return {
+          ...prev,
+          [name]: value,
+        };
+      });
+    }
   };
 
   const handleDateChange = (date) => {
     resetErrors();
-    console.log(date);
 
     if (date === null) {
       setData((prevData) => ({
@@ -107,7 +130,9 @@ const UserSettings = () => {
       lastName: { error: false, message: "" },
       email: { error: false, message: "" },
       username: { error: false, message: "" },
-      password: { error: false, message: "" },
+      oldPassword: { error: false, message: "" },
+      newPassword: { error: false, message: "" },
+      confirmNewPassword: { error: false, message: "" },
     });
   };
 
@@ -123,6 +148,48 @@ const UserSettings = () => {
     // localStorage.removeItem("token");
     // window.location = "/register";
     setMember(member);
+  };
+
+  const handleChangePassword = () => {
+    const { oldPassword, newPassword, confirmNewPassword } = editPassword;
+
+    const validate = Joi.object({
+      oldPassword: Joi.string().min(5).required().label("Old Password"),
+      newPassword: Joi.string().min(5).required().label("New Password"),
+      confirmNewPassword: Joi.string()
+        .min(5)
+        .required()
+        .valid(Joi.ref("newPassword"))
+        .label("Confirm New Password")
+        .messages({ "any.only": "{{#label}} does not match" }),
+    }).validate(editPassword, { abortEarly: false });
+
+    if (validate.error) {
+      const { details } = validate.error;
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [details[0].path[0]]: { error: true, message: details[0].message },
+      }));
+    } else if (oldPassword === newPassword) {
+      error("New password is the same as the old password");
+    } else {
+      setConfirmDialog({
+        isOpen: true,
+        title: "Are you sure you want to change your password?",
+        subTitle: "You can't undo this operation",
+        onConfirm: () => {
+          setConfirmDialog({ ...confirmDialog, isOpen: false });
+          dispatch(
+            userActions.changePassword({
+              member: data,
+              oldPassword,
+              newPassword,
+            })
+          );
+          setChangePassword(false);
+        },
+      });
+    }
   };
 
   const handleSave = () => {
@@ -172,7 +239,7 @@ const UserSettings = () => {
           <button className="blue-btn" onClick={() => setOpenEdit(true)}>
             Edit profile
           </button>
-          <button className="blue-btn" onClick={() => setChangePassword(true)}>
+          <button className="green-btn" onClick={() => setChangePassword(true)}>
             Change password
           </button>
           <button
@@ -212,7 +279,11 @@ const UserSettings = () => {
         setOpen={setChangePassword}
         title="Change password"
       >
-        <ChangePassword />
+        <ChangePassword
+          errors={errors}
+          onChange={handleChange}
+          onChangePassword={handleChangePassword}
+        />
       </Popup>
     </div>
   );
