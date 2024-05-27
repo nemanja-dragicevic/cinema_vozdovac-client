@@ -100,6 +100,29 @@
   transition: all 0.5s;
 }
 
+.green-btn {
+    width: 200px;
+    height: 50px;
+    margin: 15px;
+    background: rgb(255, 0, 0);
+    background: rgb(131, 58, 180);
+    background: linear-gradient(
+      90deg,
+      rgb(133, 180, 58) 0%,
+      rgb(29, 145, 253) 50%,
+      rgb(69, 81, 252) 100%
+    );
+    color: white;
+    border: none;
+    border-radius: 0.625em;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+}
+
 .red-btn {
   width: 200px;
   height: 50px;

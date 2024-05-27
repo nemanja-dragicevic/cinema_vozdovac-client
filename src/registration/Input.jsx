@@ -11,7 +11,7 @@ const Input = ({ password, name, label, value, onChange, error, ...rest }) => {
       name={name}
       onChange={handleChange}
       value={value}
-      label={password ? "Password" : label}
+      label={label}
       variant="filled"
       error={error.error}
       helperText={error.message ? error.message : ""}
