@@ -70,3 +70,23 @@ export const changePassword = (data) => {
       });
   };
 };
+
+export const deleteProfile = (id) => {
+  return (dispatch) => {
+    dispatch(membersActions.actionStart());
+    return apiService
+      .delete(`${membersPath}/${id}`)
+      .then(() => {
+        sessionStorage.removeItem("user");
+        localStorage.removeItem("token");
+        notifications.success("Successfully deleted profile");
+        setTimeout(() => {
+          window.location = "/register";
+        }, 1000);
+      })
+      .catch((error) => {
+        dispatch(membersActions.actionError(error?.response?.data));
+        notifications.error(error?.response?.data);
+      });
+  };
+};

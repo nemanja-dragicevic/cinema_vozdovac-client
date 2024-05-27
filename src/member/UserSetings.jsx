@@ -143,11 +143,7 @@ const UserSettings = () => {
   };
 
   const handleDelete = () => {
-    console.log("Delete profile");
-    // sessionStorage.removeItem("user");
-    // localStorage.removeItem("token");
-    // window.location = "/register";
-    setMember(member);
+    dispatch(userActions.deleteProfile(data.memberID));
   };
 
   const handleChangePassword = () => {
