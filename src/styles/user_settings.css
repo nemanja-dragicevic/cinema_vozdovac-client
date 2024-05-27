@@ -1,0 +1,147 @@
+.user_card {
+  display: flex;
+  flex-direction: column;
+  /* align-items: center;
+  justify-content: space-around; */
+  width: 50%;
+  margin-top: 100px;
+  margin-left: auto;
+  margin-right: auto;
+  cursor: pointer;
+  box-shadow: 0 10px 15px -3px rgba(33,150,243,.4),0 4px 6px -4px rgba(33,150,243,.4);
+  border-radius: 10px;
+  background-color: #6B6ECC;
+  background: linear-gradient(45deg, #04051dea 0%, #2b566e 100%);
+}
+
+.user_title {
+  text-align: center;
+}
+
+.user_content {
+  padding: 20px;
+}
+
+.user_content .user_fullname {
+  color: white;
+  text-align: center;
+  font-weight: 800;
+  font-size: 50px;
+  text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.42);
+}
+
+.user_content .user_description {
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 10px;
+  font-size: 18px;
+}
+
+.user_content .user_title {
+  font-weight: 800;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.64);
+  margin-top: 10px;
+  font-size: 25px;
+  letter-spacing: 1px;
+}
+
+.gender {
+  text-transform: capitalize;
+}
+
+/* Button */
+
+.user-events {
+  text-align: center;
+}
+
+.blue-btn {
+  width: 200px;
+  height: 50px;
+  margin: 15px;
+  background: rgb(0, 8, 144);
+  background: linear-gradient(
+    90deg,
+    rgba(0, 8, 144, 1) 0%,
+    rgba(16, 0, 255, 1) 22%,
+    rgba(86, 255, 247, 1) 100%
+  );
+  color: white;
+  border: none;
+  border-radius: 0.625em;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.blue-btn:hover, .red-btn:hover {
+  color: rgb(0, 0, 0);
+}
+
+.blue-btn:after, .red-btn:after {
+  content: "";
+  background: white;
+  position: absolute;
+  z-index: -1;
+  left: -20%;
+  right: -20%;
+  top: 0;
+  bottom: 0;
+  transform: skewX(-45deg) scale(0, 1);
+  transition: all 0.5s;
+}
+
+.blue-btn:hover:after {
+  transform: skewX(-45deg) scale(1, 1);
+  -webkit-transition: all 0.5s;
+  transition: all 0.5s;
+}
+
+.green-btn {
+    width: 200px;
+    height: 50px;
+    margin: 15px;
+    background: rgb(255, 0, 0);
+    background: rgb(131, 58, 180);
+    background: linear-gradient(
+      90deg,
+      rgb(133, 180, 58) 0%,
+      rgb(29, 145, 253) 50%,
+      rgb(69, 81, 252) 100%
+    );
+    color: white;
+    border: none;
+    border-radius: 0.625em;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.red-btn {
+  width: 200px;
+  height: 50px;
+  margin: 15px;
+  background: rgb(255, 0, 0);
+  background: rgb(131, 58, 180);
+  background: linear-gradient(
+    90deg,
+    rgba(131, 58, 180, 1) 0%,
+    rgba(253, 29, 29, 1) 50%,
+    rgba(252, 176, 69, 1) 100%
+  );
+  color: white;
+  border: none;
+  border-radius: 0.625em;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}

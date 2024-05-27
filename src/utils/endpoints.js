@@ -10,6 +10,9 @@ export const genresPath = `/api/genre`;
 export const registerPath = `/api/members/register`;
 export const loginPath = `/api/members/login`;
 
+// Members
+export const membersPath = `/api/members`;
+
 // Roles
 export const movieRolesPath = (movieID) => `/api/role/${movieID}`;
 

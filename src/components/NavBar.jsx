@@ -86,6 +86,13 @@ const NavBar = () => {
               </NavLink>
             ) : null}
           </li>
+          <li className="nav-item">
+            {role === "USER" ? (
+              <NavLink className="nav-link" to="/settings">
+                User settings
+              </NavLink>
+            ) : null}
+          </li>
           {!sessionStorage.getItem("user") ? (
             <li className="nav-item">
               <NavLink className="nav-link" to="/register">
