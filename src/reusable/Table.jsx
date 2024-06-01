@@ -43,6 +43,10 @@ const Table = ({
     onDelete(id);
   };
 
+  const getNestedProperty = (obj, path) => {
+    return path.split(".").reduce((acc, part) => acc && acc[part], obj);
+  };
+
   return (
     <>
       <ThemeProvider theme={theme}>
@@ -57,7 +61,8 @@ const Table = ({
                       ? item[field]
                           .map((arrayItem) => arrayItem.name)
                           .join(", ")
-                      : item[field]}
+                      : //: item[field]}
+                        getNestedProperty(item, field)}
                   </TableCell>
                 ))}
                 <TableCell>
