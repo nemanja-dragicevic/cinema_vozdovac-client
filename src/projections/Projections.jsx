@@ -12,13 +12,14 @@ import dayjs from "dayjs";
 import Input from "../registration/Input";
 import Popup from "../reusable/Popup";
 import ProjectionTimes from "./ProjectionTimes";
+import * as projectionsActions from "../actions/projections";
 
 const Projections = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { halls } = useSelector((state) => state.hallReducer);
   const { movie } = useSelector((state) => state.moviesReducer);
+  const { projections } = useSelector((state) => state.projectionsReducer);
 
   const initialFValues = {
     movie: movie,
@@ -28,24 +29,25 @@ const Projections = () => {
   };
 
   useEffect(() => {
-    dispatch(hallActions.getHalls());
+    // dispatch(hallActions.getHalls());
+    dispatch(projectionsActions.getProjectionsForMovieID(movie?.movieID));
   }, [dispatch]);
-
-  useEffect(() => {
-    if (halls.length > 0) {
-      setTableHalls(
-        halls.map((hall) => {
-          return {
-            hallID: hall.hallID,
-            hallName: hall.hallName,
-            rowsCount: hall.rowsCount,
-            seatsPerRow: hall.seatsPerRow,
-            checked: false,
-          };
-        })
-      );
-    }
-  }, [halls]);
+  console.log(projections);
+  // useEffect(() => {
+  //   if (halls.length > 0) {
+  //     setTableHalls(
+  //       halls.map((hall) => {
+  //         return {
+  //           hallID: hall.hallID,
+  //           hallName: hall.hallName,
+  //           rowsCount: hall.rowsCount,
+  //           seatsPerRow: hall.seatsPerRow,
+  //           checked: false,
+  //         };
+  //       })
+  //     );
+  //   }
+  // }, [halls]);
 
   const fields = ["hallName", "rowsCount", "seatsPerRow"];
   const headCells = [
@@ -193,7 +195,7 @@ const Projections = () => {
         }}
       >
         <AddHeader
-          title={"Select a hall and dates for movie " + movie?.name}
+          title={"Projections for movie " + movie?.name}
           icon={<TheatersIcon fontSize="large" />}
         />
       </Paper>

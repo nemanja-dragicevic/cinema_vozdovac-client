@@ -23,3 +23,6 @@ export const actorWithId = (actorID) => actorsPath + `/${actorID}`;
 
 // Halls
 export const hallsPath = `/api/hall`;
+
+// Projections
+export const projectionsPath = `/api/projection`;
