@@ -5,6 +5,7 @@ import rolesReducer from "./roles";
 import actorsReducer from "./actors";
 import hallReducer from "./hall";
 import genresReducer from "./genres";
+import projectionsReducer from "./projections";
 // import { thunk } from "redux-thunk";
 
 const store = configureStore({
@@ -15,6 +16,7 @@ const store = configureStore({
     actorsReducer,
     hallReducer,
     genresReducer,
+    projectionsReducer,
   },
 });
 
