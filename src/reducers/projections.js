@@ -9,7 +9,7 @@ const projectionsSlice = createSlice({
   },
 
   reducers: {
-    fetchMovies(state, action) {
+    fetchProjections(state, action) {
       state.projections = action.payload;
       state.error = undefined;
     },
