@@ -13,8 +13,10 @@ const projectionsSlice = createSlice({
       state.projections = action.payload;
       state.error = undefined;
     },
-    setMovie(state, action) {
-      state.movie = action.payload;
+    setProjection(state, action) {
+      state.projection = state.projections.find(
+        (projection) => projection.id === action.payload
+      );
       state.error = undefined;
     },
     addMovie(state, action) {

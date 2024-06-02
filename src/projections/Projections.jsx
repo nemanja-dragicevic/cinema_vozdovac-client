@@ -3,22 +3,21 @@ import { DatePicker } from "@mui/x-date-pickers";
 import TheatersIcon from "@mui/icons-material/Theaters";
 import Table from "../reusable/Table";
 import { useEffect, useState } from "react";
-import TableSearch from "../components/TableSearch";
 import * as hallActions from "../actions/hall";
 import { useDispatch, useSelector } from "react-redux";
 import AddHeader from "../reusable/AddHeader";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
-import Input from "../registration/Input";
-import Popup from "../reusable/Popup";
-import ProjectionTimes from "./ProjectionTimes";
 import * as projectionsActions from "../actions/projections";
+import Popup from "../reusable/Popup";
 
 const Projections = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const searchDate = new Date();
+  const [searchDate, setSearchDate] = useState(
+    new dayjs().add(1, "day").toDate()
+  );
 
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -30,28 +29,9 @@ const Projections = () => {
   const { projections } = useSelector((state) => state.projectionsReducer);
 
   useEffect(() => {
-    dispatch(
-      projectionsActions.getProjectionsForMovieID(formatDate(searchDate))
-    );
-  }, [dispatch]);
-
-  console.log(projections);
-
-  // useEffect(() => {
-  //   if (halls.length > 0) {
-  //     setTableHalls(
-  //       halls.map((hall) => {
-  //         return {
-  //           hallID: hall.hallID,
-  //           hallName: hall.hallName,
-  //           rowsCount: hall.rowsCount,
-  //           seatsPerRow: hall.seatsPerRow,
-  //           checked: false,
-  //         };
-  //       })
-  //     );
-  //   }
-  // }, [halls]);
+    const formattedDate = formatDate(searchDate);
+    dispatch(projectionsActions.getProjectionsForMovieID(formattedDate));
+  }, [dispatch, searchDate]);
 
   const fields = [
     "movie.name",
@@ -97,29 +77,14 @@ const Projections = () => {
     setData({ ...data, [name]: value });
   };
 
-  const handleDateChange = (name) => (value) => {
-    setData({
-      ...data,
-      movie: { ...data.movie, name: dayjs(value).format("D/MM/YYYY") },
-    });
+  const handleDateChange = (value) => {
+    setSearchDate(value.toDate());
   };
 
   const handleHallSelection = (e) => {
     const { value, checked } = e.target;
-    console.log(value);
-    console.log(checked);
-
     if (checked) {
       setData({ ...data, hall: value });
-      // setTableHalls(
-      //   tableHalls.map((hall) => {
-      //     if (hall.hallID === parseInt(value)) {
-      //       return { ...hall, checked: true };
-      //     } else {
-      //       return { ...hall, checked: false };
-      //     }
-      //   })
-      // );
       setPopup(true);
     } else {
       setData({ ...data, hall: 0 });
@@ -143,7 +108,6 @@ const Projections = () => {
 
   const handleReset = () => {
     resetErrors();
-    // setData(initialFValues);
   };
 
   const handleCheckAvailability = () => {
@@ -157,7 +121,6 @@ const Projections = () => {
 
   const parseTime = (timeString) => dayjs(timeString, "HH:mm");
 
-  // Function to generate a list of disabled times
   const generateDisabledTimes = (rangeTime) => {
     let disabledTimes = [];
     rangeTime.forEach((range) => {
@@ -174,7 +137,6 @@ const Projections = () => {
 
   const disabledTimes = generateDisabledTimes(rangeTime);
 
-  // Function to check if a given time should be disabled
   const shouldDisableTime = (timeValue, clockType) => {
     if (clockType === "hours") return false;
     const formattedTime = timeValue.format("HH:mm");
@@ -183,7 +145,6 @@ const Projections = () => {
 
   const handleTimeChange = (name) => (value) => {
     const formattedTime = value.format("HH:mm");
-    console.log(formattedTime);
     if (disabledTimes.includes(formattedTime)) {
       setErrors({
         ...errors,
@@ -195,6 +156,18 @@ const Projections = () => {
         [name]: { error: false, message: "" },
       });
     }
+  };
+
+  const handleEdit = (item) => {
+    dispatch(projectionsActions.setProjection(item.id));
+    navigate("/projection_edit/" + item.id);
+    // setData(item);
+    // navigate("/movie_edit/" + item.movieID);
+  };
+
+  const handleDelete = (id) => {
+    console.log(id);
+    // dispatch(projectionsActions.deleteProjection(id));
   };
 
   return (
@@ -212,13 +185,22 @@ const Projections = () => {
         />
 
         <div style={{ marginTop: "50px" }}>
+          <DatePicker
+            minDate={new dayjs().add(1, "day")}
+            value={dayjs(searchDate)}
+            onChange={(newValue) => handleDateChange(newValue)}
+            sx={{ marginBottom: "20px" }}
+            label="Select projections date"
+          />
           <Table
             data={projections}
             headCells={headCells}
             fields={fields}
-            objectKey={"projectID"}
-            selection={true}
+            objectKey={"id"}
+            selection={false}
             filterFn={filterFn}
+            onDelete={handleDelete}
+            setEditObj={handleEdit}
           />
         </div>
 
@@ -230,6 +212,13 @@ const Projections = () => {
           Add projection
         </Button>
       </Paper>
+      <Popup
+        title="Check availability"
+        openPopup={popup}
+        setOpenPopup={setPopup}
+      >
+        <h1>Check availability</h1>
+      </Popup>
     </div>
   );
 };

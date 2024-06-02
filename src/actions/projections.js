@@ -19,3 +19,9 @@ export const getProjectionsForMovieID = (date) => {
       });
   };
 };
+
+export const setProjection = (id) => {
+  return (dispatch) => {
+    dispatch(projectionsActions.setProjection(id));
+  };
+};

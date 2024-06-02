@@ -54,7 +54,7 @@ const Table = ({
           <TblHead />
           <TableBody>
             {dataAfterPagingAndSorting().map((item) => (
-              <TableRow objectKey={item[objectKey]}>
+              <TableRow key={item[objectKey]}>
                 {fields.map((field) => (
                   <TableCell key={field}>
                     {Array.isArray(item[field])
