@@ -4,11 +4,11 @@ import { redirect401Error } from "../utils/redirect401Error";
 import { projectionsActions } from "./../reducers/projections";
 import { projectionsPath } from "./../utils/endpoints";
 
-export const getProjectionsForMovieID = (movieID) => {
+export const getProjectionsForMovieID = (date) => {
   return (dispatch) => {
     dispatch(projectionsActions.actionStart());
     return apiService
-      .get(projectionsPath + "/" + movieID)
+      .get(projectionsPath + "/" + date)
       .then((response) => {
         dispatch(projectionsActions.fetchProjections(response.data));
       })

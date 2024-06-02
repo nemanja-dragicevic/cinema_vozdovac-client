@@ -45,8 +45,8 @@ function App() {
           <Route exact path="/hall" element={<HallPage />} />
           <Route exact path="/genre" element={<GenrePage />} />
           <Route exact path="/movie_edit/:id" element={<MovieComponent />} />
-          <Route exact path="/projections" element={<ProjectionsPage />} />
-          <Route exact path="/projections/:id" element={<Projections />} />
+          <Route exact path="/projections" element={<Projections />} />
+          {/* <Route exact path="/projections/:id" element={<Projections />} /> */}
           <Route exact path="/settings" element={<UserSettings />} />
         </Routes>
       </div>

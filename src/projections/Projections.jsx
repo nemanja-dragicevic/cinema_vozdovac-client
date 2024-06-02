@@ -18,21 +18,25 @@ const Projections = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { movie } = useSelector((state) => state.moviesReducer);
-  const { projections } = useSelector((state) => state.projectionsReducer);
+  const searchDate = new Date();
 
-  const initialFValues = {
-    movie: movie,
-    hall: 0,
-    projectionTime: [],
-    price: 0,
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   };
 
+  const { projections } = useSelector((state) => state.projectionsReducer);
+
   useEffect(() => {
-    // dispatch(hallActions.getHalls());
-    dispatch(projectionsActions.getProjectionsForMovieID(movie?.movieID));
+    dispatch(
+      projectionsActions.getProjectionsForMovieID(formatDate(searchDate))
+    );
   }, [dispatch]);
+
   console.log(projections);
+
   // useEffect(() => {
   //   if (halls.length > 0) {
   //     setTableHalls(
@@ -49,15 +53,23 @@ const Projections = () => {
   //   }
   // }, [halls]);
 
-  const fields = ["hallName", "rowsCount", "seatsPerRow"];
+  const fields = [
+    "movie.name",
+    "hall.hallName",
+    "projectTime",
+    "projectEnd",
+    "price",
+  ];
   const headCells = [
+    { id: "movie.name", label: "Movie name" },
     { id: "hallName", label: "Hall name" },
-    { id: "rowsCount", label: "Rows count", disableSorting: true },
-    { id: "seatsPerRow", label: "Seats per row", disableSorting: true },
+    { id: "projectTime", label: "Projection start" },
+    { id: "projectEnd", label: "Projection end" },
+    { id: "price", label: "Price" },
   ];
   const [popup, setPopup] = useState(false);
   const [tableHalls, setTableHalls] = useState([]);
-  const [data, setData] = useState(initialFValues);
+  const [data, setData] = useState();
   const [errors, setErrors] = useState({
     price: { error: false, message: "" },
     time: { error: false, message: "" },
@@ -131,7 +143,7 @@ const Projections = () => {
 
   const handleReset = () => {
     resetErrors();
-    setData(initialFValues);
+    // setData(initialFValues);
   };
 
   const handleCheckAvailability = () => {
@@ -195,9 +207,28 @@ const Projections = () => {
         }}
       >
         <AddHeader
-          title={"Projections for movie " + movie?.name}
+          title={"Movie projections "}
           icon={<TheatersIcon fontSize="large" />}
         />
+
+        <div style={{ marginTop: "50px" }}>
+          <Table
+            data={projections}
+            headCells={headCells}
+            fields={fields}
+            objectKey={"projectID"}
+            selection={true}
+            filterFn={filterFn}
+          />
+        </div>
+
+        <Button
+          variant="contained"
+          color="primary"
+          style={{ marginTop: "20px" }}
+        >
+          Add projection
+        </Button>
       </Paper>
     </div>
   );
