@@ -21,7 +21,7 @@ const ProjectionPage = () => {
 
   const { halls } = useSelector((state) => state.hallReducer);
   const { projection } = useSelector((state) => state.projectionsReducer);
-  console.log(projection);
+
   // const initialFValues = {
   //   movie: movie,
   //   hall: 0,
@@ -55,13 +55,13 @@ const ProjectionPage = () => {
     { id: "rowsCount", label: "Rows count", disableSorting: true },
     { id: "seatsPerRow", label: "Seats per row", disableSorting: true },
   ];
-  // const [popup, setPopup] = useState(false);
+  const [popup, setPopup] = useState(false);
   // const [tableHalls, setTableHalls] = useState([]);
-  // const [data, setData] = useState(initialFValues);
-  // const [errors, setErrors] = useState({
-  //   price: { error: false, message: "" },
-  //   time: { error: false, message: "" },
-  // });
+  const [data, setData] = useState(projection);
+  const [errors, setErrors] = useState({
+    price: { error: false, message: "" },
+    time: { error: false, message: "" },
+  });
   const [filterFn, setFilterFn] = useState({
     fn: (items) => {
       return items;
@@ -81,9 +81,9 @@ const ProjectionPage = () => {
     });
   };
 
-  // const handleChange = (name, value) => {
-  //   setData({ ...data, [name]: value });
-  // };
+  const handleChange = (name, value) => {
+    setData({ ...data, [name]: value });
+  };
 
   // const handleDateChange = (name) => (value) => {
   //   setData({
@@ -123,67 +123,68 @@ const ProjectionPage = () => {
   //   }
   // };
 
-  // const resetErrors = () => {
-  //   setErrors({
-  //     price: { error: false, message: "" },
-  //   });
-  // };
+  const resetErrors = () => {
+    setErrors({
+      price: { error: false, message: "" },
+      time: { error: false, message: "" },
+    });
+  };
 
-  // const handleReset = () => {
-  //   resetErrors();
-  //   setData(initialFValues);
-  // };
+  const handleReset = () => {
+    resetErrors();
+    setData(projection);
+  };
 
   // const handleCheckAvailability = () => {
   //   // dispatch()
   // };
 
-  // let rangeTime = [
-  //   { startTime: "13:00", endTime: "14:59" },
-  //   { startTime: "20:01", endTime: "22:00" },
-  // ];
+  let rangeTime = [
+    { startTime: "13:00", endTime: "14:59" },
+    { startTime: "20:01", endTime: "22:00" },
+  ];
 
-  // const parseTime = (timeString) => dayjs(timeString, "HH:mm");
+  const parseTime = (timeString) => dayjs(timeString, "HH:mm");
 
-  // // Function to generate a list of disabled times
-  // const generateDisabledTimes = (rangeTime) => {
-  //   let disabledTimes = [];
-  //   rangeTime.forEach((range) => {
-  //     let start = parseTime(range.startTime);
-  //     let end = parseTime(range.endTime);
+  // Function to generate a list of disabled times
+  const generateDisabledTimes = (rangeTime) => {
+    let disabledTimes = [];
+    rangeTime.forEach((range) => {
+      let start = parseTime(range.startTime);
+      let end = parseTime(range.endTime);
 
-  //     while (start.isBefore(end) || start.isSame(end)) {
-  //       disabledTimes.push(start.format("HH:mm"));
-  //       start = start.add(1, "minute");
-  //     }
-  //   });
-  //   return disabledTimes;
-  // };
+      while (start.isBefore(end) || start.isSame(end)) {
+        disabledTimes.push(start.format("HH:mm"));
+        start = start.add(15, "minute");
+      }
+    });
+    return disabledTimes;
+  };
 
-  // const disabledTimes = generateDisabledTimes(rangeTime);
+  const disabledTimes = generateDisabledTimes(rangeTime);
 
-  // // Function to check if a given time should be disabled
-  // const shouldDisableTime = (timeValue, clockType) => {
-  //   if (clockType === "hours") return false;
-  //   const formattedTime = timeValue.format("HH:mm");
-  //   return disabledTimes.includes(formattedTime);
-  // };
+  // Function to check if a given time should be disabled
+  const shouldDisableTime = (timeValue, clockType) => {
+    if (clockType === "hours") return false;
+    const formattedTime = timeValue.format("HH:mm");
+    return disabledTimes.includes(formattedTime);
+  };
 
-  // const handleTimeChange = (name) => (value) => {
-  //   const formattedTime = value.format("HH:mm");
-  //   console.log(formattedTime);
-  //   if (disabledTimes.includes(formattedTime)) {
-  //     setErrors({
-  //       ...errors,
-  //       [name]: { error: true, message: "Time is taken" },
-  //     });
-  //   } else {
-  //     setErrors({
-  //       ...errors,
-  //       [name]: { error: false, message: "" },
-  //     });
-  //   }
-  // };
+  const handleTimeChange = (name) => (value) => {
+    const formattedTime = value.format("HH:mm");
+    console.log(formattedTime);
+    if (disabledTimes.includes(formattedTime)) {
+      setErrors({
+        ...errors,
+        [name]: { error: true, message: "Time is taken" },
+      });
+    } else {
+      setErrors({
+        ...errors,
+        [name]: { error: false, message: "" },
+      });
+    }
+  };
 
   return (
     <div style={{ padding: "20px", marginTop: "50px" }}>
@@ -195,7 +196,9 @@ const ProjectionPage = () => {
         }}
       >
         <AddHeader
-          title={"Select a hall and time for movie " + projection?.movie.name}
+          title={
+            "Select a hall, time and price for movie " + projection?.movie.name
+          }
           icon={<TheatersIcon fontSize="large" />}
         />
         <TableSearch
@@ -212,7 +215,45 @@ const ProjectionPage = () => {
           selection={true}
           // setEditObj={handleHallSelection}
         />
-        <div style={{ display: "flex", columnGap: "20px" }}>
+        <Input
+          label="Price (in RSD)"
+          name="price"
+          value={data.price}
+          onChange={handleChange}
+          type="number"
+          sx={{ marginTop: "20px", width: "200px" }}
+          error={errors.price}
+        />
+        <Button
+          variant="contained"
+          sx={{ marginTop: "20px", width: "200px" }}
+          onClick={() => setPopup(true)}
+        >
+          Set projection time
+        </Button>
+
+        <div
+          style={{
+            display: "flex",
+            columnGap: "20px",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Button
+            variant="contained"
+            sx={{ marginTop: "20px" }}
+            onClick={() => console.log(data, projection)}
+          >
+            Edit projection
+          </Button>
+          <Button
+            variant="outlined"
+            sx={{ marginTop: "20px" }}
+            onClick={handleReset}
+          >
+            Reset
+          </Button>
           {/* <DatePicker
             label="Start date"
             name="startTime"
@@ -233,16 +274,7 @@ const ProjectionPage = () => {
             disabled={new dayjs(data.movie.endTime) < new dayjs()}
             value={new dayjs(data?.movie.endTime)}
           />
-          <Input
-            label="Price"
-            name="price"
-            value={data.price}
-            onChange={handleChange}
-            type="number"
-            sx={{ marginTop: "20px", width: "250px" }}
-            error={errors.price}
-          />
-        
+          
         
         
         <div
@@ -254,16 +286,8 @@ const ProjectionPage = () => {
             columnGap: "20px",
           }}
         >
-          <Button variant="contained" sx={{ marginTop: "20px" }}>
-            Add projection
-          </Button>
-          <Button
-            variant="outlined"
-            sx={{ marginTop: "20px" }}
-            onClick={handleReset}
-          >
-            Reset
-          </Button>
+          
+          
           <Button
             variant="outlined"
             sx={{ marginTop: "20px" }}
@@ -275,7 +299,7 @@ const ProjectionPage = () => {
           </Button>*/}
         </div>
       </Paper>
-      {/* <Popup
+      {/*<Popup
         title="Select times for projection"
         openPopup={popup}
         setOpen={setPopup}
@@ -289,7 +313,16 @@ const ProjectionPage = () => {
           rangeTime={rangeTime}
           shouldDisableTime={shouldDisableTime}
         />
-      </Popup> */}
+      </Popup>*/}
+      <Popup title="Check availability" openPopup={popup} setOpen={setPopup}>
+        <ProjectionTimes
+          duration={projection.movie.duration}
+          rangeTime={rangeTime}
+          shouldDisableTime={shouldDisableTime}
+          errors={errors.time}
+          handleTimeChange={handleTimeChange}
+        />
+      </Popup>
     </div>
   );
 };

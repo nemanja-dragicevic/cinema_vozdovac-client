@@ -4,9 +4,9 @@ import dayjs from "dayjs";
 import Input from "../registration/Input";
 
 const ProjectionTimes = ({
-  hallID,
+  // hallID,
   duration,
-  onCheckAvailability,
+  // onCheckAvailability,
   errors,
   handleTimeChange,
   rangeTime,
@@ -43,9 +43,9 @@ const ProjectionTimes = ({
           },
         }}
       />
-      <Button variant="contained" color="primary" onClick={onCheckAvailability}>
+      {/*<Button variant="contained" color="primary" onClick={onCheckAvailability}>
         Check availability
-      </Button>
+      </Button> */}
     </div>
   );
 };
