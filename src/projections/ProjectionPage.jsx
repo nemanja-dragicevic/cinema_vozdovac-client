@@ -26,22 +26,6 @@ const ProjectionPage = () => {
     dispatch(hallActions.getHalls());
   }, [dispatch]);
 
-  // useEffect(() => {
-  //   if (halls.length > 0) {
-  //     setTableHalls(
-  //       halls.map((hall) => {
-  //         return {
-  //           hallID: hall.hallID,
-  //           hallName: hall.hallName,
-  //           rowsCount: hall.rowsCount,
-  //           seatsPerRow: hall.seatsPerRow,
-  //           checked: false,
-  //         };
-  //       })
-  //     );
-  //   }
-  // }, [halls]);
-
   const fields = ["hallName", "rowsCount", "seatsPerRow"];
   const [tableHalls, setTableHalls] = useState(halls);
   const [workingHall, setWorkingHall] = useState(0);
@@ -55,7 +39,6 @@ const ProjectionPage = () => {
   const [data, setData] = useState(projection);
   const [errors, setErrors] = useState({
     price: { error: false, message: "" },
-    time: { error: false, message: "" },
   });
   const [filterFn, setFilterFn] = useState({
     fn: (items) => {
@@ -96,48 +79,9 @@ const ProjectionPage = () => {
     setData({ ...data, [name]: value });
   };
 
-  // const handleDateChange = (name) => (value) => {
-  //   setData({
-  //     ...data,
-  //     movie: { ...data.movie, name: dayjs(value).format("D/MM/YYYY") },
-  //   });
-  // };
-
-  // const handleHallSelection = (e) => {
-  //   const { value, checked } = e.target;
-  //   console.log(value);
-  //   console.log(checked);
-
-  //   if (checked) {
-  //     setData({ ...data, hall: value });
-  //     // setTableHalls(
-  //     //   tableHalls.map((hall) => {
-  //     //     if (hall.hallID === parseInt(value)) {
-  //     //       return { ...hall, checked: true };
-  //     //     } else {
-  //     //       return { ...hall, checked: false };
-  //     //     }
-  //     //   })
-  //     // );
-  //     setPopup(true);
-  //   } else {
-  //     setData({ ...data, hall: 0 });
-  //     setTableHalls(
-  //       tableHalls.map((hall) => {
-  //         if (hall.hallID === parseInt(value)) {
-  //           return { ...hall, checked: false };
-  //         } else {
-  //           return hall;
-  //         }
-  //       })
-  //     );
-  //   }
-  // };
-
   const resetErrors = () => {
     setErrors({
       price: { error: false, message: "" },
-      time: { error: false, message: "" },
     });
   };
 
@@ -148,8 +92,8 @@ const ProjectionPage = () => {
 
   const handleHallSelection = (e) => {
     const { value, checked } = e.target;
-    console.log(value);
-    console.log(checked);
+    // console.log(value);
+    // console.log(checked);
     setWorkingHall(value);
     setPopup(true);
   };
@@ -187,7 +131,7 @@ const ProjectionPage = () => {
 
   const handleTimeChange = (name) => (value) => {
     const formattedTime = value.format("HH:mm");
-    console.log(formattedTime);
+    // console.log(formattedTime);
     if (disabledTimes.includes(formattedTime)) {
       setErrors({
         ...errors,
@@ -282,39 +226,6 @@ const ProjectionPage = () => {
           >
             Reset
           </Button>
-          {/* <DatePicker
-            label="Start date"
-            name="startTime"
-            sx={{ marginTop: "20px", width: "250px" }}
-            format="D/MM/YYYY"
-            disabled={new dayjs(data.movie.startTime) < new dayjs()}
-            value={new dayjs(data?.movie.startTime)}
-            onChange={handleDateChange("startTime")}
-            minDate={
-              data.movie.startTime ? new dayjs(data.movie.startTime) : null
-            }
-          />
-          <DatePicker
-            label="End date"
-            name="endTime"
-            sx={{ marginTop: "20px", width: "250px" }}
-            format="D/MM/YYYY"
-            disabled={new dayjs(data.movie.endTime) < new dayjs()}
-            value={new dayjs(data?.movie.endTime)}
-          />
-          
-        
-        
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            columnGap: "20px",
-          }}
-        >
-          */}
         </div>
       </Paper>
       <Popup title="Check availability" openPopup={popup} setOpen={setPopup}>
@@ -322,8 +233,6 @@ const ProjectionPage = () => {
           hallID={workingHall}
           date={formatDate(new Date(data.projectTime))}
           duration={projection.movie.duration}
-          errors={errors.time}
-          handleTimeChange={handleTimeChange}
           setNewTime={handleSetNewTime}
         />
       </Popup>
