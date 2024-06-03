@@ -55,12 +55,23 @@ const ProjectionPage = () => {
             hallName: hall.hallName,
             rowsCount: hall.rowsCount,
             seatsPerRow: hall.seatsPerRow,
+            display:
+              hall.hallID === projection?.hall?.hallID
+                ? getTimeFromDateTime(projection.projectTime)
+                : "",
             checked: hall.hallID === projection?.hall?.hallID ? true : false,
           };
         })
       );
     }
   }, [halls]);
+
+  const getTimeFromDateTime = (dateTime) => {
+    if (dateTime.includes("T")) {
+      const time = dateTime.split("T")[1];
+      return time;
+    } else return dateTime;
+  };
 
   const handleSearch = (e) => {
     let target = e.target;

@@ -69,14 +69,12 @@ const Table = ({
                   {selection ? (
                     <>
                       {item.checked ? (
-                        item.roleName ? (
-                          <Input
-                            name="roleName"
-                            value={item.roleName}
-                            error={false}
-                            disabled={true}
-                          />
-                        ) : null
+                        <Input
+                          name="roleName"
+                          value={item.roleName || item.display}
+                          error={false}
+                          disabled={true}
+                        />
                       ) : null}
                       <CheckBox
                         checked={item.checked}
