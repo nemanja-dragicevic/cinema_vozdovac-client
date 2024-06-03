@@ -1,5 +1,4 @@
 import { Button, Paper } from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers";
 import TheatersIcon from "@mui/icons-material/Theaters";
 import Table from "../reusable/Table";
 import { useEffect, useState } from "react";
@@ -12,6 +11,7 @@ import dayjs from "dayjs";
 import Input from "../registration/Input";
 import Popup from "../reusable/Popup";
 import ProjectionTimes from "./ProjectionTimes";
+import { formatDate } from "../utils/date";
 
 const ProjectionPage = () => {
   const dispatch = useDispatch();
@@ -21,13 +21,6 @@ const ProjectionPage = () => {
 
   const { halls } = useSelector((state) => state.hallReducer);
   const { projection } = useSelector((state) => state.projectionsReducer);
-
-  // const initialFValues = {
-  //   movie: movie,
-  //   hall: 0,
-  //   projectionTime: [],
-  //   price: 0,
-  // };
 
   useEffect(() => {
     dispatch(hallActions.getHalls());
@@ -50,6 +43,8 @@ const ProjectionPage = () => {
   // }, [halls]);
 
   const fields = ["hallName", "rowsCount", "seatsPerRow"];
+  const [tableHalls, setTableHalls] = useState(halls);
+  const [workingHall, setWorkingHall] = useState(0);
   const headCells = [
     { id: "hallName", label: "Hall name" },
     { id: "rowsCount", label: "Rows count", disableSorting: true },
@@ -67,6 +62,22 @@ const ProjectionPage = () => {
       return items;
     },
   });
+
+  useEffect(() => {
+    if (halls.length > 0) {
+      setTableHalls(
+        halls.map((hall) => {
+          return {
+            hallID: hall.hallID,
+            hallName: hall.hallName,
+            rowsCount: hall.rowsCount,
+            seatsPerRow: hall.seatsPerRow,
+            checked: hall.hallID === projection?.hall?.hallID ? true : false,
+          };
+        })
+      );
+    }
+  }, [halls]);
 
   const handleSearch = (e) => {
     let target = e.target;
@@ -135,9 +146,13 @@ const ProjectionPage = () => {
     setData(projection);
   };
 
-  // const handleCheckAvailability = () => {
-  //   // dispatch()
-  // };
+  const handleHallSelection = (e) => {
+    const { value, checked } = e.target;
+    console.log(value);
+    console.log(checked);
+    setWorkingHall(value);
+    setPopup(true);
+  };
 
   let rangeTime = [
     { startTime: "13:00", endTime: "14:59" },
@@ -186,6 +201,19 @@ const ProjectionPage = () => {
     }
   };
 
+  const handleSetNewTime = () => {
+    setPopup(false);
+    // setTableHalls(
+    //   tableHalls.map((hall) => {
+    //     if (hall.hallID === parseInt(value)) {
+    //       return { ...hall, checked: true };
+    //     } else {
+    //       return { ...hall, checked: false };
+    //     }
+    //   })
+    // );
+  };
+
   return (
     <div style={{ padding: "20px", marginTop: "50px" }}>
       <Paper
@@ -207,13 +235,13 @@ const ProjectionPage = () => {
           handleSearch={handleSearch}
         />
         <Table
-          data={halls}
+          data={tableHalls}
           filterFn={filterFn}
           objectKey="hallID"
           fields={fields}
           headCells={headCells}
           selection={true}
-          // setEditObj={handleHallSelection}
+          setEditObj={handleHallSelection}
         />
         <Input
           label="Price (in RSD)"
@@ -286,41 +314,19 @@ const ProjectionPage = () => {
             columnGap: "20px",
           }}
         >
-          
-          
-          <Button
-            variant="outlined"
-            sx={{ marginTop: "20px" }}
-            onClick={() => {
-              navigate("/projections");
-            }}
-          >
-            Cancel
-          </Button>*/}
+          */}
         </div>
       </Paper>
-      {/*<Popup
-        title="Select times for projection"
-        openPopup={popup}
-        setOpen={setPopup}
-      >
-        <ProjectionTimes
-          hallID={data.hall}
-          duration={movie.duration}
-          onCheckAvailability={handleCheckAvailability}
-          errors={errors.time}
-          handleTimeChange={handleTimeChange}
-          rangeTime={rangeTime}
-          shouldDisableTime={shouldDisableTime}
-        />
-      </Popup>*/}
       <Popup title="Check availability" openPopup={popup} setOpen={setPopup}>
         <ProjectionTimes
+          hallID={workingHall}
+          date={formatDate(new Date(data.projectTime))}
           duration={projection.movie.duration}
-          rangeTime={rangeTime}
+          // rangeTime={rangeTime}
           shouldDisableTime={shouldDisableTime}
           errors={errors.time}
           handleTimeChange={handleTimeChange}
+          setNewTime={handleSetNewTime}
         />
       </Popup>
     </div>
