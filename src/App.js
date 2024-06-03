@@ -16,9 +16,9 @@ import ActorsPage from "./actor/ActorsPage";
 import MoviePage from "./movie/MoviePage";
 import MovieComponent from "./movie/MovieComponent";
 import GenrePage from "./genre/GenrePage";
-import ProjectionsPage from "./projections/ProjectionsPage";
 import Projections from "./projections/Projections";
 import UserSettings from "./member/UserSetings";
+import ProjectionPage from "./projections/ProjectionPage";
 
 function App() {
   const [token, setToken] = useState(null);
@@ -45,8 +45,12 @@ function App() {
           <Route exact path="/hall" element={<HallPage />} />
           <Route exact path="/genre" element={<GenrePage />} />
           <Route exact path="/movie_edit/:id" element={<MovieComponent />} />
-          <Route exact path="/projections" element={<ProjectionsPage />} />
-          <Route exact path="/projections/:id" element={<Projections />} />
+          <Route exact path="/projections" element={<Projections />} />
+          <Route
+            exact
+            path="/projection_edit/:id"
+            element={<ProjectionPage />}
+          />
           <Route exact path="/settings" element={<UserSettings />} />
         </Routes>
       </div>

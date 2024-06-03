@@ -3,13 +3,12 @@ import { DatePicker } from "@mui/x-date-pickers";
 import TheatersIcon from "@mui/icons-material/Theaters";
 import Table from "../reusable/Table";
 import { useEffect, useState } from "react";
-import TableSearch from "../components/TableSearch";
 import * as hallActions from "../actions/hall";
 import { useDispatch, useSelector } from "react-redux";
 import AddHeader from "../reusable/AddHeader";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
-import Input from "../registration/Input";
+import * as projectionsActions from "../actions/projections";
 import Popup from "../reusable/Popup";
 import ProjectionTimes from "./ProjectionTimes";
 
@@ -17,45 +16,41 @@ const Projections = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { halls } = useSelector((state) => state.hallReducer);
-  const { movie } = useSelector((state) => state.moviesReducer);
+  const [searchDate, setSearchDate] = useState(
+    new dayjs().add(1, "day").toDate()
+  );
 
-  const initialFValues = {
-    movie: movie,
-    hall: 0,
-    projectionTime: [],
-    price: 0,
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   };
 
-  useEffect(() => {
-    dispatch(hallActions.getHalls());
-  }, [dispatch]);
+  const { projections } = useSelector((state) => state.projectionsReducer);
 
   useEffect(() => {
-    if (halls.length > 0) {
-      setTableHalls(
-        halls.map((hall) => {
-          return {
-            hallID: hall.hallID,
-            hallName: hall.hallName,
-            rowsCount: hall.rowsCount,
-            seatsPerRow: hall.seatsPerRow,
-            checked: false,
-          };
-        })
-      );
-    }
-  }, [halls]);
+    const formattedDate = formatDate(searchDate);
+    dispatch(projectionsActions.getProjectionsForMovieID(formattedDate));
+  }, [dispatch, searchDate]);
 
-  const fields = ["hallName", "rowsCount", "seatsPerRow"];
+  const fields = [
+    "movie.name",
+    "hall.hallName",
+    "projectTime",
+    "projectEnd",
+    "price",
+  ];
   const headCells = [
+    { id: "movie.name", label: "Movie name" },
     { id: "hallName", label: "Hall name" },
-    { id: "rowsCount", label: "Rows count", disableSorting: true },
-    { id: "seatsPerRow", label: "Seats per row", disableSorting: true },
+    { id: "projectTime", label: "Projection start" },
+    { id: "projectEnd", label: "Projection end" },
+    { id: "price", label: "Price" },
   ];
   const [popup, setPopup] = useState(false);
   const [tableHalls, setTableHalls] = useState([]);
-  const [data, setData] = useState(initialFValues);
+  const [data, setData] = useState();
   const [errors, setErrors] = useState({
     price: { error: false, message: "" },
     time: { error: false, message: "" },
@@ -83,29 +78,14 @@ const Projections = () => {
     setData({ ...data, [name]: value });
   };
 
-  const handleDateChange = (name) => (value) => {
-    setData({
-      ...data,
-      movie: { ...data.movie, name: dayjs(value).format("D/MM/YYYY") },
-    });
+  const handleDateChange = (value) => {
+    setSearchDate(value.toDate());
   };
 
   const handleHallSelection = (e) => {
     const { value, checked } = e.target;
-    console.log(value);
-    console.log(checked);
-
     if (checked) {
       setData({ ...data, hall: value });
-      // setTableHalls(
-      //   tableHalls.map((hall) => {
-      //     if (hall.hallID === parseInt(value)) {
-      //       return { ...hall, checked: true };
-      //     } else {
-      //       return { ...hall, checked: false };
-      //     }
-      //   })
-      // );
       setPopup(true);
     } else {
       setData({ ...data, hall: 0 });
@@ -129,7 +109,6 @@ const Projections = () => {
 
   const handleReset = () => {
     resetErrors();
-    setData(initialFValues);
   };
 
   const handleCheckAvailability = () => {
@@ -143,7 +122,6 @@ const Projections = () => {
 
   const parseTime = (timeString) => dayjs(timeString, "HH:mm");
 
-  // Function to generate a list of disabled times
   const generateDisabledTimes = (rangeTime) => {
     let disabledTimes = [];
     rangeTime.forEach((range) => {
@@ -160,7 +138,6 @@ const Projections = () => {
 
   const disabledTimes = generateDisabledTimes(rangeTime);
 
-  // Function to check if a given time should be disabled
   const shouldDisableTime = (timeValue, clockType) => {
     if (clockType === "hours") return false;
     const formattedTime = timeValue.format("HH:mm");
@@ -169,7 +146,6 @@ const Projections = () => {
 
   const handleTimeChange = (name) => (value) => {
     const formattedTime = value.format("HH:mm");
-    console.log(formattedTime);
     if (disabledTimes.includes(formattedTime)) {
       setErrors({
         ...errors,
@@ -183,6 +159,18 @@ const Projections = () => {
     }
   };
 
+  const handleEdit = (item) => {
+    dispatch(projectionsActions.setProjection(item.id));
+    navigate("/projection_edit/" + item.id);
+    // setData(item);
+    // navigate("/movie_edit/" + item.movieID);
+  };
+
+  const handleDelete = (id) => {
+    console.log(id);
+    // dispatch(projectionsActions.deleteProjection(id));
+  };
+
   return (
     <div style={{ padding: "20px", marginTop: "50px" }}>
       <Paper
@@ -193,9 +181,37 @@ const Projections = () => {
         }}
       >
         <AddHeader
-          title={"Select a hall and dates for movie " + movie?.name}
+          title={"Movie projections "}
           icon={<TheatersIcon fontSize="large" />}
         />
+
+        <div style={{ marginTop: "50px" }}>
+          <DatePicker
+            minDate={new dayjs().add(1, "day")}
+            value={dayjs(searchDate)}
+            onChange={(newValue) => handleDateChange(newValue)}
+            sx={{ marginBottom: "20px" }}
+            label="Select projections date"
+          />
+          <Table
+            data={projections}
+            headCells={headCells}
+            fields={fields}
+            objectKey={"id"}
+            selection={false}
+            filterFn={filterFn}
+            onDelete={handleDelete}
+            setEditObj={handleEdit}
+          />
+        </div>
+
+        <Button
+          variant="contained"
+          color="primary"
+          style={{ marginTop: "20px" }}
+        >
+          Add projection
+        </Button>
       </Paper>
     </div>
   );

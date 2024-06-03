@@ -43,6 +43,10 @@ const Table = ({
     onDelete(id);
   };
 
+  const getNestedProperty = (obj, path) => {
+    return path.split(".").reduce((acc, part) => acc && acc[part], obj);
+  };
+
   return (
     <>
       <ThemeProvider theme={theme}>
@@ -50,14 +54,15 @@ const Table = ({
           <TblHead />
           <TableBody>
             {dataAfterPagingAndSorting().map((item) => (
-              <TableRow objectKey={item[objectKey]}>
+              <TableRow key={item[objectKey]}>
                 {fields.map((field) => (
                   <TableCell key={field}>
                     {Array.isArray(item[field])
                       ? item[field]
                           .map((arrayItem) => arrayItem.name)
                           .join(", ")
-                      : item[field]}
+                      : //: item[field]}
+                        getNestedProperty(item, field)}
                   </TableCell>
                 ))}
                 <TableCell>
@@ -66,7 +71,7 @@ const Table = ({
                       {item.checked ? (
                         <Input
                           name="roleName"
-                          value={item.roleName}
+                          value={item.roleName || item.display}
                           error={false}
                           disabled={true}
                         />
