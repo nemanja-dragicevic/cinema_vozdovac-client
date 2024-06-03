@@ -25,3 +25,22 @@ export const setProjection = (id) => {
     dispatch(projectionsActions.setProjection(id));
   };
 };
+
+export const getTimeForHallID = (date, hallID) => {
+  console.log(date, hallID);
+  return (dispatch) => {
+    dispatch(projectionsActions.actionStart());
+    return apiService
+      .get(`${projectionsPath}/${date}/${hallID}`)
+      .then((response) => {
+        dispatch(projectionsActions.fetchTimes(response.data));
+      })
+      .catch((error) => {
+        if (error.response.status === 401) {
+          redirect401Error(error);
+        }
+        dispatch(projectionsActions.actionError(error?.response?.data));
+        notifications.error();
+      });
+  };
+};

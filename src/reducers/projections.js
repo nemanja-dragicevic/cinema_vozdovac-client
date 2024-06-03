@@ -4,6 +4,7 @@ const projectionsSlice = createSlice({
   name: "projections",
   initialState: {
     projections: [],
+    times: [],
     projection: undefined,
     error: undefined,
   },
@@ -33,6 +34,11 @@ const projectionsSlice = createSlice({
       state.projections = state.projections.filter(
         (movie) => movie.movieID !== action.payload
       );
+      state.error = undefined;
+    },
+
+    fetchTimes(state, action) {
+      state.times = action.payload;
       state.error = undefined;
     },
     actionStart(state) {
