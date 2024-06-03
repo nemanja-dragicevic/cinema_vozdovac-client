@@ -322,8 +322,6 @@ const ProjectionPage = () => {
           hallID={workingHall}
           date={formatDate(new Date(data.projectTime))}
           duration={projection.movie.duration}
-          // rangeTime={rangeTime}
-          shouldDisableTime={shouldDisableTime}
           errors={errors.time}
           handleTimeChange={handleTimeChange}
           setNewTime={handleSetNewTime}

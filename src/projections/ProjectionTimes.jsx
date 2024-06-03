@@ -6,6 +6,8 @@ import * as projectionsActions from "../actions/projections";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 
+const parseTime = (timeString) => dayjs(timeString, "HH:mm");
+
 const ProjectionTimes = ({
   hallID,
   date,
@@ -13,8 +15,6 @@ const ProjectionTimes = ({
   setNewTime,
   errors,
   handleTimeChange,
-  // rangeTime,
-  shouldDisableTime,
 }) => {
   const dispatch = useDispatch();
 
@@ -26,9 +26,30 @@ const ProjectionTimes = ({
 
   const { times } = useSelector((state) => state.projectionsReducer);
 
-  console.log(times);
   const myDuration =
     Math.floor(duration / 60) + " hours" + (duration % 60) + " minutes";
+
+  const generateDisabledTimes = (rangeTime) => {
+    let disabledTimes = [];
+    rangeTime.forEach((range) => {
+      let start = parseTime(range.start);
+      let end = parseTime(range.end);
+
+      while (start.isBefore(end) || start.isSame(end)) {
+        disabledTimes.push(start.format("HH:mm"));
+        start = start.add(1, "minute");
+      }
+    });
+    return disabledTimes;
+  };
+
+  const disabledTimes = generateDisabledTimes(times);
+
+  const shouldDisableTime = (timeValue, clockType) => {
+    if (clockType === "hours") return false;
+    const formattedTime = timeValue.format("HH:mm");
+    return disabledTimes.includes(formattedTime);
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", rowGap: 20 }}>
