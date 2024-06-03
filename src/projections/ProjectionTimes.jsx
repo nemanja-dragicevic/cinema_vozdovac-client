@@ -4,18 +4,11 @@ import dayjs from "dayjs";
 import Input from "../registration/Input";
 import * as projectionsActions from "../actions/projections";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const parseTime = (timeString) => dayjs(timeString, "HH:mm");
 
-const ProjectionTimes = ({
-  hallID,
-  date,
-  duration,
-  setNewTime,
-  errors,
-  handleTimeChange,
-}) => {
+const ProjectionTimes = ({ hallID, date, duration, setNewTime }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -25,6 +18,10 @@ const ProjectionTimes = ({
   const durationInHours = Math.ceil(duration / 60);
 
   const { times } = useSelector((state) => state.projectionsReducer);
+  const [errors, setErrors] = useState({
+    error: false,
+    message: "",
+  });
 
   const myDuration =
     Math.floor(duration / 60) + " hours" + (duration % 60) + " minutes";
@@ -51,6 +48,27 @@ const ProjectionTimes = ({
     return disabledTimes.includes(formattedTime);
   };
 
+  const handleTimeChange = (time) => {
+    const formattedTime = time.format("HH:mm");
+    if (disabledTimes.includes(formattedTime)) {
+      setErrors({
+        error: true,
+        message: "Time is taken",
+      });
+    } else {
+      setErrors({
+        error: false,
+        message: "",
+      });
+    }
+  };
+
+  const onCheckTime = () => {
+    if (!errors.error) {
+      setNewTime();
+    }
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", rowGap: 20 }}>
       <div>
@@ -71,7 +89,7 @@ const ProjectionTimes = ({
         minTime={dayjs().set("hour", 12)}
         maxTime={dayjs().set("hour", 23 - durationInHours)}
         shouldDisableTime={shouldDisableTime}
-        onChange={handleTimeChange("time")}
+        onChange={handleTimeChange}
         // slotProps={{ textField: { error: errors } }}
         slotProps={{
           textField: {
@@ -80,7 +98,7 @@ const ProjectionTimes = ({
           },
         }}
       />
-      <Button variant="contained" color="primary" onClick={setNewTime}>
+      <Button variant="contained" color="primary" onClick={onCheckTime}>
         Set time
       </Button>
     </div>
