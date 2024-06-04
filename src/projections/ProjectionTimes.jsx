@@ -5,6 +5,7 @@ import Input from "../registration/Input";
 import * as projectionsActions from "../actions/projections";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import { error } from "../utils/notification";
 
 const parseTime = (timeString) => dayjs(timeString, "HH:mm");
 
@@ -81,6 +82,14 @@ const ProjectionTimes = ({ hallID, date, duration, setNewTime }) => {
   };
 
   const onCheckTime = () => {
+    if (!editedTime) {
+      error("Please select a time");
+      return;
+    }
+    if (errors.error) {
+      error("Time is taken");
+      return;
+    }
     if (!errors.error) {
       setNewTime(editedTime);
     }
