@@ -18,13 +18,13 @@ const ProjectionTimes = ({ hallID, date, duration, setNewTime }) => {
   const durationInHours = Math.ceil(duration / 60);
 
   const { times } = useSelector((state) => state.projectionsReducer);
+  const [editedTime, setEditedTime] = useState("");
   const [errors, setErrors] = useState({
     error: false,
     message: "",
   });
 
-  const myDuration =
-    Math.floor(duration / 60) + " hours" + (duration % 60) + " minutes";
+  const myDuration = Math.floor(duration / 60) + " " + (duration % 60);
 
   const generateDisabledTimes = (rangeTime) => {
     let disabledTimes = [];
@@ -32,7 +32,23 @@ const ProjectionTimes = ({ hallID, date, duration, setNewTime }) => {
       let start = parseTime(range.start);
       let end = parseTime(range.end);
 
+      const startTimeMinusDuration = start
+        .subtract(duration, "minute")
+        .subtract(30, "minute");
+      while (start.isAfter(startTimeMinusDuration)) {
+        disabledTimes.push(start.format("HH:mm"));
+        start = start.subtract(1, "minute");
+      }
+
       while (start.isBefore(end) || start.isSame(end)) {
+        disabledTimes.push(start.format("HH:mm"));
+        start = start.add(1, "minute");
+      }
+      const endTimePlus30Minutes = end.add(30, "minute");
+      while (
+        start.isBefore(endTimePlus30Minutes) ||
+        start.isSame(endTimePlus30Minutes)
+      ) {
         disabledTimes.push(start.format("HH:mm"));
         start = start.add(1, "minute");
       }
@@ -56,6 +72,7 @@ const ProjectionTimes = ({ hallID, date, duration, setNewTime }) => {
         message: "Time is taken",
       });
     } else {
+      setEditedTime(formattedTime);
       setErrors({
         error: false,
         message: "",
@@ -65,7 +82,7 @@ const ProjectionTimes = ({ hallID, date, duration, setNewTime }) => {
 
   const onCheckTime = () => {
     if (!errors.error) {
-      setNewTime();
+      setNewTime(editedTime);
     }
   };
 

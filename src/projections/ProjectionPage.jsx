@@ -156,17 +156,21 @@ const ProjectionPage = () => {
     }
   };
 
-  const handleSetNewTime = () => {
+  const handleSetNewTime = (value) => {
     setPopup(false);
-    // setTableHalls(
-    //   tableHalls.map((hall) => {
-    //     if (hall.hallID === parseInt(value)) {
-    //       return { ...hall, checked: true };
-    //     } else {
-    //       return { ...hall, checked: false };
-    //     }
-    //   })
-    // );
+    setTableHalls(
+      tableHalls.map((hall) => {
+        if (hall.hallID === parseInt(value)) {
+          return {
+            ...hall,
+            // display: getTimeFromDateTime(data.projectTime),
+            checked: true,
+          };
+        } else {
+          return { ...hall, checked: false };
+        }
+      })
+    );
   };
 
   return (
