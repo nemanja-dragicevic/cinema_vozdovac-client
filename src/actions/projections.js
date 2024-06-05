@@ -44,3 +44,21 @@ export const getTimeForHallID = (date, hallID) => {
       });
   };
 };
+
+export const deleteProjection = (id) => {
+  console.log(id);
+  return (dispatch) => {
+    dispatch(projectionsActions.actionStart());
+    return apiService
+      .delete(projectionsPath + "/" + id)
+      .then((response) => {
+        dispatch(projectionsActions.deleteProjection(id));
+        notifications.success(response.data);
+      })
+      .catch((error) => {
+        if (error?.response?.status === 401) redirect401Error(error);
+        dispatch(projectionsActions.actionError(error?.response?.data));
+        notifications.error(error?.response?.data);
+      });
+  };
+};

@@ -30,9 +30,9 @@ const projectionsSlice = createSlice({
       );
       state.error = undefined;
     },
-    deleteMovie(state, action) {
+    deleteProjection(state, action) {
       state.projections = state.projections.filter(
-        (movie) => movie.movieID !== action.payload
+        (projection) => projection.id !== action.payload
       );
       state.error = undefined;
     },

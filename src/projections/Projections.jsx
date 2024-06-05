@@ -168,7 +168,7 @@ const Projections = () => {
 
   const handleDelete = (id) => {
     console.log(id);
-    // dispatch(projectionsActions.deleteProjection(id));
+    dispatch(projectionsActions.deleteProjection(id));
   };
 
   return (
