@@ -35,7 +35,7 @@ const ProjectionTimes = ({ hallID, date, duration, setNewTime }) => {
 
       const startTimeMinusDuration = start
         .subtract(duration, "minute")
-        .subtract(30, "minute");
+        .subtract(15, "minute");
       while (start.isAfter(startTimeMinusDuration)) {
         disabledTimes.push(start.format("HH:mm"));
         start = start.subtract(1, "minute");
@@ -45,7 +45,7 @@ const ProjectionTimes = ({ hallID, date, duration, setNewTime }) => {
         disabledTimes.push(start.format("HH:mm"));
         start = start.add(1, "minute");
       }
-      const endTimePlus30Minutes = end.add(30, "minute");
+      const endTimePlus30Minutes = end.add(15, "minute");
       while (
         start.isBefore(endTimePlus30Minutes) ||
         start.isSame(endTimePlus30Minutes)

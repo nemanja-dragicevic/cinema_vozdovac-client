@@ -158,12 +158,13 @@ const ProjectionPage = () => {
 
   const handleSetNewTime = (value) => {
     setPopup(false);
+    console.log(value);
     setTableHalls(
       tableHalls.map((hall) => {
-        if (hall.hallID === parseInt(value)) {
+        if (hall.hallID === parseInt(workingHall)) {
           return {
             ...hall,
-            // display: getTimeFromDateTime(data.projectTime),
+            display: getTimeFromDateTime(value),
             checked: true,
           };
         } else {
