@@ -53,6 +53,7 @@ const ProjectionTimes = ({ hallID, date, duration, setNewTime }) => {
         disabledTimes.push(start.format("HH:mm"));
         start = start.add(1, "minute");
       }
+      disabledTimes.push("00:00");
     });
     return disabledTimes;
   };
@@ -70,7 +71,7 @@ const ProjectionTimes = ({ hallID, date, duration, setNewTime }) => {
     if (disabledTimes.includes(formattedTime)) {
       setErrors({
         error: true,
-        message: "Time is taken",
+        message: "Time not available",
       });
     } else {
       setEditedTime(formattedTime);
@@ -87,7 +88,7 @@ const ProjectionTimes = ({ hallID, date, duration, setNewTime }) => {
       return;
     }
     if (errors.error) {
-      error("Time is taken");
+      error("Time not available");
       return;
     }
     if (!errors.error) {
