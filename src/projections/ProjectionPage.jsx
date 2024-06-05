@@ -99,6 +99,15 @@ const ProjectionPage = () => {
   const handleReset = () => {
     resetErrors();
     setData(projection);
+    setTableHalls(
+      tableHalls.map((hall) => {
+        if (hall.hallID === projection?.hall?.hallID) {
+          return { ...hall, checked: true };
+        } else {
+          return { ...hall, checked: false };
+        }
+      })
+    );
   };
 
   const handleHallSelection = (e) => {

@@ -10,7 +10,6 @@ import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import * as projectionsActions from "../actions/projections";
 import Popup from "../reusable/Popup";
-import ProjectionTimes from "./ProjectionTimes";
 
 const Projections = () => {
   const dispatch = useDispatch();
