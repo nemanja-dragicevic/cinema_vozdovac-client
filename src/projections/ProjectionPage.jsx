@@ -155,7 +155,7 @@ const ProjectionPage = () => {
     if (disabledTimes.includes(formattedTime)) {
       setErrors({
         ...errors,
-        [name]: { error: true, message: "Time is taken" },
+        [name]: { error: true, message: "Time not available" },
       });
     } else {
       setErrors({
