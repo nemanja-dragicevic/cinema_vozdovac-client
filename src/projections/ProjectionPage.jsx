@@ -143,11 +143,11 @@ const ProjectionPage = () => {
   const disabledTimes = generateDisabledTimes(rangeTime);
 
   // Function to check if a given time should be disabled
-  const shouldDisableTime = (timeValue, clockType) => {
-    if (clockType === "hours") return false;
-    const formattedTime = timeValue.format("HH:mm");
-    return disabledTimes.includes(formattedTime);
-  };
+  // const shouldDisableTime = (timeValue, clockType) => {
+  //   if (clockType === "hours") return false;
+  //   const formattedTime = timeValue.format("HH:mm");
+  //   return disabledTimes.includes(formattedTime);
+  // };
 
   const handleTimeChange = (name) => (value) => {
     const formattedTime = value.format("HH:mm");
@@ -165,11 +165,32 @@ const ProjectionPage = () => {
     }
   };
 
+  const setProjectTime = (newTime) => {
+    const currentDateTime = projection.projectTime;
+
+    // Parse the current date and time into a dayjs object
+    let dateTime = dayjs(currentDateTime);
+
+    // Extract hours and minutes from the new time string
+    const [newHours, newMinutes] = newTime.split(":").map(Number);
+
+    // Update the dateTime with the new time
+    dateTime = dateTime.hour(newHours).minute(newMinutes).second(0);
+
+    setData({
+      ...data,
+      projectTime: dateTime.format("YYYY-MM-DDTHH:mm:ss"),
+      projectEnd: dateTime
+        .add(projection.movie.duration, "minute")
+        .format("YYYY-MM-DDTHH:mm:ss"),
+    });
+  };
+
   const handleSetNewTime = (value) => {
     setPopup(false);
-    console.log(value);
     setTableHalls(
       tableHalls.map((hall) => {
+        setProjectTime(value);
         if (hall.hallID === parseInt(workingHall)) {
           return {
             ...hall,
@@ -240,7 +261,7 @@ const ProjectionPage = () => {
           <Button
             variant="contained"
             sx={{ marginTop: "20px" }}
-            onClick={() => console.log(data, projection)}
+            onClick={() => console.log(data)}
           >
             Edit projection
           </Button>
