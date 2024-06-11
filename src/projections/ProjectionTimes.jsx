@@ -68,7 +68,23 @@ const ProjectionTimes = ({ hallID, date, duration, setNewTime }) => {
 
   const handleTimeChange = (time) => {
     const formattedTime = time.format("HH:mm");
-    if (disabledTimes.includes(formattedTime)) {
+    const minTime = dayjs()
+      .set("hour", 12)
+      .set("minute", 0)
+      .set("second", 0)
+      .set("millisecond", 0);
+    const maxTime = dayjs()
+      .set("hour", 23 - durationInHours)
+      .set("minute", 0);
+
+    if (time.isBefore(minTime) || time.isAfter(maxTime)) {
+      setErrors({
+        error: true,
+        message: `Time should be between ${minTime.format(
+          "HH:mm"
+        )} and ${maxTime.format("HH:mm")}`,
+      });
+    } else if (disabledTimes.includes(formattedTime)) {
       setErrors({
         error: true,
         message: "Time not available",
@@ -113,7 +129,7 @@ const ProjectionTimes = ({ hallID, date, duration, setNewTime }) => {
       <TimePicker
         label="Select projection time"
         timeSteps={{ minutes: 15 }}
-        minTime={dayjs().set("hour", 12)}
+        minTime={dayjs().set("hour", 12).set("minute", 0)}
         maxTime={dayjs().set("hour", 23 - durationInHours)}
         shouldDisableTime={shouldDisableTime}
         onChange={handleTimeChange}
