@@ -27,7 +27,6 @@ export const setProjection = (id) => {
 };
 
 export const getTimeForHallID = (date, hallID) => {
-  console.log(date, hallID);
   return (dispatch) => {
     dispatch(projectionsActions.actionStart());
     return apiService

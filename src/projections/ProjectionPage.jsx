@@ -1,17 +1,18 @@
 import { Button, Paper } from "@mui/material";
 import TheatersIcon from "@mui/icons-material/Theaters";
-import Table from "../reusable/Table";
-import { useEffect, useState } from "react";
-import TableSearch from "../components/TableSearch";
-import * as hallActions from "../actions/hall";
 import { useDispatch, useSelector } from "react-redux";
-import AddHeader from "../reusable/AddHeader";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
+import Table from "../reusable/Table";
+import TableSearch from "../components/TableSearch";
+import * as hallActions from "../actions/hall";
+import AddHeader from "../reusable/AddHeader";
 import Input from "../registration/Input";
 import Popup from "../reusable/Popup";
 import ProjectionTimes from "./ProjectionTimes";
 import { formatDate } from "../utils/date";
+import * as projectionsActions from "../actions/projections";
 
 const ProjectionPage = () => {
   const dispatch = useDispatch();
@@ -99,7 +100,6 @@ const ProjectionPage = () => {
   const handleReset = () => {
     resetErrors();
     setData(projection);
-    console.log(projection);
     setTableHalls(
       tableHalls.map((hall) => {
         if (hall.hallID === projection?.hall?.hallID) {
@@ -182,20 +182,13 @@ const ProjectionPage = () => {
     // Update the dateTime with the new time
     dateTime = dateTime.hour(newHours).minute(newMinutes).second(0);
 
-    setData({
-      ...data,
-      projectTime: dateTime.format("YYYY-MM-DDTHH:mm:ss"),
-      projectEnd: dateTime
-        .add(projection.movie.duration, "minute")
-        .format("YYYY-MM-DDTHH:mm:ss"),
-    });
+    return dateTime;
   };
 
   const handleSetNewTime = (value) => {
     setPopup(false);
     setTableHalls(
       tableHalls.map((hall) => {
-        setProjectTime(value);
         if (hall.hallID === parseInt(workingHall)) {
           return {
             ...hall,
@@ -207,6 +200,20 @@ const ProjectionPage = () => {
         }
       })
     );
+    const dateTime = setProjectTime(value);
+    setData({
+      ...data,
+      hall: halls.find((hall) => hall.hallID === parseInt(workingHall)),
+      projectTime: dateTime.format("YYYY-MM-DDTHH:mm:ss"),
+      projectEnd: dateTime
+        .add(projection.movie.duration, "minute")
+        .format("YYYY-MM-DDTHH:mm:ss"),
+    });
+  };
+
+  const handleSaveEdit = () => {
+    console.log(data);
+    dispatch(projectionsActions.editProjection(data));
   };
 
   return (
@@ -266,7 +273,7 @@ const ProjectionPage = () => {
           <Button
             variant="contained"
             sx={{ marginTop: "20px" }}
-            onClick={() => console.log(data)}
+            onClick={handleSaveEdit}
           >
             Edit projection
           </Button>
