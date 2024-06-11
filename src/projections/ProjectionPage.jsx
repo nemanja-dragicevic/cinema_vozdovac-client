@@ -13,6 +13,7 @@ import Popup from "../reusable/Popup";
 import ProjectionTimes from "./ProjectionTimes";
 import { formatDate } from "../utils/date";
 import * as projectionsActions from "../actions/projections";
+import ConfirmDialog from "../reusable/ConfirmDialog";
 
 const ProjectionPage = () => {
   const dispatch = useDispatch();
@@ -36,7 +37,11 @@ const ProjectionPage = () => {
     { id: "seatsPerRow", label: "Seats per row", disableSorting: true },
   ];
   const [popup, setPopup] = useState(false);
-  // const [tableHalls, setTableHalls] = useState([]);
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
   const [data, setData] = useState(projection);
   const [errors, setErrors] = useState({
     price: { error: false, message: "" },
@@ -212,7 +217,11 @@ const ProjectionPage = () => {
   };
 
   const handleSaveEdit = () => {
-    console.log(data);
+    // console.log(data);
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false,
+    });
     dispatch(projectionsActions.editProjection(data));
   };
 
@@ -273,7 +282,14 @@ const ProjectionPage = () => {
           <Button
             variant="contained"
             sx={{ marginTop: "20px" }}
-            onClick={handleSaveEdit}
+            onClick={() =>
+              setConfirmDialog({
+                isOpen: true,
+                title: "Save changes",
+                subTitle: "Are you sure you want to save changes?",
+                onConfirm: handleSaveEdit,
+              })
+            }
           >
             Edit projection
           </Button>
@@ -294,6 +310,10 @@ const ProjectionPage = () => {
           setNewTime={handleSetNewTime}
         />
       </Popup>
+      <ConfirmDialog
+        confirmDialog={confirmDialog}
+        setConfirm={setConfirmDialog}
+      />
     </div>
   );
 };
