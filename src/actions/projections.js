@@ -62,3 +62,20 @@ export const deleteProjection = (id) => {
       });
   };
 };
+
+export const editProjection = (data) => {
+  return (dispatch) => {
+    dispatch(projectionsActions.actionStart());
+    return apiService
+      .put(projectionsPath + "/" + data.id, data)
+      .then((response) => {
+        dispatch(projectionsActions.editProjection(data));
+        notifications.success("Successfully edited projection");
+      })
+      .catch((error) => {
+        if (error?.response?.status === 401) redirect401Error(error);
+        dispatch(projectionsActions.actionError(error?.response?.data));
+        notifications.error(error?.response?.data);
+      });
+  };
+};
