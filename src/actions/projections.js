@@ -27,7 +27,6 @@ export const setProjection = (id) => {
 };
 
 export const getTimeForHallID = (date, hallID) => {
-  console.log(date, hallID);
   return (dispatch) => {
     dispatch(projectionsActions.actionStart());
     return apiService
@@ -41,6 +40,40 @@ export const getTimeForHallID = (date, hallID) => {
         }
         dispatch(projectionsActions.actionError(error?.response?.data));
         notifications.error();
+      });
+  };
+};
+
+export const deleteProjection = (id) => {
+  return (dispatch) => {
+    dispatch(projectionsActions.actionStart());
+    return apiService
+      .delete(projectionsPath + "/" + id)
+      .then((response) => {
+        dispatch(projectionsActions.deleteProjection(id));
+        notifications.success(response.data);
+      })
+      .catch((error) => {
+        if (error?.response?.status === 401) redirect401Error(error);
+        dispatch(projectionsActions.actionError(error?.response?.data));
+        notifications.error(error?.response?.data);
+      });
+  };
+};
+
+export const editProjection = (data) => {
+  return (dispatch) => {
+    dispatch(projectionsActions.actionStart());
+    return apiService
+      .put(projectionsPath + "/" + data.id, data)
+      .then((response) => {
+        dispatch(projectionsActions.editProjection(data));
+        notifications.success("Successfully edited projection");
+      })
+      .catch((error) => {
+        if (error?.response?.status === 401) redirect401Error(error);
+        dispatch(projectionsActions.actionError(error?.response?.data));
+        notifications.error(error?.response?.data);
       });
   };
 };

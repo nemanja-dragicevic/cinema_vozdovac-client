@@ -5,6 +5,7 @@ import Input from "../registration/Input";
 import * as projectionsActions from "../actions/projections";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import { error } from "../utils/notification";
 
 const parseTime = (timeString) => dayjs(timeString, "HH:mm");
 
@@ -18,13 +19,13 @@ const ProjectionTimes = ({ hallID, date, duration, setNewTime }) => {
   const durationInHours = Math.ceil(duration / 60);
 
   const { times } = useSelector((state) => state.projectionsReducer);
+  const [editedTime, setEditedTime] = useState("");
   const [errors, setErrors] = useState({
     error: false,
     message: "",
   });
 
-  const myDuration =
-    Math.floor(duration / 60) + " hours" + (duration % 60) + " minutes";
+  const myDuration = Math.floor(duration / 60) + " " + (duration % 60);
 
   const generateDisabledTimes = (rangeTime) => {
     let disabledTimes = [];
@@ -32,10 +33,27 @@ const ProjectionTimes = ({ hallID, date, duration, setNewTime }) => {
       let start = parseTime(range.start);
       let end = parseTime(range.end);
 
+      const startTimeMinusDuration = start
+        .subtract(duration, "minute")
+        .subtract(15, "minute");
+      while (start.isAfter(startTimeMinusDuration)) {
+        disabledTimes.push(start.format("HH:mm"));
+        start = start.subtract(1, "minute");
+      }
+
       while (start.isBefore(end) || start.isSame(end)) {
         disabledTimes.push(start.format("HH:mm"));
         start = start.add(1, "minute");
       }
+      const endTimePlus30Minutes = end.add(15, "minute");
+      while (
+        start.isBefore(endTimePlus30Minutes) ||
+        start.isSame(endTimePlus30Minutes)
+      ) {
+        disabledTimes.push(start.format("HH:mm"));
+        start = start.add(1, "minute");
+      }
+      disabledTimes.push("00:00");
     });
     return disabledTimes;
   };
@@ -50,12 +68,29 @@ const ProjectionTimes = ({ hallID, date, duration, setNewTime }) => {
 
   const handleTimeChange = (time) => {
     const formattedTime = time.format("HH:mm");
-    if (disabledTimes.includes(formattedTime)) {
+    const minTime = dayjs()
+      .set("hour", 12)
+      .set("minute", 0)
+      .set("second", 0)
+      .set("millisecond", 0);
+    const maxTime = dayjs()
+      .set("hour", 23 - durationInHours)
+      .set("minute", 0);
+
+    if (time.isBefore(minTime) || time.isAfter(maxTime)) {
       setErrors({
         error: true,
-        message: "Time is taken",
+        message: `Time should be between ${minTime.format(
+          "HH:mm"
+        )} and ${maxTime.format("HH:mm")}`,
+      });
+    } else if (disabledTimes.includes(formattedTime)) {
+      setErrors({
+        error: true,
+        message: "Time not available",
       });
     } else {
+      setEditedTime(formattedTime);
       setErrors({
         error: false,
         message: "",
@@ -64,8 +99,16 @@ const ProjectionTimes = ({ hallID, date, duration, setNewTime }) => {
   };
 
   const onCheckTime = () => {
+    if (!editedTime) {
+      error("Please select a time");
+      return;
+    }
+    if (errors.error) {
+      error("Time not available");
+      return;
+    }
     if (!errors.error) {
-      setNewTime();
+      setNewTime(editedTime);
     }
   };
 
@@ -86,7 +129,7 @@ const ProjectionTimes = ({ hallID, date, duration, setNewTime }) => {
       <TimePicker
         label="Select projection time"
         timeSteps={{ minutes: 15 }}
-        minTime={dayjs().set("hour", 12)}
+        minTime={dayjs().set("hour", 12).set("minute", 0)}
         maxTime={dayjs().set("hour", 23 - durationInHours)}
         shouldDisableTime={shouldDisableTime}
         onChange={handleTimeChange}

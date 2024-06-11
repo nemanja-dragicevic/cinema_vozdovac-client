@@ -10,7 +10,6 @@ import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import * as projectionsActions from "../actions/projections";
 import Popup from "../reusable/Popup";
-import ProjectionTimes from "./ProjectionTimes";
 
 const Projections = () => {
   const dispatch = useDispatch();
@@ -149,7 +148,7 @@ const Projections = () => {
     if (disabledTimes.includes(formattedTime)) {
       setErrors({
         ...errors,
-        [name]: { error: true, message: "Time is taken" },
+        [name]: { error: true, message: "Time not available" },
       });
     } else {
       setErrors({
@@ -167,8 +166,7 @@ const Projections = () => {
   };
 
   const handleDelete = (id) => {
-    console.log(id);
-    // dispatch(projectionsActions.deleteProjection(id));
+    dispatch(projectionsActions.deleteProjection(id));
   };
 
   return (

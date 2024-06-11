@@ -1,17 +1,19 @@
 import { Button, Paper } from "@mui/material";
 import TheatersIcon from "@mui/icons-material/Theaters";
-import Table from "../reusable/Table";
-import { useEffect, useState } from "react";
-import TableSearch from "../components/TableSearch";
-import * as hallActions from "../actions/hall";
 import { useDispatch, useSelector } from "react-redux";
-import AddHeader from "../reusable/AddHeader";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
+import Table from "../reusable/Table";
+import TableSearch from "../components/TableSearch";
+import * as hallActions from "../actions/hall";
+import AddHeader from "../reusable/AddHeader";
 import Input from "../registration/Input";
 import Popup from "../reusable/Popup";
 import ProjectionTimes from "./ProjectionTimes";
 import { formatDate } from "../utils/date";
+import * as projectionsActions from "../actions/projections";
+import ConfirmDialog from "../reusable/ConfirmDialog";
 
 const ProjectionPage = () => {
   const dispatch = useDispatch();
@@ -35,7 +37,11 @@ const ProjectionPage = () => {
     { id: "seatsPerRow", label: "Seats per row", disableSorting: true },
   ];
   const [popup, setPopup] = useState(false);
-  // const [tableHalls, setTableHalls] = useState([]);
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
   const [data, setData] = useState(projection);
   const [errors, setErrors] = useState({
     price: { error: false, message: "" },
@@ -99,6 +105,19 @@ const ProjectionPage = () => {
   const handleReset = () => {
     resetErrors();
     setData(projection);
+    setTableHalls(
+      tableHalls.map((hall) => {
+        if (hall.hallID === projection?.hall?.hallID) {
+          return {
+            ...hall,
+            checked: true,
+            display: getTimeFromDateTime(projection.projectTime),
+          };
+        } else {
+          return { ...hall, checked: false, display: "" };
+        }
+      })
+    );
   };
 
   const handleHallSelection = (e) => {
@@ -134,11 +153,11 @@ const ProjectionPage = () => {
   const disabledTimes = generateDisabledTimes(rangeTime);
 
   // Function to check if a given time should be disabled
-  const shouldDisableTime = (timeValue, clockType) => {
-    if (clockType === "hours") return false;
-    const formattedTime = timeValue.format("HH:mm");
-    return disabledTimes.includes(formattedTime);
-  };
+  // const shouldDisableTime = (timeValue, clockType) => {
+  //   if (clockType === "hours") return false;
+  //   const formattedTime = timeValue.format("HH:mm");
+  //   return disabledTimes.includes(formattedTime);
+  // };
 
   const handleTimeChange = (name) => (value) => {
     const formattedTime = value.format("HH:mm");
@@ -146,7 +165,7 @@ const ProjectionPage = () => {
     if (disabledTimes.includes(formattedTime)) {
       setErrors({
         ...errors,
-        [name]: { error: true, message: "Time is taken" },
+        [name]: { error: true, message: "Time not available" },
       });
     } else {
       setErrors({
@@ -156,17 +175,55 @@ const ProjectionPage = () => {
     }
   };
 
-  const handleSetNewTime = () => {
+  const setProjectTime = (newTime) => {
+    const currentDateTime = projection.projectTime;
+
+    // Parse the current date and time into a dayjs object
+    let dateTime = dayjs(currentDateTime);
+
+    // Extract hours and minutes from the new time string
+    const [newHours, newMinutes] = newTime.split(":").map(Number);
+
+    // Update the dateTime with the new time
+    dateTime = dateTime.hour(newHours).minute(newMinutes).second(0);
+
+    return dateTime;
+  };
+
+  const handleSetNewTime = (value) => {
     setPopup(false);
-    // setTableHalls(
-    //   tableHalls.map((hall) => {
-    //     if (hall.hallID === parseInt(value)) {
-    //       return { ...hall, checked: true };
-    //     } else {
-    //       return { ...hall, checked: false };
-    //     }
-    //   })
-    // );
+    setTableHalls(
+      tableHalls.map((hall) => {
+        if (hall.hallID === parseInt(workingHall)) {
+          return {
+            ...hall,
+            display: getTimeFromDateTime(value),
+            checked: true,
+          };
+        } else {
+          return { ...hall, checked: false };
+        }
+      })
+    );
+    const dateTime = setProjectTime(value);
+    setData({
+      ...data,
+      hall: halls.find((hall) => hall.hallID === parseInt(workingHall)),
+      projectTime: dateTime.format("YYYY-MM-DDTHH:mm:ss"),
+      projectEnd: dateTime
+        .add(projection.movie.duration, "minute")
+        .format("YYYY-MM-DDTHH:mm:ss"),
+    });
+  };
+
+  const handleSaveEdit = () => {
+    // console.log(data);
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false,
+    });
+    dispatch(projectionsActions.editProjection(data));
+    navigate("/projections");
   };
 
   return (
@@ -207,13 +264,6 @@ const ProjectionPage = () => {
           sx={{ marginTop: "20px", width: "200px" }}
           error={errors.price}
         />
-        <Button
-          variant="contained"
-          sx={{ marginTop: "20px", width: "200px" }}
-          onClick={() => setPopup(true)}
-        >
-          Set projection time
-        </Button>
 
         <div
           style={{
@@ -226,7 +276,14 @@ const ProjectionPage = () => {
           <Button
             variant="contained"
             sx={{ marginTop: "20px" }}
-            onClick={() => console.log(data, projection)}
+            onClick={() =>
+              setConfirmDialog({
+                isOpen: true,
+                title: "Save changes",
+                subTitle: "Are you sure you want to save changes?",
+                onConfirm: handleSaveEdit,
+              })
+            }
           >
             Edit projection
           </Button>
@@ -247,6 +304,10 @@ const ProjectionPage = () => {
           setNewTime={handleSetNewTime}
         />
       </Popup>
+      <ConfirmDialog
+        confirmDialog={confirmDialog}
+        setConfirm={setConfirmDialog}
+      />
     </div>
   );
 };
