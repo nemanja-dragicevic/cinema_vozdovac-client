@@ -99,12 +99,17 @@ const ProjectionPage = () => {
   const handleReset = () => {
     resetErrors();
     setData(projection);
+    console.log(projection);
     setTableHalls(
       tableHalls.map((hall) => {
         if (hall.hallID === projection?.hall?.hallID) {
-          return { ...hall, checked: true };
+          return {
+            ...hall,
+            checked: true,
+            display: getTimeFromDateTime(projection.projectTime),
+          };
         } else {
-          return { ...hall, checked: false };
+          return { ...hall, checked: false, display: "" };
         }
       })
     );
