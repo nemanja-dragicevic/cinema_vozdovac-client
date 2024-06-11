@@ -223,6 +223,7 @@ const ProjectionPage = () => {
       isOpen: false,
     });
     dispatch(projectionsActions.editProjection(data));
+    navigate("/projections");
   };
 
   return (
@@ -263,13 +264,6 @@ const ProjectionPage = () => {
           sx={{ marginTop: "20px", width: "200px" }}
           error={errors.price}
         />
-        <Button
-          variant="contained"
-          sx={{ marginTop: "20px", width: "200px" }}
-          onClick={() => setPopup(true)}
-        >
-          Set projection time
-        </Button>
 
         <div
           style={{
