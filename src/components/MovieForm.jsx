@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import MovieBackground from "./../reusable/MovieBackground";
 import * as rolesActions from "../actions/roles";
 import "../styles/movie.css";
+import { getFirstTwoSentences } from "./../utils/other";
 
 const MovieForm = () => {
   const dispatch = useDispatch();
@@ -36,14 +37,15 @@ const MovieForm = () => {
           </p>
         </div>
         <div class="movie_desc">
-          <p class="text">{movie.description}</p>
-          <button>Reserve your seat</button>
+          <p class="text">{getFirstTwoSentences(movie.description)}</p>
+          <button className="reserve">Reserve your seat</button>
         </div>
       </div>
       <MovieBackground
         small={false}
         base64Image={movie.bigPicture}
         nameClass="blur_back bright_back"
+        toDecode={true}
       />
     </div>
   );
