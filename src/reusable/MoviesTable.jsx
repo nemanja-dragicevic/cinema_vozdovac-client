@@ -19,9 +19,9 @@ const MoviesTable = ({ movies }) => {
         <span className="gradient-text">Repertoar Bioskopa</span>
       </div>
       {movies.map((movie) => (
-        <div class="movie_card" id="bright">
-          <div class="info_section">
-            <div class="movie_header">
+        <div className="movie_card" id="bright">
+          <div className="info_section">
+            <div className="movie_header">
               <MovieBackground
                 small={true}
                 base64Image={movie.smallPicture}
@@ -30,15 +30,15 @@ const MoviesTable = ({ movies }) => {
               />
               <h1>{movie.name}</h1>
               <h4>{movie.genres.map((genre) => genre.name).join(", ")}</h4>
-              <span class="minutes">{movie.duration} min</span>
-              {/* <p class="type">
+              <span className="minutes">{movie.duration} min</span>
+              {/* <p className="type">
                 {movie.roles
                   .map((actor) => actor.firstName + " " + actor.lastName)
                   .join(", ")}
               </p> */}
             </div>
-            <div class="movie_desc">
-              <p class="text">{getFirstTwoSentences(movie.description)}</p>
+            <div className="movie_desc">
+              <p className="text">{getFirstTwoSentences(movie.description)}</p>
               <MovieNextPage movieId={movie.movieID} />
             </div>
           </div>
