@@ -38,7 +38,7 @@ const Movies = () => {
 
   return movies === undefined || movies.length === 0 ? (
     <>
-      <div class="no_movie_container">
+      <div className="no_movie_container">
         <h1>No Movies Available</h1>
         <p>Sorry, there are no movies to display right now.</p>
       </div>

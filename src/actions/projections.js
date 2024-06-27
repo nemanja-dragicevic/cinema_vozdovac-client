@@ -77,3 +77,19 @@ export const editProjection = (data) => {
       });
   };
 };
+
+export const getProjectionsForDateAndMovie = (date, id) => {
+  return (dispatch) => {
+    dispatch(projectionsActions.actionStart());
+    return apiService
+      .get(projectionsPath + `?date=${date}&id=${id}`)
+      .then((response) => {
+        dispatch(projectionsActions.fetchProjections(response.data));
+      })
+      .catch((error) => {
+        if (error?.response?.status === 401) redirect401Error(error);
+        dispatch(projectionsActions.actionError(error?.response?.data));
+        notifications.error(error?.response?.data);
+      });
+  };
+};
