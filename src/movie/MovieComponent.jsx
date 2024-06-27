@@ -74,14 +74,32 @@ const MovieComponent = () => {
     subTitle: "",
   });
 
+  const movie =
+    id === "0"
+      ? {
+          movieID: 0,
+          name: "",
+          duration: 0,
+          description: "",
+          genres: [],
+          bigPicture: "",
+          smallPicture: "",
+          roleDTO: [],
+        }
+      : movies.find((movie) => movie.movieID === parseInt(id));
+
   useEffect(() => {
-    if (genres.length > 0 && movies.length > 0) {
-      const movie = movies.find((movie) => movie.movieID === parseInt(id));
+    if (id !== "0" && genres.length > 0) {
+      setData(movie);
       const movieGenreIDs =
         movie?.genres.length > 0
           ? movie.genres.map((genre) => genre.genreID)
           : [];
       const updatedGenres = activeGenres(movieGenreIDs);
+      setAllGenres(updatedGenres);
+    }
+    if (id === "0") {
+      const updatedGenres = activeGenres([]);
       setAllGenres(updatedGenres);
     }
     if (actors.length > 0) {
@@ -114,20 +132,6 @@ const MovieComponent = () => {
     },
   });
 
-  const movie =
-    id === "0"
-      ? {
-          movieID: 0,
-          name: "",
-          duration: 0,
-          description: "",
-          genres: [],
-          bigPicture: "",
-          smallPicture: "",
-          roleDTO: [],
-        }
-      : movies.find((movie) => movie.movieID === parseInt(id));
-
   const [allGenres, setAllGenres] = useState([]);
   const [allActors, setAllActors] = useState([]);
   const [openPopup, setOpenPopup] = useState(false);
@@ -145,10 +149,17 @@ const MovieComponent = () => {
   });
 
   const activeGenres = (movieGenreIDs) => {
-    return genres.map((genre) => ({
-      ...genre,
-      checked: movieGenreIDs.includes(genre.genreID),
-    }));
+    if (movieGenreIDs.length === 0) {
+      return genres.map((genre) => ({
+        ...genre,
+        checked: false,
+      }));
+    } else {
+      return genres.map((genre) => ({
+        ...genre,
+        checked: movieGenreIDs.includes(genre.genreID),
+      }));
+    }
   };
 
   const handleChange = (name, value) => {
@@ -421,6 +432,7 @@ const MovieComponent = () => {
           />
           <Input
             name="duration"
+            type="number"
             value={data.duration}
             label="Duration (in minutes)"
             error={errors.duration}

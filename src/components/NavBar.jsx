@@ -2,6 +2,7 @@ import { Button } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, NavLink } from "react-router-dom";
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 
 const NavBar = () => {
   var { member } = useSelector((state) => state.membersReducer);
@@ -105,6 +106,18 @@ const NavBar = () => {
         {sessionStorage.getItem("user") ? (
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">
+              <NavLink className="nav-link" to="/checkout">
+                <ShoppingCartOutlinedIcon fontSize="large" />
+              </NavLink>
+            </li>
+            <li
+              className="nav-item"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <Button className="nav-link" onClick={handleLogout}>
                 Logout
               </Button>

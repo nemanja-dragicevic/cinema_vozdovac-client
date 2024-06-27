@@ -37,7 +37,12 @@ const Movies = () => {
   }
 
   return movies === undefined || movies.length === 0 ? (
-    <h1>Nema filmova</h1>
+    <>
+      <div className="no_movie_container">
+        <h1>No Movies Available</h1>
+        <p>Sorry, there are no movies to display right now.</p>
+      </div>
+    </>
   ) : (
     <>
       <MoviesTable movies={movies} />

@@ -113,8 +113,13 @@ const GenrePage = () => {
 
     if (genreExists) return;
 
-    if (data.genreID === 0) dispatch(genreActions.addGenre(data));
-    else dispatch(genreActions.updateGenre(data));
+    if (data.genreID === 0) {
+      setOpenPopup(false);
+      dispatch(genreActions.addGenre(data));
+    } else {
+      setOpenPopup(false);
+      dispatch(genreActions.updateGenre(data));
+    }
   };
 
   return (

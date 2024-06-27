@@ -15,3 +15,42 @@
   align-items: center;
   height: 100vh;
 }
+
+.no_movie_container {
+  margin: 150px auto;
+  width: 50%;
+  height: 100px;
+  padding: 20px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  
+  border-radius: 8px;
+  font-size: 1.5rem;
+  background-image: linear-gradient(to right, #4F46E5, #8D44AD, #D26385, #F89A7D, #8D44AD, #4F46E5);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+p {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+footer {
+  margin-top: 30px;
+  color: #999;
+  font-size: 14px;
+}
