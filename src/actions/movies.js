@@ -4,6 +4,7 @@ import {
   moviesApi,
   moviesPath,
   moviesPathID,
+  moviesWithoutProjections,
 } from "../utils/endpoints";
 import apiService from "./../utils/apiService";
 import * as notifications from "../utils/notification";
@@ -31,6 +32,24 @@ export const getMoviesInfo = () => {
     dispatch(moviesActions.actionStart());
     return apiService
       .get(allMovies)
+      .then((response) => {
+        dispatch(moviesActions.fetchMovies(response.data));
+      })
+      .catch((error) => {
+        if (error.response.status === 401) {
+          localStorage.removeItem("token");
+        }
+        dispatch(moviesActions.actionError(error?.response?.data));
+        notifications.error();
+      });
+  };
+};
+
+export const getUnprojectedMovies = () => {
+  return (dispatch) => {
+    dispatch(moviesActions.actionStart());
+    return apiService
+      .get(moviesWithoutProjections)
       .then((response) => {
         dispatch(moviesActions.fetchMovies(response.data));
       })
