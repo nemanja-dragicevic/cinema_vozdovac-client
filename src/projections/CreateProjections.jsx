@@ -7,12 +7,14 @@ import { useDispatch, useSelector } from "react-redux";
 import dayjs from "dayjs";
 import * as hallActions from "../actions/hall";
 import * as movieActions from "../actions/movies";
+import * as projectionsActions from "../actions/projections";
 import Table from "../reusable/Table";
 import Popup from "../reusable/Popup";
 import AddHeader from "../reusable/AddHeader";
 import ProjectionTimes from "./ProjectionTimes";
 import { warning } from "../utils/notification";
 import { formatDate } from "./../utils/date";
+import Input from "../registration/Input";
 
 const CreateProjections = () => {
   const dispatch = useDispatch();
@@ -53,15 +55,13 @@ const CreateProjections = () => {
 
   const [tableHall, setTableHall] = useState([]);
   const [tableMovie, setTableMovie] = useState([]);
-  const [time, setTime] = useState("");
+  const [errors, setErrors] = useState({
+    price: { error: false, message: "" },
+  });
   const [openPopup, setOpenPopup] = useState(false);
   const [dates, setDates] = useState({
-    startDate: new dayjs().add(1, "day"),
-    endDate: new dayjs().add(1, "day"),
-  });
-  const [workingMovieHall, setWorkingMovieHall] = useState({
-    hallID: 0,
-    movieID: 0,
+    startTime: new dayjs().add(1, "day"),
+    endTime: new dayjs().add(1, "day"),
   });
   const movieFields = ["name", "duration", "genres"];
   const movieHeadCells = [
@@ -69,6 +69,23 @@ const CreateProjections = () => {
     { id: "duration", label: "Duration" },
     { id: "genres", label: "Genres", disableSorting: true },
   ];
+  const [data, setData] = useState({
+    movie: {},
+    hall: {},
+    projectionTime: [],
+    price: 0,
+  });
+
+  useEffect(() => {
+    setData((prevData) => ({
+      ...prevData,
+      movie: {
+        ...prevData.movie,
+        startTime: dates.startTime,
+        endTime: dates.endTime,
+      },
+    }));
+  }, [dates.startTime, dates.endTime]);
 
   const [filterFn, setFilterFn] = useState({
     fn: (items) => {
@@ -80,9 +97,9 @@ const CreateProjections = () => {
     const { value, checked } = e.target;
 
     if (checked) {
-      setWorkingMovieHall((prevState) => ({
+      setData((prevState) => ({
         ...prevState,
-        hallID: value,
+        hall: halls.find((hall) => hall.hallID === parseInt(value)),
       }));
       setTableHall((currentHalls) =>
         currentHalls.map((hall) => ({
@@ -91,9 +108,9 @@ const CreateProjections = () => {
         }))
       );
     } else {
-      setWorkingMovieHall((prevState) => ({
+      setData((prevState) => ({
         ...prevState,
-        hallID: 0,
+        hall: {},
       }));
       setTableHall((currentHalls) =>
         currentHalls.map((hall) => ({
@@ -108,10 +125,11 @@ const CreateProjections = () => {
     const { value, checked } = e.target;
 
     if (checked) {
-      setWorkingMovieHall((prevState) => ({
+      setData((prevState) => ({
         ...prevState,
-        movieID: value,
+        movie: movies.find((movie) => movie.movieID === parseInt(value)),
       }));
+
       setTableMovie((currentMovies) =>
         currentMovies.map((movie) => ({
           ...movie,
@@ -119,9 +137,9 @@ const CreateProjections = () => {
         }))
       );
     } else {
-      setWorkingMovieHall((prevState) => ({
+      setData((prevState) => ({
         ...prevState,
-        movieID: 0,
+        movie: {},
       }));
       setTableMovie((currentMovies) =>
         currentMovies.map((movie) => ({
@@ -137,27 +155,82 @@ const CreateProjections = () => {
       ...prevState,
       [name]: value,
     }));
-    if (name == "startDate") {
+
+    if (name == "startTime") {
       setDates((prevState) => ({
         ...prevState,
-        endDate: value,
+        endTime: value,
       }));
     }
   };
 
   const handleTimeSelection = () => {
     if (
-      dates.startDate.isAfter(dates.endDate) ||
-      dates.startDate.isSame(dates.endDate)
+      dates.startTime.isAfter(dates.endTime) ||
+      dates.startTime.isSame(dates.endTime)
     ) {
       warning("Start date should be before end date");
       return;
     }
-    if (workingMovieHall.hallID === 0 || workingMovieHall.movieID === 0) {
+    if (
+      Object.keys(data.hall).length === 0 ||
+      Object.keys(data.movie).length === 0
+    ) {
       warning("Please select movie and hall");
       return;
     }
     setOpenPopup(true);
+  };
+
+  const handleChange = (name, value) => {
+    setErrors((prevState) => ({
+      ...prevState,
+      price: { error: false, message: "" },
+    }));
+    setData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleSelectedTime = (newTime) => {
+    setOpenPopup(false);
+
+    setData((prevState) => ({
+      ...prevState,
+      projectionTime: [newTime],
+    }));
+  };
+
+  const handleSaveProjections = () => {
+    if (
+      Object.keys(data.hall).length === 0 ||
+      Object.keys(data.movie).length === 0
+    ) {
+      warning("Please select movie and hall");
+      return;
+    }
+    if (
+      dates.startTime.isAfter(dates.endTime) ||
+      dates.startTime.isSame(dates.endTime)
+    ) {
+      warning("Start date should be before end date");
+      return;
+    }
+    if (data.projectionTime.length === 0) {
+      warning("Please select projection time");
+      return;
+    }
+    if (parseInt(data.price) <= 0) {
+      setErrors((prevState) => ({
+        ...prevState,
+        price: { error: true, message: "Price should be greater than 0" },
+      }));
+      return;
+    }
+
+    console.log(data);
+    dispatch(projectionsActions.createProjection(data));
   };
 
   return (
@@ -205,21 +278,30 @@ const CreateProjections = () => {
             </div>
             <div style={{ display: "flex", width: "80%", columnGap: 20 }}>
               <DatePicker
-                name="startDate"
+                name="startTime"
                 minDate={new dayjs().add(1, "day")}
-                value={dayjs(dates.startDate)}
-                onChange={(newValue) => handleDateChange("startDate", newValue)}
+                value={dayjs(dates.startTime)}
+                onChange={(newValue) => handleDateChange("startTime", newValue)}
                 sx={{ marginBottom: "20px" }}
                 label="Select start date"
               />
               <DatePicker
-                minDate={dayjs(dates.startDate)}
-                value={dayjs(dates.endDate)}
-                onChange={(newValue) => handleDateChange("endDate", newValue)}
+                minDate={dayjs(dates.startTime)}
+                value={dayjs(dates.endTime)}
+                onChange={(newValue) => handleDateChange("endTime", newValue)}
                 sx={{ marginBottom: "20px" }}
                 label="Select end date"
               />
             </div>
+            <Input
+              label="Price (in RSD)"
+              name="price"
+              value={data.price}
+              onChange={handleChange}
+              type="number"
+              sx={{ marginTop: "20px", width: "200px", marginBottom: "20px" }}
+              error={errors.price}
+            />
             <div
               style={{
                 display: "flex",
@@ -228,7 +310,9 @@ const CreateProjections = () => {
               }}
             >
               <span>
-                {time ? "Selected time:" + { time } : "No time selected"}
+                {data.projectionTime.length !== 0
+                  ? `Selected time: ${data.projectionTime}`
+                  : "No time selected"}
               </span>
             </div>
 
@@ -240,6 +324,14 @@ const CreateProjections = () => {
             >
               Select projection time
             </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ width: "200px" }}
+              onClick={handleSaveProjections}
+            >
+              Save projections
+            </Button>
           </>
         ) : (
           <h3>No movies to project</h3>
@@ -247,17 +339,11 @@ const CreateProjections = () => {
       </Paper>
       <Popup openPopup={openPopup} setOpen={setOpenPopup}>
         <ProjectionTimes
-          hallID={workingMovieHall.hallID}
-          time={time}
-          date={formatDate(dates.startDate.toDate())}
-          endDate={formatDate(dates.endDate.toDate())}
-          setTime={setTime}
-          duration={
-            movies.find(
-              (movie) => movie.movieID === parseInt(workingMovieHall.movieID)
-            )?.duration
-          }
-          workingMovieHall={workingMovieHall}
+          hallID={data?.hall?.hallID}
+          date={formatDate(dates.startTime.toDate())}
+          endDate={formatDate(dates.endTime.toDate())}
+          setNewTime={handleSelectedTime}
+          duration={data?.movie?.duration}
           setOpenPopup={setOpenPopup}
         />
       </Popup>
