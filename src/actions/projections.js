@@ -26,7 +26,7 @@ export const setProjection = (id) => {
   };
 };
 
-export const getTimeForHallID = (date, hallID) => {
+export const getTimeForHallAndDate = (date, hallID) => {
   return (dispatch) => {
     dispatch(projectionsActions.actionStart());
     return apiService
@@ -41,6 +41,35 @@ export const getTimeForHallID = (date, hallID) => {
         dispatch(projectionsActions.actionError(error?.response?.data));
         notifications.error();
       });
+  };
+};
+
+export const getTimeForHallID = (hallID, startDate, endDate) => {
+  const params = {
+    hallID: hallID,
+    startDate: startDate,
+    endDate: endDate,
+  };
+  return (dispatch) => {
+    dispatch(projectionsActions.actionStart());
+    return (
+      apiService
+        // .get(`${projectionsPath}/${hallID}`)
+        // .get(`${projectionsPath}/get-projections`, {
+        //   params: params,
+        // })
+        .get(`${projectionsPath}/get-projections`, params)
+        .then((response) => {
+          dispatch(projectionsActions.fetchTimes(response.data));
+        })
+        .catch((error) => {
+          if (error.response.status === 401) {
+            redirect401Error(error);
+          }
+          dispatch(projectionsActions.actionError(error?.response?.data));
+          notifications.error();
+        })
+    );
   };
 };
 
