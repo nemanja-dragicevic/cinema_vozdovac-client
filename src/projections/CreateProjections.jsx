@@ -334,7 +334,7 @@ const CreateProjections = () => {
             </Button>
           </>
         ) : (
-          <h3>No movies to project</h3>
+          <h3>There are no movies to save their projections</h3>
         )}
       </Paper>
       <Popup openPopup={openPopup} setOpen={setOpenPopup}>

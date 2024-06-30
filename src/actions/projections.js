@@ -73,6 +73,7 @@ export const createProjection = (data) => {
     return apiService
       .post(projectionsPath, data)
       .then((response) => {
+        window.location.href = "/projections";
         notifications.success(response?.data);
       })
       .catch((error) => {
