@@ -9,11 +9,15 @@ import { error } from "../utils/notification";
 
 const parseTime = (timeString) => dayjs(timeString, "HH:mm");
 
-const ProjectionTimes = ({ hallID, date, duration, setNewTime }) => {
+const ProjectionTimes = ({ hallID, date, endDate, duration, setNewTime }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(projectionsActions.getTimeForHallID(date, hallID));
+    if (!endDate)
+      dispatch(projectionsActions.getTimeForHallAndDate(date, hallID));
+    else {
+      dispatch(projectionsActions.getTimeForHallID(hallID, date, endDate));
+    }
   }, [dispatch]);
 
   const durationInHours = Math.ceil(duration / 60);

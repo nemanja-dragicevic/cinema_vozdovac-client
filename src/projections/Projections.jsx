@@ -203,13 +203,23 @@ const Projections = () => {
           />
         </div>
 
-        <Button
-          variant="contained"
-          color="primary"
-          style={{ marginTop: "20px" }}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         >
-          Add projection
-        </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            style={{ marginTop: "20px", width: "20%" }}
+            onClick={() => navigate("/create_projections")}
+          >
+            Add projection
+          </Button>
+        </div>
       </Paper>
     </div>
   );

@@ -17,6 +17,7 @@ const Table = ({
   objectKey,
   fields,
   selection,
+  hideChecked,
 }) => {
   const theme = createTheme({
     palette: {
@@ -68,7 +69,7 @@ const Table = ({
                 <TableCell>
                   {selection ? (
                     <>
-                      {item.checked ? (
+                      {item.checked && !hideChecked ? (
                         <Input
                           name="roleName"
                           value={item.roleName || item.display}
