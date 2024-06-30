@@ -52,24 +52,34 @@ export const getTimeForHallID = (hallID, startDate, endDate) => {
   };
   return (dispatch) => {
     dispatch(projectionsActions.actionStart());
-    return (
-      apiService
-        // .get(`${projectionsPath}/${hallID}`)
-        // .get(`${projectionsPath}/get-projections`, {
-        //   params: params,
-        // })
-        .get(`${projectionsPath}/get-projections`, params)
-        .then((response) => {
-          dispatch(projectionsActions.fetchTimes(response.data));
-        })
-        .catch((error) => {
-          if (error.response.status === 401) {
-            redirect401Error(error);
-          }
-          dispatch(projectionsActions.actionError(error?.response?.data));
-          notifications.error();
-        })
-    );
+    return apiService
+      .get(`${projectionsPath}/get-projections`, params)
+      .then((response) => {
+        dispatch(projectionsActions.fetchTimes(response.data));
+      })
+      .catch((error) => {
+        if (error.response.status === 401) {
+          redirect401Error(error);
+        }
+        dispatch(projectionsActions.actionError(error?.response?.data));
+        notifications.error();
+      });
+  };
+};
+
+export const createProjection = (data) => {
+  return (dispatch) => {
+    dispatch(projectionsActions.actionStart());
+    return apiService
+      .post(projectionsPath, data)
+      .then((response) => {
+        notifications.success(response?.data);
+      })
+      .catch((error) => {
+        if (error?.response?.status === 401) redirect401Error(error);
+        dispatch(projectionsActions.actionError(error?.response?.data));
+        notifications.error(error?.response?.data);
+      });
   };
 };
 
