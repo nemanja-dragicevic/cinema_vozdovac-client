@@ -20,10 +20,6 @@ const projectionsSlice = createSlice({
       );
       state.error = undefined;
     },
-    addMovie(state, action) {
-      state.projections = [action.payload].concat(state.projections);
-      state.error = undefined;
-    },
     editProjection(state, action) {
       state.projections = state.projections.map((projection) =>
         projection.id === action.payload.id ? action.payload : projection
