@@ -3,10 +3,13 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, NavLink } from "react-router-dom";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
 
 const NavBar = () => {
   var { member } = useSelector((state) => state.membersReducer);
   // const member = sessionStorage.getItem("user");
+
+  const { checkout } = useSelector((state) => state.ticketReducer);
 
   const [role, setRole] = useState("DEFAULT");
   useEffect(() => {
@@ -106,9 +109,17 @@ const NavBar = () => {
         {sessionStorage.getItem("user") ? (
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">
-              <NavLink className="nav-link" to="/checkout">
-                <ShoppingCartOutlinedIcon fontSize="large" />
-              </NavLink>
+              {role === "USER" ? (
+                checkout.length > 0 ? (
+                  <NavLink className="nav-link" to="/checkout">
+                    <ShoppingCartCheckoutIcon fontSize="large" />
+                  </NavLink>
+                ) : (
+                  <NavLink className="nav-link" to="/checkout">
+                    <ShoppingCartOutlinedIcon fontSize="large" />
+                  </NavLink>
+                )
+              ) : null}
             </li>
             <li
               className="nav-item"
