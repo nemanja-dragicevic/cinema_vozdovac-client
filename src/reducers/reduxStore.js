@@ -6,7 +6,7 @@ import actorsReducer from "./actors";
 import hallReducer from "./hall";
 import genresReducer from "./genres";
 import projectionsReducer from "./projections";
-// import { thunk } from "redux-thunk";
+import ticketReducer from "./ticket";
 
 const store = configureStore({
   reducer: {
@@ -17,6 +17,7 @@ const store = configureStore({
     hallReducer,
     genresReducer,
     projectionsReducer,
+    ticketReducer,
   },
 });
 
