@@ -1,0 +1,15 @@
+.seat-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    column-gap: 10px;
+    margin: 10px 0;
+}
+
+.rowNum {
+    margin-right: 10px;
+}
+
+.totalPrice {
+    margin-top: 20px;
+}
