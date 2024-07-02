@@ -2,13 +2,12 @@ import { useParams } from "react-router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import MovieBackground from "./../reusable/MovieBackground";
+import * as projectionsActions from "../actions/projections";
 import * as rolesActions from "../actions/roles";
-import "../styles/movie.css";
-import { getFirstTwoSentences } from "./../utils/other";
 import Popup from "./../reusable/Popup";
 import Ticket from "../ticket/Ticket";
-import * as projectionsActions from "../actions/projections";
 import Card from "../reusable/Card";
+import "../styles/movie.css";
 
 const MovieForm = () => {
   const dispatch = useDispatch();
@@ -32,7 +31,6 @@ const MovieForm = () => {
   };
 
   const handleSeatSelection = (projection) => {
-    console.log("Projection: ", projection);
     setOpenPopup(true);
     setSelectedProjection(projection);
   };
@@ -57,9 +55,6 @@ const MovieForm = () => {
           </div>
           <div className="movie_desc">
             <p className="text">{movie.description}</p>
-            {/* <button className="reserve" onClick={openReserve}>
-            Reserve your seat
-          </button> */}
           </div>
         </div>
         <MovieBackground
