@@ -9,3 +9,9 @@ export const saveCheckoutTickets = (ticketItem, projectionId) => {
     dispatch(ticketActions.addTicketItem(ticketItem));
   };
 };
+
+export const removeSelection = (id, projectionId) => {
+  return (dispatch) => {
+    dispatch(ticketActions.removeSelection({ id, projectionId }));
+  };
+};
