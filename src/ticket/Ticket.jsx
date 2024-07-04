@@ -1,20 +1,21 @@
 import { Paper } from "@mui/material";
 import AddHeader from "../reusable/AddHeader";
-import Seat from "./Seat"; // Import your Seat component
+import Seat from "./Seat";
 import { useEffect, useState } from "react";
-// import { useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
-// import * as projectionsActions from "../actions/projections";
+import { useDispatch, useSelector } from "react-redux";
+import * as ticketActions from "../actions/tickets";
 import "../styles/ticket.css";
 import ChairIcon from "@mui/icons-material/Chair";
+import { warning } from "../utils/notification";
+import { dateDisplay } from "../utils/date";
 
-const Ticket = ({ projection }) => {
+const Ticket = ({ projection, closePopup }) => {
   const { rowsCount, seatsPerRow } = projection.hall;
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    // dispatch(projectionsActions.getProjectionsForMovie(id));
-  }, [dispatch]);
+  const { checkout } = useSelector((state) => state.ticketReducer);
+
+  useEffect(() => {}, [dispatch]);
 
   const [seatState, setSeatState] = useState(
     Array(rowsCount)
@@ -22,13 +23,37 @@ const Ticket = ({ projection }) => {
       .map(() => Array(seatsPerRow).fill({ bought: false, selected: false }))
   );
 
-  const [ticketItem, setTicketItem] = useState({
-    projectId: projection.id,
-    seatId: [],
-    total: 0,
-  });
+  const minSeatId = projection.hall.seats[0].id;
 
-  const toggleSeat = (row, seat) => {
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [ticketItem, setTicketItem] = useState([]);
+
+  useEffect(() => {
+    // console.log(checkout);
+    const selectedSeats = checkout.filter(
+      (item) => item.projectionId === projection.id
+    );
+    // console.log(selectedSeats);
+
+    setTicketItem(selectedSeats);
+    selectedSeats.forEach((item) => {
+      const row = item.row - 1;
+      const seatIndex = item.seat - 1;
+      setSeatState((prevSeatState) => {
+        const newSeatState = [...prevSeatState];
+        newSeatState[row] = [...prevSeatState[row]];
+        newSeatState[row][seatIndex] = {
+          ...prevSeatState[row][seatIndex],
+          selected: true,
+          bought: false,
+        };
+        return newSeatState;
+      });
+    });
+    setTotalPrice(selectedSeats.reduce((acc) => acc + projection.price, 0));
+  }, [checkout]);
+
+  const toggleSeat = (row, seat, seatId) => {
     setSeatState((prevSeatState) => {
       const newSeatState = [...prevSeatState];
       newSeatState[row] = [...prevSeatState[row]];
@@ -38,22 +63,38 @@ const Ticket = ({ projection }) => {
       };
       return newSeatState;
     });
-
+    console.log(ticketItem);
     setTicketItem((prevTicketItem) => {
       const newTicketItem = { ...prevTicketItem };
-      const seatId = row * seatsPerRow + seat;
       const price = projection.price;
 
       if (!seatState[row][seat].selected) {
-        newTicketItem.seatId.push(seatId);
-        newTicketItem.total += price;
-      } else {
-        newTicketItem.seatId = newTicketItem.seatId.filter(
-          (id) => id !== seatId
+        const exists = prevTicketItem.some(
+          (item) =>
+            item.projectionId === projection.id && item.seatId === seatId
         );
-        newTicketItem.total -= price;
+        if (!exists) {
+          prevTicketItem.push({
+            projectionId: projection.id,
+            seatId: seatId,
+            row: row + 1,
+            seat: seat + 1,
+            movieInfo: projection.movie.name,
+            hallName: projection.hall.hallName,
+            projectionTime:
+              dateDisplay(projection.projectTime) +
+              " - " +
+              dateDisplay(projection.projectEnd),
+          });
+        }
+        setTotalPrice((prevPrice) => prevPrice + price);
+      } else {
+        prevTicketItem = prevTicketItem.filter(
+          (item) => item.seatId !== seatId
+        );
+        setTotalPrice((prevPrice) => prevPrice - price);
       }
-      return newTicketItem;
+      return prevTicketItem;
     });
   };
 
@@ -68,6 +109,8 @@ const Ticket = ({ projection }) => {
             key={`seat-${row}-${seat}`}
             row={row}
             seat={seat}
+            seatId={row * seatsPerRow + seat + minSeatId}
+            isBooked={seatState[row][seat].bought}
             isSelected={isSelected}
             toggleSeat={toggleSeat}
             projection={projection}
@@ -84,8 +127,13 @@ const Ticket = ({ projection }) => {
   };
 
   const handleAddToCart = () => {
+    if (totalPrice === 0) {
+      warning("You must select at least one seat");
+      return;
+    }
     console.log(ticketItem);
-    // dispatch(projectionsActions.addTicketToCart(ticketItem));
+    dispatch(ticketActions.saveCheckoutTickets(ticketItem, projection.id));
+    closePopup();
   };
 
   return (
@@ -121,9 +169,13 @@ const Ticket = ({ projection }) => {
               alignItems: "center",
             }}
           >
-            <h5 className="totalPrice">Total price: {ticketItem.total} RSD</h5>
+            <h5 className="totalPrice">
+              Total price: {""}
+              {totalPrice} {""}
+              RSD
+            </h5>
             <button className="reserve" onClick={handleAddToCart}>
-              Reserve your seat
+              Reserve your seat(s)
             </button>
           </div>
         </div>
