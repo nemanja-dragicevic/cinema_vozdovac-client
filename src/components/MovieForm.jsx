@@ -19,20 +19,24 @@ const MovieForm = () => {
   useEffect(() => {
     dispatch(rolesActions.getRoles(id));
     dispatch(projectionsActions.getProjectionsForMovie(id));
-  }, [dispatch]);
+  }, [dispatch, id]);
 
   const { movies } = useSelector((state) => state.moviesReducer);
   const movie = movies.filter((movie) => movie.movieID === parseInt(id))[0];
   const [openPopup, setOpenPopup] = useState(false);
   const [selectedProjection, setSelectedProjection] = useState(null);
 
-  const openReserve = () => {
-    setOpenPopup(true);
-  };
-
-  const handleSeatSelection = (projection) => {
+  const handleProjectionSelect = (projection) => {
     setOpenPopup(true);
     setSelectedProjection(projection);
+  };
+
+  const sortSeats = (projection) => {
+    const seats = [...projection.hall.seats];
+    const sortedSeats = seats.sort((a, b) => {
+      return a.id - b.id;
+    });
+    return { ...projection, hall: { ...projection.hall, seats: sortedSeats } };
   };
 
   return (
@@ -69,7 +73,10 @@ const MovieForm = () => {
           setOpen={setOpenPopup}
           title="Reserve your seat"
         >
-          <Ticket projection={selectedProjection} />
+          <Ticket
+            projection={selectedProjection}
+            closePopup={() => setOpenPopup(false)}
+          />
         </Popup>
       </div>
       <div
@@ -88,8 +95,8 @@ const MovieForm = () => {
               return (
                 <div key={projection.id}>
                   <Card
-                    projection={projection}
-                    onSeatSelection={handleSeatSelection}
+                    projection={sortSeats(projection)}
+                    onSeatSelection={handleProjectionSelect}
                   />
                 </div>
               );
