@@ -79,3 +79,18 @@ export const getTickets = (id) => {
       });
   };
 };
+
+export const getTicketItems = (id) => {
+  return (dispatch) => {
+    dispatch(ticketActions.actionStart());
+    return apiService
+      .get(`${ticket}/items/${id}`)
+      .then((response) => {
+        dispatch(ticketActions.setTicketItems(response.data));
+      })
+      .catch((error) => {
+        dispatch(ticketActions.actionError(error?.response?.data));
+        notifications.error();
+      });
+  };
+};

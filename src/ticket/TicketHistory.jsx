@@ -19,6 +19,7 @@ const TicketHistory = () => {
     dispatch(ticketActions.getTickets(user.memberID));
   }, [dispatch]);
 
+  const [ticketId, setTicketId] = useState(0);
   const [openPopup, setOpenPopup] = useState(false);
   const [filterFn, setFilterFn] = useState({
     fn: (items) => {
@@ -39,6 +40,7 @@ const TicketHistory = () => {
   const handleDetails = (obj) => {
     console.log(obj);
     setOpenPopup(true);
+    setTicketId(obj.id);
   };
 
   return (
@@ -64,7 +66,7 @@ const TicketHistory = () => {
         openPopup={openPopup}
         setOpen={setOpenPopup}
       >
-        <TicketDetails />
+        <TicketDetails ticketId={ticketId} />
       </Popup>
     </div>
   );
