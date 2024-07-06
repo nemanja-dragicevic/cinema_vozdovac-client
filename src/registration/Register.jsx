@@ -103,7 +103,7 @@ const Register = () => {
       username: data.username,
       password: data.password,
     });
-    console.log(validate);
+
     if (validate.error) {
       const { details } = validate.error;
       const error = details[0].message;

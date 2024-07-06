@@ -6,7 +6,6 @@ import { rolesActions } from "../reducers/roles";
 export const getRoles = (movieID) => {
   return (dispatch) => {
     dispatch(rolesActions.actionStart());
-    console.log(movieID);
     return apiService
       .get(movieRolesPath(movieID))
       .then((response) => {

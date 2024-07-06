@@ -27,3 +27,9 @@ export const hallsPath = `/api/hall`;
 
 // Projections
 export const projectionsPath = `/api/projection`;
+
+// Tickets
+const ticketsPath = `/api/ticket`;
+export const ticket = ticketsPath;
+export const checkout = ticketsPath + `/create_payment`;
+export const capturePayment = ticketsPath + `/capture_payment`;

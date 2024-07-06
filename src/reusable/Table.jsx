@@ -1,6 +1,7 @@
 import { Button, TableBody, TableCell, TableRow } from "@mui/material";
 import useTable from "../utils/useTable";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import InfoIcon from "@mui/icons-material/Info";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ConfirmDialog from "./ConfirmDialog";
@@ -18,6 +19,9 @@ const Table = ({
   fields,
   selection,
   hideChecked,
+  arrayField,
+  deleteMoreData,
+  details,
 }) => {
   const theme = createTheme({
     palette: {
@@ -39,9 +43,9 @@ const Table = ({
   const { TblContainer, TblHead, TblPagination, dataAfterPagingAndSorting } =
     useTable(data, headCells, filterFn);
 
-  const closeDialog = (id) => {
+  const closeDialog = (id, ...params) => {
     setConfirmDialog({ ...confirmDialog, isOpen: false });
-    onDelete(id);
+    onDelete(id, ...params);
   };
 
   const getNestedProperty = (obj, path) => {
@@ -60,7 +64,7 @@ const Table = ({
                   <TableCell key={field}>
                     {Array.isArray(item[field])
                       ? item[field]
-                          .map((arrayItem) => arrayItem.name)
+                          .map((arrayItem) => arrayItem[arrayField])
                           .join(", ")
                       : //: item[field]}
                         getNestedProperty(item, field)}
@@ -84,6 +88,16 @@ const Table = ({
                         inputProps={{ "aria-label": "controlled" }}
                       />
                     </>
+                  ) : details ? (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        setEditObj(item);
+                      }}
+                    >
+                      <InfoIcon />
+                    </Button>
                   ) : (
                     <>
                       <Button
@@ -97,7 +111,6 @@ const Table = ({
                       </Button>
                       <button
                         className="btn btn-danger m-1"
-                        //onClick={() => onDelete(item.actorID)}
                         onClick={() => {
                           setConfirmDialog({
                             isOpen: true,
@@ -105,7 +118,12 @@ const Table = ({
                               "Are you sure you want to delete this record?",
                             subTitle: "You can't undo this operation",
                             onConfirm: () => {
-                              closeDialog(item[objectKey]);
+                              const id = item[objectKey];
+                              const additionalData =
+                                deleteMoreData.length > 0
+                                  ? deleteMoreData.map((field) => item[field])
+                                  : [];
+                              closeDialog(id, additionalData);
                             },
                           });
                         }}
@@ -127,6 +145,12 @@ const Table = ({
       />
     </>
   );
+};
+
+Table.defaultProps = {
+  arrayField: "name",
+  deleteMoreData: [],
+  details: false,
 };
 
 export default Table;

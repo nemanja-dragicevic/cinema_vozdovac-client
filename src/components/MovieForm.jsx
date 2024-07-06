@@ -2,13 +2,12 @@ import { useParams } from "react-router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import MovieBackground from "./../reusable/MovieBackground";
+import * as projectionsActions from "../actions/projections";
 import * as rolesActions from "../actions/roles";
-import "../styles/movie.css";
-import { getFirstTwoSentences } from "./../utils/other";
 import Popup from "./../reusable/Popup";
 import Ticket from "../ticket/Ticket";
-import * as projectionsActions from "../actions/projections";
 import Card from "../reusable/Card";
+import "../styles/movie.css";
 
 const MovieForm = () => {
   const dispatch = useDispatch();
@@ -20,21 +19,24 @@ const MovieForm = () => {
   useEffect(() => {
     dispatch(rolesActions.getRoles(id));
     dispatch(projectionsActions.getProjectionsForMovie(id));
-  }, [dispatch]);
+  }, [dispatch, id]);
 
   const { movies } = useSelector((state) => state.moviesReducer);
   const movie = movies.filter((movie) => movie.movieID === parseInt(id))[0];
   const [openPopup, setOpenPopup] = useState(false);
   const [selectedProjection, setSelectedProjection] = useState(null);
 
-  const openReserve = () => {
-    setOpenPopup(true);
-  };
-
-  const handleSeatSelection = (projection) => {
-    console.log("Projection: ", projection);
+  const handleProjectionSelect = (projection) => {
     setOpenPopup(true);
     setSelectedProjection(projection);
+  };
+
+  const sortSeats = (projection) => {
+    const seats = [...projection.hall.seats];
+    const sortedSeats = seats.sort((a, b) => {
+      return a.id - b.id;
+    });
+    return { ...projection, hall: { ...projection.hall, seats: sortedSeats } };
   };
 
   return (
@@ -57,9 +59,6 @@ const MovieForm = () => {
           </div>
           <div className="movie_desc">
             <p className="text">{movie.description}</p>
-            {/* <button className="reserve" onClick={openReserve}>
-            Reserve your seat
-          </button> */}
           </div>
         </div>
         <MovieBackground
@@ -74,7 +73,10 @@ const MovieForm = () => {
           setOpen={setOpenPopup}
           title="Reserve your seat"
         >
-          <Ticket projection={selectedProjection} />
+          <Ticket
+            projection={selectedProjection}
+            closePopup={() => setOpenPopup(false)}
+          />
         </Popup>
       </div>
       <div
@@ -93,8 +95,8 @@ const MovieForm = () => {
               return (
                 <div key={projection.id}>
                   <Card
-                    projection={projection}
-                    onSeatSelection={handleSeatSelection}
+                    projection={sortSeats(projection)}
+                    onSeatSelection={handleProjectionSelect}
                   />
                 </div>
               );
