@@ -21,6 +21,9 @@ import UserSettings from "./member/UserSetings";
 import ProjectionPage from "./projections/ProjectionPage";
 import Checkout from "./ticket/Checkout";
 import CreateProjections from "./projections/CreateProjections";
+import Success from "./ticket/Sucess";
+import Failure from "./ticket/Failure";
+import TicketHistory from "./ticket/TicketHistory";
 
 function App() {
   const [token, setToken] = useState(null);
@@ -49,6 +52,9 @@ function App() {
           <Route exact path="/movie_edit/:id" element={<MovieComponent />} />
           <Route exact path="/projections" element={<Projections />} />
           <Route exact path="/checkout" element={<Checkout />} />
+          <Route exact path="/success" element={<Success />} />
+          <Route exact path="/failure" element={<Failure />} />
+          <Route exact path="/history" element={<TicketHistory />} />
           <Route
             exact
             path="/create_projections"
