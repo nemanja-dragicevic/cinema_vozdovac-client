@@ -1,4 +1,4 @@
-import { Paper } from "@mui/material";
+import { Button, Paper } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import Table from "../reusable/Table";
 import { useState } from "react";
@@ -10,6 +10,8 @@ const Checkout = () => {
   const dispatch = useDispatch();
 
   const { checkout } = useSelector((state) => state.ticketReducer);
+
+  const userFromSessionStorage = sessionStorage.getItem("user");
 
   const [filterFn, setFilterFn] = useState({
     fn: (items) => {
@@ -29,6 +31,25 @@ const Checkout = () => {
 
   const handleDelete = (id, ...params) => {
     dispatch(ticketActions.removeSelection(id, params[0][0]));
+  };
+
+  const handleCheckout = () => {
+    if (checkout.length === 0) {
+      alert("No tickets to checkout");
+      return;
+    }
+    if (!userFromSessionStorage) {
+      alert("Please login to checkout");
+      return;
+    }
+    const user = JSON.parse(userFromSessionStorage);
+    const ticket = {
+      memberID: user.memberID,
+      status: "NOT_PAID",
+      ticketItems: checkout,
+    };
+    // console.log(ticket);
+    dispatch(ticketActions.checkoutTicket(ticket));
   };
 
   return (
@@ -60,6 +81,15 @@ const Checkout = () => {
             selection={false}
             deleteMoreData={["projectionId"]}
           />
+
+          <Button
+            variant="contained"
+            color="primary"
+            style={{ marginTop: 20 }}
+            onClick={handleCheckout}
+          >
+            Checkout
+          </Button>
         </div>
       </Paper>
     </div>
