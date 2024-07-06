@@ -1,6 +1,7 @@
 import { Button, TableBody, TableCell, TableRow } from "@mui/material";
 import useTable from "../utils/useTable";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import InfoIcon from "@mui/icons-material/Info";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ConfirmDialog from "./ConfirmDialog";
@@ -20,6 +21,7 @@ const Table = ({
   hideChecked,
   arrayField,
   deleteMoreData,
+  details,
 }) => {
   const theme = createTheme({
     palette: {
@@ -86,6 +88,16 @@ const Table = ({
                         inputProps={{ "aria-label": "controlled" }}
                       />
                     </>
+                  ) : details ? (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        setEditObj(item);
+                      }}
+                    >
+                      <InfoIcon />
+                    </Button>
                   ) : (
                     <>
                       <Button
@@ -138,6 +150,7 @@ const Table = ({
 Table.defaultProps = {
   arrayField: "name",
   deleteMoreData: [],
+  details: false,
 };
 
 export default Table;
