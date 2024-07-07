@@ -12,6 +12,8 @@ const Success = () => {
   useEffect(() => {
     if (sessionID) {
       dispatch(ticketActions.saveCheckoutTicket(sessionID));
+    } else {
+      window.location.href = "/";
     }
   }, [sessionID]);
 
