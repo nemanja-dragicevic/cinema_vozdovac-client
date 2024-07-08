@@ -1,32 +1,29 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ReceiptIcon from "@mui/icons-material/Receipt";
-import { Paper } from "@mui/material";
 import * as ticketActions from "../actions/tickets";
+import { Paper } from "@mui/material";
 import AddHeader from "../reusable/AddHeader";
 import Table from "../reusable/Table";
-import Popup from "./../reusable/Popup";
-import TicketDetails from "./TicketDetails";
+import Popup from "../reusable/Popup";
+import TicketDetails from "../ticket/TicketDetails";
 
-const TicketHistory = () => {
+const RefundPage = () => {
   const dispatch = useDispatch();
-
-  const user = JSON.parse(sessionStorage.getItem("user"));
 
   const { tickets } = useSelector((state) => state.ticketReducer);
 
   useEffect(() => {
-    dispatch(ticketActions.getTickets(user.memberID));
+    dispatch(ticketActions.getRefundRequests());
   }, [dispatch]);
 
-  const [ticketId, setTicketId] = useState(0);
   const [openPopup, setOpenPopup] = useState(false);
+  const [ticketId, setTicketId] = useState(0);
   const [filterFn, setFilterFn] = useState({
     fn: (items) => {
       return items;
     },
   });
-
   const headCells = [
     { id: "id", label: "Ticket ID" },
     { id: "payinTime", label: "Payin time" },
@@ -38,6 +35,7 @@ const TicketHistory = () => {
   const objectKey = "id";
 
   const handleDetails = (obj) => {
+    console.log(obj);
     setOpenPopup(true);
     setTicketId(obj.id);
   };
@@ -45,7 +43,10 @@ const TicketHistory = () => {
   return (
     <div style={{ padding: "20px", marginTop: "50px" }}>
       <Paper sx={{ padding: 3 }}>
-        <AddHeader title="History" icon={<ReceiptIcon fontSize="large" />} />
+        <AddHeader
+          title="Refund requests"
+          icon={<ReceiptIcon fontSize="large" />}
+        />
         <div style={{ marginTop: "20px" }}>
           <Table
             headCells={headCells}
@@ -67,8 +68,8 @@ const TicketHistory = () => {
       >
         <TicketDetails
           ticketId={ticketId}
-          memberID={user.memberID}
-          status={tickets.find((ticket) => ticket.id === ticketId)?.status}
+          memberID={null}
+          status={"UNDER_REVIEW"}
           setOpenPopup={setOpenPopup}
         />
       </Popup>
@@ -76,4 +77,4 @@ const TicketHistory = () => {
   );
 };
 
-export default TicketHistory;
+export default RefundPage;

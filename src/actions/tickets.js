@@ -94,3 +94,50 @@ export const getTicketItems = (id) => {
       });
   };
 };
+
+export const refundRequest = (memberID, id) => {
+  return (dispatch) => {
+    dispatch(ticketActions.actionStart());
+    return apiService
+      .put(`${ticket}/revoke/${memberID}/${id}`)
+      .then((response) => {
+        dispatch(ticketActions.updateTicket(response?.data));
+        notifications.success("Ticket sent for approval");
+      })
+      .catch((error) => {
+        dispatch(ticketActions.actionError(error?.response?.data));
+        notifications.error();
+      });
+  };
+};
+
+export const getRefundRequests = () => {
+  return (dispatch) => {
+    dispatch(ticketActions.actionStart());
+    return apiService
+      .get(`${ticket}/for-refund`)
+      .then((response) => {
+        dispatch(ticketActions.setTickets(response.data));
+      })
+      .catch((error) => {
+        dispatch(ticketActions.actionError(error?.response?.data));
+        notifications.error(error?.response?.data?.message);
+      });
+  };
+};
+
+export const refundTicket = (ticketID) => {
+  return (dispatch) => {
+    dispatch(ticketActions.actionStart());
+    return apiService
+      .post(`${ticket}/refund/${ticketID}`)
+      .then(() => {
+        dispatch(ticketActions.removeTicket(ticketID));
+        notifications.success("Ticket refunded successfully!");
+      })
+      .catch((error) => {
+        dispatch(ticketActions.actionError(error?.response?.data));
+        notifications.error("There was an error while trying to refund");
+      });
+  };
+};

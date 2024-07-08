@@ -24,15 +24,25 @@ import CreateProjections from "./projections/CreateProjections";
 import Success from "./ticket/Sucess";
 import Failure from "./ticket/Failure";
 import TicketHistory from "./ticket/TicketHistory";
+import ProtectedRoute from "./security/ProtectedRoute";
+import { useSelector } from "react-redux";
+import RefundPage from "./refund/RefundPage";
 
 function App() {
   const [token, setToken] = useState(null);
+
+  const { member } = useSelector((state) => state.membersReducer);
+
   useEffect(() => {
-    const stored = localStorage.getItem("token");
-    if (stored) {
-      setToken(stored);
+    if (member) {
+      setToken(member.token);
+    } else {
+      const stored = localStorage.getItem("token");
+      if (stored) {
+        setToken(stored);
+      }
     }
-  }, [token]);
+  }, [member]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -43,29 +53,110 @@ function App() {
           <Route exact path="/" element={<WelcomePage />} />
           <Route exact path="/login" element={<Login />} />
           <Route exact path="/movies" element={<Movies />} />
-          <Route exact path="/movies/:id" element={<MovieForm />} />
+          <Route
+            exact
+            path="/movies/:id"
+            element={
+              <ProtectedRoute token={token}>
+                <MovieForm />
+              </ProtectedRoute>
+            }
+          />
           <Route exact path="/register" element={<Register />} />
           <Route exact path="/actors" element={<ActorsPage />} />
           <Route exact path="/add_movie" element={<MoviePage />} />
           <Route exact path="/hall" element={<HallPage />} />
-          <Route exact path="/genre" element={<GenrePage />} />
-          <Route exact path="/movie_edit/:id" element={<MovieComponent />} />
-          <Route exact path="/projections" element={<Projections />} />
-          <Route exact path="/checkout" element={<Checkout />} />
+          <Route
+            exact
+            path="/genre"
+            element={
+              <ProtectedRoute token={token}>
+                <GenrePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            exact
+            path="/movie_edit/:id"
+            element={
+              <ProtectedRoute token={token}>
+                <MovieComponent />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            exact
+            path="/projections"
+            element={
+              <ProtectedRoute token={token}>
+                <Projections />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            exact
+            path="/checkout"
+            element={
+              <ProtectedRoute token={token}>
+                <Checkout />
+              </ProtectedRoute>
+            }
+          />
           <Route exact path="/success" element={<Success />} />
-          <Route exact path="/failure" element={<Failure />} />
-          <Route exact path="/history" element={<TicketHistory />} />
+          <Route
+            exact
+            path="/failure"
+            element={
+              <ProtectedRoute token={token}>
+                <Failure />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            exact
+            path="/history"
+            element={
+              <ProtectedRoute token={token}>
+                <TicketHistory />
+              </ProtectedRoute>
+            }
+          />
           <Route
             exact
             path="/create_projections"
-            element={<CreateProjections />}
+            element={
+              <ProtectedRoute token={token}>
+                <CreateProjections />
+              </ProtectedRoute>
+            }
           />
           <Route
             exact
             path="/projection_edit/:id"
-            element={<ProjectionPage />}
+            element={
+              <ProtectedRoute token={token}>
+                <ProjectionPage />
+              </ProtectedRoute>
+            }
           />
-          <Route exact path="/settings" element={<UserSettings />} />
+          <Route
+            exact
+            path="/settings"
+            element={
+              <ProtectedRoute token={token}>
+                <UserSettings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            exact
+            path="/refund"
+            element={
+              <ProtectedRoute token={token}>
+                <RefundPage />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </div>
     </LocalizationProvider>

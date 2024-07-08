@@ -28,7 +28,7 @@ const NavBar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <Link className="navbar-brand" to="/">
-        Bioskop Vozdovac
+        Cinema Vozdovac
       </Link>
       <button
         className="navbar-toggler"
@@ -84,6 +84,13 @@ const NavBar = () => {
             ) : null}
           </li>
           <li className="nav-item">
+            {role === "ADMIN" ? (
+              <NavLink className="nav-link" to="/refund">
+                Refund tickets
+              </NavLink>
+            ) : null}
+          </li>
+          <li className="nav-item">
             {role === "USER" ? (
               <NavLink className="nav-link" to="/history">
                 My history
@@ -105,7 +112,11 @@ const NavBar = () => {
             </li>
           ) : null}
         </ul>
-        <span className="navbar-text">Dobrodošli u svet filmske zabave</span>
+        {role === "USER" ? (
+          <span className="navbar-text">
+            Welcome to the captivating world of cinema!
+          </span>
+        ) : null}
         {sessionStorage.getItem("user") ? (
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">

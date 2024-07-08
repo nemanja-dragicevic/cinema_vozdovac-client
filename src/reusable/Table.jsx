@@ -1,4 +1,10 @@
-import { Button, TableBody, TableCell, TableRow } from "@mui/material";
+import {
+  Button,
+  Checkbox,
+  TableBody,
+  TableCell,
+  TableRow,
+} from "@mui/material";
 import useTable from "../utils/useTable";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import InfoIcon from "@mui/icons-material/Info";
@@ -22,6 +28,7 @@ const Table = ({
   arrayField,
   deleteMoreData,
   details,
+  buttons,
 }) => {
   const theme = createTheme({
     palette: {
@@ -66,73 +73,74 @@ const Table = ({
                       ? item[field]
                           .map((arrayItem) => arrayItem[arrayField])
                           .join(", ")
-                      : //: item[field]}
-                        getNestedProperty(item, field)}
+                      : getNestedProperty(item, field)}
                   </TableCell>
                 ))}
-                <TableCell>
-                  {selection ? (
-                    <>
-                      {item.checked && !hideChecked ? (
-                        <Input
-                          name="roleName"
-                          value={item.roleName || item.display}
-                          error={false}
-                          disabled={true}
+                {buttons && (
+                  <TableCell>
+                    {selection ? (
+                      <>
+                        {item.checked && !hideChecked ? (
+                          <Input
+                            name="roleName"
+                            value={item.roleName || item.display}
+                            error={false}
+                            disabled={true}
+                          />
+                        ) : null}
+                        <Checkbox
+                          checked={item.checked}
+                          onClick={setEditObj}
+                          value={item[objectKey]}
+                          inputProps={{ "aria-label": "controlled" }}
                         />
-                      ) : null}
-                      <CheckBox
-                        checked={item.checked}
-                        onClick={setEditObj}
-                        value={item[objectKey]}
-                        inputProps={{ "aria-label": "controlled" }}
-                      />
-                    </>
-                  ) : details ? (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => {
-                        setEditObj(item);
-                      }}
-                    >
-                      <InfoIcon />
-                    </Button>
-                  ) : (
-                    <>
+                      </>
+                    ) : details ? (
                       <Button
                         variant="contained"
-                        color="secondary"
+                        color="primary"
                         onClick={() => {
                           setEditObj(item);
                         }}
                       >
-                        <EditOutlinedIcon />
+                        <InfoIcon />
                       </Button>
-                      <button
-                        className="btn btn-danger m-1"
-                        onClick={() => {
-                          setConfirmDialog({
-                            isOpen: true,
-                            title:
-                              "Are you sure you want to delete this record?",
-                            subTitle: "You can't undo this operation",
-                            onConfirm: () => {
-                              const id = item[objectKey];
-                              const additionalData =
-                                deleteMoreData.length > 0
-                                  ? deleteMoreData.map((field) => item[field])
-                                  : [];
-                              closeDialog(id, additionalData);
-                            },
-                          });
-                        }}
-                      >
-                        <DeleteIcon />
-                      </button>
-                    </>
-                  )}
-                </TableCell>
+                    ) : (
+                      <>
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          onClick={() => {
+                            setEditObj(item);
+                          }}
+                        >
+                          <EditOutlinedIcon />
+                        </Button>
+                        <button
+                          className="btn btn-danger m-1"
+                          onClick={() => {
+                            setConfirmDialog({
+                              isOpen: true,
+                              title:
+                                "Are you sure you want to delete this record?",
+                              subTitle: "You can't undo this operation",
+                              onConfirm: () => {
+                                const id = item[objectKey];
+                                const additionalData =
+                                  deleteMoreData.length > 0
+                                    ? deleteMoreData.map((field) => item[field])
+                                    : [];
+                                closeDialog(id, additionalData);
+                              },
+                            });
+                          }}
+                        >
+                          <DeleteIcon />
+                        </button>
+                      </>
+                    )}
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>
@@ -151,6 +159,7 @@ Table.defaultProps = {
   arrayField: "name",
   deleteMoreData: [],
   details: false,
+  buttons: true,
 };
 
 export default Table;
