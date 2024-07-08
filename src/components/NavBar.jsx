@@ -84,6 +84,13 @@ const NavBar = () => {
             ) : null}
           </li>
           <li className="nav-item">
+            {role === "ADMIN" ? (
+              <NavLink className="nav-link" to="/refund">
+                Refund tickets
+              </NavLink>
+            ) : null}
+          </li>
+          <li className="nav-item">
             {role === "USER" ? (
               <NavLink className="nav-link" to="/history">
                 My history
@@ -105,9 +112,11 @@ const NavBar = () => {
             </li>
           ) : null}
         </ul>
-        <span className="navbar-text">
-          Welcome to the captivating world of cinema!
-        </span>
+        {role === "USER" ? (
+          <span className="navbar-text">
+            Welcome to the captivating world of cinema!
+          </span>
+        ) : null}
         {sessionStorage.getItem("user") ? (
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">
