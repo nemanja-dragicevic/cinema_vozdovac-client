@@ -38,7 +38,6 @@ const TicketHistory = () => {
   const objectKey = "id";
 
   const handleDetails = (obj) => {
-    console.log(obj);
     setOpenPopup(true);
     setTicketId(obj.id);
   };
@@ -66,7 +65,12 @@ const TicketHistory = () => {
         openPopup={openPopup}
         setOpen={setOpenPopup}
       >
-        <TicketDetails ticketId={ticketId} />
+        <TicketDetails
+          ticketId={ticketId}
+          memberID={user.memberID}
+          status={tickets.find((ticket) => ticket.id === ticketId)?.status}
+          setOpenPopup={setOpenPopup}
+        />
       </Popup>
     </div>
   );

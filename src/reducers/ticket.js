@@ -46,12 +46,24 @@ const ticketSlice = createSlice({
       state.tickets = action.payload;
       state.error = undefined;
     },
+    updateTicket(state, action) {
+      state.tickets = state.tickets?.map((ticket) =>
+        ticket.id === action.payload.id ? action.payload : ticket
+      );
+      state.error = undefined;
+    },
     setTicketItems(state, action) {
       state.ticketItems = action.payload;
       state.error = undefined;
     },
     setSessionId(state, action) {
       state.sessionId = action.payload;
+      state.error = undefined;
+    },
+    removeTicket(state, action) {
+      state.tickets = state.tickets.filter(
+        (ticket) => ticket.id !== action.payload
+      );
       state.error = undefined;
     },
     deleteTicket(state, action) {
