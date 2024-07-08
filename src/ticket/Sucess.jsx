@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import * as ticketActions from "../actions/tickets";
 import "../styles/gradient.css";
 import { Link } from "react-router-dom";
@@ -11,11 +11,15 @@ const Success = () => {
 
   useEffect(() => {
     if (sessionID) {
-      dispatch(ticketActions.saveCheckoutTicket(sessionID));
-    } else {
+      const isSaved = sessionStorage.getItem("isSaved");
+      if (!isSaved) {
+        sessionStorage.setItem("isSaved", true);
+        dispatch(ticketActions.saveCheckoutTicket(sessionID));
+      }
+    } else if (!sessionID) {
       window.location.href = "/";
     }
-  }, [sessionID]);
+  }, [sessionID, dispatch]);
 
   return (
     <div style={{ textAlign: "center", marginTop: "100px" }}>
