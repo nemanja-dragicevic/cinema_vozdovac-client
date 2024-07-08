@@ -1,7 +1,7 @@
 import { Button, Paper } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import Table from "../reusable/Table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddHeader from "../reusable/AddHeader";
 import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
 import * as ticketActions from "../actions/tickets";
@@ -12,6 +12,10 @@ const Checkout = () => {
   const { checkout } = useSelector((state) => state.ticketReducer);
 
   const userFromSessionStorage = sessionStorage.getItem("user");
+
+  useEffect(() => {
+    sessionStorage.removeItem("isSaved");
+  }, []);
 
   const [filterFn, setFilterFn] = useState({
     fn: (items) => {
