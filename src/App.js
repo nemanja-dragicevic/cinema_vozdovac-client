@@ -26,6 +26,7 @@ import Failure from "./ticket/Failure";
 import TicketHistory from "./ticket/TicketHistory";
 import ProtectedRoute from "./security/ProtectedRoute";
 import { useSelector } from "react-redux";
+import RefundPage from "./refund/RefundPage";
 
 function App() {
   const [token, setToken] = useState(null);
@@ -144,6 +145,15 @@ function App() {
             element={
               <ProtectedRoute token={token}>
                 <UserSettings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            exact
+            path="/refund"
+            element={
+              <ProtectedRoute token={token}>
+                <RefundPage />
               </ProtectedRoute>
             }
           />
