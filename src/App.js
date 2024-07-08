@@ -25,15 +25,23 @@ import Success from "./ticket/Sucess";
 import Failure from "./ticket/Failure";
 import TicketHistory from "./ticket/TicketHistory";
 import ProtectedRoute from "./security/ProtectedRoute";
+import { useSelector } from "react-redux";
 
 function App() {
   const [token, setToken] = useState(null);
+
+  const { member } = useSelector((state) => state.membersReducer);
+
   useEffect(() => {
-    const stored = localStorage.getItem("token");
-    if (stored) {
-      setToken(stored);
+    if (member) {
+      setToken(member.token);
+    } else {
+      const stored = localStorage.getItem("token");
+      if (stored) {
+        setToken(stored);
+      }
     }
-  }, [token]);
+  }, [member]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
