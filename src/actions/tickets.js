@@ -141,3 +141,18 @@ export const refundTicket = (ticketID) => {
       });
   };
 };
+
+export const getBookedSeats = (projectionId) => {
+  return (dispatch) => {
+    dispatch(ticketActions.actionStart());
+    return apiService
+      .get(`${ticket}/booked-seats/${projectionId}`)
+      .then((response) => {
+        dispatch(ticketActions.setBooked(response.data));
+      })
+      .catch((error) => {
+        dispatch(ticketActions.actionError(error?.response?.data));
+        notifications.error();
+      });
+  };
+};

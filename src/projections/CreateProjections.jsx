@@ -229,7 +229,6 @@ const CreateProjections = () => {
       return;
     }
 
-    console.log(data);
     dispatch(projectionsActions.createProjection(data));
   };
 

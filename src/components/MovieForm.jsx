@@ -27,8 +27,8 @@ const MovieForm = () => {
   const [selectedProjection, setSelectedProjection] = useState(null);
 
   const handleProjectionSelect = (projection) => {
-    setOpenPopup(true);
     setSelectedProjection(projection);
+    setOpenPopup(true);
   };
 
   const sortSeats = (projection) => {
