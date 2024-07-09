@@ -73,8 +73,10 @@ export const createProjection = (data) => {
     return apiService
       .post(projectionsPath, data)
       .then((response) => {
-        window.location.href = "/projections";
         notifications.success(response?.data);
+        setTimeout(() => {
+          window.location.href = "/projections";
+        }, 2000);
       })
       .catch((error) => {
         if (error?.response?.status === 401) redirect401Error(error);
