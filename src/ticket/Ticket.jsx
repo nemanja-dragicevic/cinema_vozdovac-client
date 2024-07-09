@@ -13,27 +13,49 @@ const Ticket = ({ projection, closePopup }) => {
   const { rowsCount, seatsPerRow } = projection.hall;
   const dispatch = useDispatch();
 
-  const { checkout } = useSelector((state) => state.ticketReducer);
+  const { checkout, booked } = useSelector((state) => state.ticketReducer);
 
-  useEffect(() => {}, [dispatch]);
-
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [ticketItem, setTicketItem] = useState([]);
   const [seatState, setSeatState] = useState(
     Array(rowsCount)
       .fill()
       .map(() => Array(seatsPerRow).fill({ bought: false, selected: false }))
   );
 
+  useEffect(() => {
+    if (projection === null) return;
+    dispatch(ticketActions.getBookedSeats(projection.id));
+  }, [dispatch, projection]);
+
   const minSeatId = projection.hall.seats[0].id;
 
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [ticketItem, setTicketItem] = useState([]);
-
   useEffect(() => {
-    // console.log(checkout);
+    setSeatState(
+      Array(rowsCount)
+        .fill()
+        .map(() => Array(seatsPerRow).fill({ bought: false, selected: false }))
+    );
     const selectedSeats = checkout.filter(
       (item) => item.projectionId === projection.id
     );
     // console.log(selectedSeats);
+
+    console.log(booked);
+    booked.forEach((item) => {
+      const row = item.seatDTO.rowNumber - 1;
+      const seatIndex = item.seatDTO.seatNumber - 1;
+      setSeatState((prevSeatState) => {
+        const newSeatState = [...prevSeatState];
+        newSeatState[row] = [...prevSeatState[row]];
+        newSeatState[row][seatIndex] = {
+          ...prevSeatState[row][seatIndex],
+          selected: false,
+          bought: true,
+        };
+        return newSeatState;
+      });
+    });
 
     setTicketItem(selectedSeats);
     selectedSeats.forEach((item) => {
@@ -51,9 +73,10 @@ const Ticket = ({ projection, closePopup }) => {
       });
     });
     setTotalPrice(selectedSeats.reduce((acc) => acc + projection.price, 0));
-  }, [checkout]);
+  }, [projection, booked, checkout]);
 
-  const toggleSeat = (row, seat, seatId) => {
+  const toggleSeat = (row, seat, seatId, isBooked) => {
+    if (isBooked) return;
     setSeatState((prevSeatState) => {
       const newSeatState = [...prevSeatState];
       newSeatState[row] = [...prevSeatState[row]];
@@ -63,7 +86,7 @@ const Ticket = ({ projection, closePopup }) => {
       };
       return newSeatState;
     });
-    console.log(ticketItem);
+
     setTicketItem((prevTicketItem) => {
       const newTicketItem = { ...prevTicketItem };
       const price = projection.price;
