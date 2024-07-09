@@ -5,6 +5,7 @@ const ticketSlice = createSlice({
   initialState: {
     tickets: [],
     checkout: [],
+    booked: [],
     ticketItems: [],
     sessionId: undefined,
     ticket: undefined,
@@ -64,6 +65,10 @@ const ticketSlice = createSlice({
       state.tickets = state.tickets.filter(
         (ticket) => ticket.id !== action.payload
       );
+      state.error = undefined;
+    },
+    setBooked(state, action) {
+      state.booked = action.payload;
       state.error = undefined;
     },
     deleteTicket(state, action) {
