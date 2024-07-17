@@ -31,8 +31,8 @@ const TicketHistory = () => {
     { id: "id", label: "Ticket ID" },
     { id: "payinTime", label: "Payin time" },
     { id: "total", label: "Total" },
-    { id: "totalSeats", label: "Total seats" },
-    { id: "status", label: "Status", disableSorting: true },
+    { id: "totalSeats", label: "Total seats", disableSorting: true },
+    { id: "status", label: "Status" },
   ];
   const fields = ["id", "payinTime", "total", "totalSeats", "status"];
   const objectKey = "id";
