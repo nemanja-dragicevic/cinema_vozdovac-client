@@ -18,7 +18,7 @@ export const getMovies = () => {
         dispatch(moviesActions.fetchMovies(response.data));
       })
       .catch((error) => {
-        if (error.response.status === 401) {
+        if (error?.response?.status === 401) {
           localStorage.removeItem("token");
         }
         dispatch(moviesActions.actionError(error?.response?.data));
@@ -87,7 +87,43 @@ export const getMovie = (id) => {
   };
 };
 
+export const saveMovie = (data, images) => {
+  const formData = new FormData();
+
+  formData.append("movie", JSON.stringify(data));
+  if (images.smallPicture !== null) {
+    formData.append("smallPicture", images.smallPicture);
+  }
+  if (images.bigPicture !== null) {
+    formData.append("bigPicture", images.bigPicture);
+  }
+
+  return (dispatch) => {
+    dispatch(moviesActions.actionStart());
+    return apiService
+      .postFormData(moviesApi, formData)
+      .then(() => {
+        console.log("Successfully saved movie");
+        notifications.success(
+          "Successfully saved movie, wait for redirection..."
+        );
+        setTimeout(() => {
+          window.location.href = "/add_movie";
+        }, 3000);
+      })
+      .catch((error) => {
+        // if (error.response.status === 401) {
+        //   localStorage.removeItem("token");
+        // }
+        console.log("Error while saving movie");
+        dispatch(moviesActions.actionError(error?.response?.data));
+        notifications.error("Error while saving movie");
+      });
+  };
+};
+
 export const editMovie = (data, images) => {
+  console.log(images);
   const formData = new FormData();
 
   formData.append("movie", JSON.stringify(data));
@@ -99,19 +135,20 @@ export const editMovie = (data, images) => {
     formData.append("bigPicture", images.bigPicture);
     // data.bigPicture = null;
   }
+  console.log("formData", formData);
 
   return (dispatch) => {
     dispatch(moviesActions.actionStart());
     return apiService
       .putFormData(moviesApi, formData)
       .then((response) => {
-        dispatch(moviesActions.editMovie(response.data));
+        // dispatch(moviesActions.editMovie(response.data));
         notifications.success("Successfully edited movie");
       })
       .catch((error) => {
-        if (error.response.status === 401) {
-          localStorage.removeItem("token");
-        }
+        // if (error.response.status === 401) {
+        //   localStorage.removeItem("token");
+        // }
         dispatch(moviesActions.actionError(error?.response?.data));
         notifications.error("Error while editing movie");
       });

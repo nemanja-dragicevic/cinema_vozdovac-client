@@ -5,6 +5,25 @@
     background-clip: text;
       
     font-size: 3rem;
+    animation: shift 1s linear infinite;
+    color: transparent;
+}
+
+  @keyframes shift {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 100% 50%;
+    }
+  }
+.gradient-small {
+    background-image: linear-gradient(to right, #4F46E5, #4469ad, #63b3d2, #F89A7D, #449dad, #4F46E5);
+  
+    -webkit-background-clip: text;
+    background-clip: text;
+      
+    font-size: 1.5rem;
   
     color: transparent;
-  }
+}

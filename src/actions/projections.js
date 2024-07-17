@@ -151,3 +151,18 @@ export const getProjectionsForMovie = (id) => {
       });
   };
 };
+
+export const todaysProjections = () => {
+  return (dispatch) => {
+    dispatch(projectionsActions.actionStart());
+    return apiService
+      .get(projectionsPath + "/today")
+      .then((response) => {
+        dispatch(projectionsActions.fetchProjections(response.data));
+      })
+      .catch((error) => {
+        dispatch(projectionsActions.actionError(error?.response?.data));
+        notifications.error(error?.response?.data);
+      });
+  };
+};

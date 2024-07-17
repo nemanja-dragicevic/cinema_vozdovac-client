@@ -24,6 +24,17 @@ const apiService = {
       .catch(handleErrors);
   },
 
+  postFormData(url, body) {
+    return axiosInstance
+      .post(url, body, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          // Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .catch(handleErrors);
+  },
+
   put(url, body) {
     return axiosInstance
       .put(url, body, { headers: getHeaders() })
