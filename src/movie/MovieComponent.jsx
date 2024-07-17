@@ -26,6 +26,7 @@ import TableSearch from "../components/TableSearch";
 import { warning } from "../utils/notification";
 import Popup from "../reusable/Popup";
 import ActorRole from "./ActorRole";
+import { base64ToBlob } from "../utils/decode";
 
 const schema = Joi.object({
   movieID: Joi.number().integer().min(0).required(),
@@ -368,15 +369,44 @@ const MovieComponent = () => {
       return;
     } else {
       console.log(data);
-      setConfirmDialog({
-        isOpen: true,
-        title: "Are you sure you want to save this movie?",
-        subTitle: "You can't undo this operation",
-        onConfirm: () => {
-          setConfirmDialog({ ...confirmDialog, isOpen: false });
-          dispatch(moviesActions.editMovie(data, fileImages));
-        },
-      });
+      console.log(fileImages);
+      if (fileImages.smallPicture === null) {
+        console.log("small picture");
+        const blob = base64ToBlob(data.smallPicture);
+        setFileImages((prevImages) => ({
+          ...prevImages,
+          smallPicture: blob,
+        }));
+      }
+      if (fileImages.bigPicture === null) {
+        const blob = base64ToBlob(data.bigPicture);
+        setFileImages((prevImages) => ({
+          ...prevImages,
+          bigPicture: blob,
+        }));
+      }
+      console.log(fileImages);
+      if (data.movieID === 0) {
+        setConfirmDialog({
+          isOpen: true,
+          title: "Are you sure you want to save this movie?",
+          subTitle: "You can't undo this operation",
+          onConfirm: () => {
+            setConfirmDialog({ ...confirmDialog, isOpen: false });
+            dispatch(moviesActions.saveMovie(data, fileImages));
+          },
+        });
+      } else {
+        setConfirmDialog({
+          isOpen: true,
+          title: "Are you sure you want to edit this movie?",
+          subTitle: "You can't undo this operation",
+          onConfirm: () => {
+            setConfirmDialog({ ...confirmDialog, isOpen: false });
+            dispatch(moviesActions.editMovie(data, fileImages));
+          },
+        });
+      }
     }
   };
 
