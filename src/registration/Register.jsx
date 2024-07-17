@@ -18,7 +18,7 @@ const div_style = { display: "flex", flexDirection: "row", columnGap: 15 };
 const schema_login = Joi.object({
   username: Joi.string().min(3).max(30).required().label("Username"),
   password: Joi.string()
-    .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
+    .pattern(new RegExp("^[a-zA-Z0-9@#$%^&+=]{3,30}$"))
     .messages({
       "string.pattern.base":
         "Password must be 3-30 characters long and " +
