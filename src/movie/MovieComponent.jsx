@@ -141,6 +141,28 @@ const MovieComponent = () => {
     bigPicture: null,
   });
   const [data, setData] = useState(movie);
+
+  useEffect(() => {
+    if (fileImages.smallPicture !== null || fileImages.bigPicture !== null) {
+      // This effect will run whenever fileImages is updated
+      if (fileImages.smallPicture === null) {
+        console.log("small picture");
+        const blob = base64ToBlob(data.smallPicture);
+        setFileImages((prevImages) => ({
+          ...prevImages,
+          smallPicture: blob,
+        }));
+      }
+      if (fileImages.bigPicture === null) {
+        const blob = base64ToBlob(data.bigPicture);
+        setFileImages((prevImages) => ({
+          ...prevImages,
+          bigPicture: blob,
+        }));
+      }
+    }
+  }, [fileImages]);
+
   const [errors, setErrors] = useState({
     name: { error: false, message: "" },
     duration: { error: false, message: "" },
@@ -369,22 +391,6 @@ const MovieComponent = () => {
       return;
     } else {
       console.log(data);
-      console.log(fileImages);
-      if (fileImages.smallPicture === null) {
-        console.log("small picture");
-        const blob = base64ToBlob(data.smallPicture);
-        setFileImages((prevImages) => ({
-          ...prevImages,
-          smallPicture: blob,
-        }));
-      }
-      if (fileImages.bigPicture === null) {
-        const blob = base64ToBlob(data.bigPicture);
-        setFileImages((prevImages) => ({
-          ...prevImages,
-          bigPicture: blob,
-        }));
-      }
       console.log(fileImages);
       if (data.movieID === 0) {
         setConfirmDialog({
