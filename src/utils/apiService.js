@@ -29,7 +29,7 @@ const apiService = {
       .post(url, body, {
         headers: {
           "Content-Type": "multipart/form-data",
-          // Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       })
       .catch(handleErrors);
