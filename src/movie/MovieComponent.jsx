@@ -435,6 +435,8 @@ const MovieComponent = () => {
     );
   };
 
+  console.log(data);
+
   return (
     <div style={{ marginTop: "50px" }}>
       <Paper
@@ -473,6 +475,11 @@ const MovieComponent = () => {
             label="Duration (in minutes)"
             error={errors.duration}
             onChange={handleChange}
+            InputProps={
+              movie.startTime !== undefined && movie.startTime !== null
+                ? { readOnly: true }
+                : {}
+            }
           />
           <Input
             name="description"
